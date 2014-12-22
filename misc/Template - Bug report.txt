@@ -1,0 +1,54 @@
+Bug Reporting Template
+======================
+
+Title:    
+
+Class:
+e.g. "Feature Request", "System Error", "Serious Bug"
+
+Date:           
+Reported By:   
+Email:      
+
+
+Product:                        Version:
+Platform:                       Version:
+Browser:                        Version:
+URL:        
+
+Is it reproducible: Yes / Occasionally / One Time / No
+
+Description
+===========
+
+
+
+Steps to Produce/Reproduce
+--------------------------
+
+
+
+Expected Results
+----------------
+
+
+
+Actual Results
+--------------
+
+
+
+Workarounds
+-----------
+
+
+
+Attachments
+-----------
+
+
+
+Other Information
+-----------------
+
+

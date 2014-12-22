@@ -1,0 +1,62 @@
+Bug Report
+======================
+
+Title:    Error during execution : Unable to set default database for logins that were not created before.
+
+Class:Serious Bug
+e.g. "Feature Request", "System Error", "Serious Bug"
+
+Date:           2014 - 12 - 16
+Reported By:   Jefferson Elias
+Email:      jelias@chu.ulg.ac.be
+
+
+Product: Referenced Database Users Creation		  	Version:0.1.0 and onwards
+Platform:                       					Version:
+Browser:                        					Version:
+URL:        
+
+Is it reproducible: Yes 
+
+Description
+===========
+	If a login is created by the generated script, the creation fails for default database assignment.
+	
+	. Commands for "Bernard Wojeiechowski" from department "CHU Liege/SAI/MTECH"
+		Msg 102, Level 15, State 1, Line 1
+		Incorrect syntax near ','.
+		Msg 15151, Level 16, State 1, Line 1
+		Cannot find the login 'CHULG\c146446', because it does not exist or you do not have permission.
+		
+
+Steps to Produce/Reproduce
+--------------------------
+	
+	METHOD 1 :
+		Create a login and map it to a database. Set this mapping as default.
+		Generate script and execute it.
+
+Expected Results
+----------------
+	
+
+
+Actual Results
+--------------
+
+
+
+Workarounds
+-----------
+
+	Run the script again.
+
+Attachments
+-----------
+
+
+
+Other Information
+-----------------
+
+

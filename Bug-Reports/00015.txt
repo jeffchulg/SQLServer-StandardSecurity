@@ -1,0 +1,69 @@
+Bug Report
+======================
+
+Title:    Error during execution : security standard cannot take place as expected 
+		  for SYS and INFORMATION_SCHEMA 
+
+Class:Serious Bug
+e.g. "Feature Request", "System Error", "Serious Bug"
+
+Date:           2014 - 11 - 20
+Reported By:   Jefferson Elias
+Email:      jelias@chu.ulg.ac.be
+
+
+Product: Referenced Database Users Creation		  	Version:0.1.0 and 0.1.1
+Platform:                       					Version:
+Browser:                        					Version:
+URL:        
+
+Is it reproducible: Yes 
+
+Description
+===========
+	If a user is assigned a privilege on an object (or on schema) SYS, the standard policy about
+	schema access is applied. 
+	
+	This leads to the following error :
+		Msg 33008, Niveau 16, État 2, Ligne 23
+		Cannot grant, deny, or revoke ALTER permission on INFORMATION_SCHEMA or SYS schema.
+
+	The message is explicit.
+		
+
+Steps to Produce/Reproduce
+--------------------------
+	
+	METHOD 1 :
+		grant ALTER on SCHEMA::INFORMATION_SCHEMA
+	
+	METHOD 2 :
+		create a user in security database and set a schema privilege on SYS or INFORMATION_SCHEMA
+		
+	METHOD 3 : 
+		create a user in security database and set an object privilege in schema SYS or INFORMATION_SCHEMA
+
+Expected Results
+----------------
+	
+
+
+Actual Results
+--------------
+
+
+
+Workarounds
+-----------
+
+
+
+Attachments
+-----------
+
+
+
+Other Information
+-----------------
+
+

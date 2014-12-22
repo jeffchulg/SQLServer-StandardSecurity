@@ -1,0 +1,55 @@
+Bug Report
+======================
+
+Title:    Missing BEGIN .. END for the IF statement
+
+Class:System Error
+e.g. "Feature Request", "System Error", "Serious Bug"
+
+Date:           2014 - 05 - 07 
+Reported By:   Jefferson Elias
+Email:      jelias@chu.ulg.ac.be
+
+
+Product: Standard Role creation 				  	Version:0.1.1
+Platform:                       					Version:
+Browser:                        					Version:
+URL:        
+
+Is it reproducible: Yes 
+
+Description
+===========
+	Mandatory Schema Effective Creation does not have enclosing 
+	BEGIN .. END for the IF statement
+
+
+Steps to Produce/Reproduce
+--------------------------
+
+
+
+Expected Results
+----------------
+
+
+
+Actual Results
+--------------
+
+
+
+Workarounds
+-----------
+
+
+
+Attachments
+-----------
+
+
+
+Other Information
+-----------------
+
+

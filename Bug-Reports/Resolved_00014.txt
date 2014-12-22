@@ -1,0 +1,54 @@
+Bug Report
+======================
+
+Title:    Error on execution
+
+Class:System Error
+e.g. "Feature Request", "System Error", "Serious Bug"
+
+Date:           2014 - 05 - 07 
+Reported By:   Jefferson Elias
+Email:      jelias@chu.ulg.ac.be
+
+
+Product: Referenced Database Users Creation		  	Version:0.1.0
+Platform:                       					Version:
+Browser:                        					Version:
+URL:        
+
+Is it reproducible: Yes 
+
+Description
+===========
+	If username is different from sql login name, crash
+
+
+Steps to Produce/Reproduce
+--------------------------
+
+
+
+Expected Results
+----------------
+
+
+
+Actual Results
+--------------
+
+
+
+Workarounds
+-----------
+
+
+
+Attachments
+-----------
+
+
+
+Other Information
+-----------------
+
+

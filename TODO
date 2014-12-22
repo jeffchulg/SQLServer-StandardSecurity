@@ -1,0 +1,30 @@
+A FAIRE A CHAQUE MODIF :
+-- TODO: Tester le tout et le valider pour passer aux étapes documentation et utilisation
+
+URGENT :
+-- TODO: utilisation de sp_execute_sql + gestion des exceptions.
+-- TODO faire usage de PermissionLevel dans la génération.
+-- TODO: [security].[getCmds4StandardRoles]                 - gérer le cas isDeny=1 pour isRoleMembership=1
+-- TODO: ajouter la gestion des désactivations => révocation/désactivation. (mise en commentaire et laissé à l'appréciation)
+-- TODO: Procédure d'application de la sécurité pour un serveur et une base de données
+-- TODO : procédure pour copier les privilèges d'un serveur à un autre (modes : merge/replace)
+-- TODO: [security].[getCmds4SchemaCreation]                - Get the @SchemaAuthorization from  "ApplicationParams" table
+-- TODO: [security].[getCmds4ObjectPermissionAssignments]   - Get the @AsGrantorName from  "ApplicationParams" table
+
+MOINS URGENT :	
+-- TODO: Creation of the [OnObjectPrivs] table              - vérifier que les associations de privilèges objet correspondent au type d'objet
+-- TODO: ALL FUNCTIONS                                      - (in generated script) Check @@Servername is the same as the one provided to the function
+-- TODO: [security].[getCmds4SchemaRoleAssignments]         - check role exists
+-- TODO: [security].[getCmds4ObjectPermissionAssignments]   - Check user exists
+-- TODO: [security].[getLoginCreationStatement] : gérer les guids dans la création de logins. 
+-- TODO: [security].[getLoginCreationStatement] : Si login existant mais GUID différent => procédure de mise en adéquation.
+
+-- TODO : Database user creation version 0.1.0 => !!! create user for login sans vérification préalable et sans paramètre login !
+
+DU LUXE :
+-- TODO: ajouter gestion du nom d'instance dans les paramètres impliquant ServerName
+-- TODO: uninstallation script
+-- TODO: Contraintes foreign key et uniques
+-- TODO: logging au niveau des scripts générés
+-- TODO : Faire des procédures "helper" de manière à aider l'utilisation.
+-- TODO : interface graphique en perl

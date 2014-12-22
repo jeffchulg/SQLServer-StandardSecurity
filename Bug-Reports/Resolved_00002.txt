@@ -1,0 +1,54 @@
+Bug Report
+======================
+
+Title:    Missing PRINT command
+
+Class:System Error
+e.g. "Feature Request", "System Error", "Serious Bug"
+
+Date:           2014 - 05 - 07 
+Reported By:   Jefferson Elias
+Email:      jelias@chu.ulg.ac.be
+
+
+Product: SQL Login Creation (both authentication)  	Version:0.1.2
+Platform:                       					Version:
+Browser:                        					Version:
+URL:        
+
+Is it reproducible: Yes 
+
+Description
+===========
+String ". Generating commands" shown like that in the resulting script. 
+
+
+Steps to Produce/Reproduce
+--------------------------
+
+
+
+Expected Results
+----------------
+
+
+
+Actual Results
+--------------
+
+
+
+Workarounds
+-----------
+
+
+
+Attachments
+-----------
+
+
+
+Other Information
+-----------------
+
+

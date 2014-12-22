@@ -1,0 +1,54 @@
+Bug Report
+======================
+
+Title:    This view does not give all database users !
+
+Class:System Error
+e.g. "Feature Request", "System Error", "Serious Bug"
+
+Date:           2014 - 05 - 07 
+Reported By:   Jefferson Elias
+Email:      jelias@chu.ulg.ac.be
+
+
+Product: View [security].[DatabaseUsers]         	Version:0.1.0
+Platform:                       					Version:
+Browser:                        					Version:
+URL:        
+
+Is it reproducible: Yes 
+
+Description
+===========
+This view does not give all database users !
+
+
+Steps to Produce/Reproduce
+--------------------------
+
+
+
+Expected Results
+----------------
+
+
+
+Actual Results
+--------------
+
+
+
+Workarounds
+-----------
+
+
+
+Attachments
+-----------
+
+
+
+Other Information
+-----------------
+
+

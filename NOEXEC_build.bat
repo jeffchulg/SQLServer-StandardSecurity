@@ -1,1 +1,1 @@
-java -jar .\tools\combiner-0.0.1.jar -e -o .\dist\securityApplier_SQLServer_0.0.2.sql .\src\sqlserver\*.sql
+java -jar .\tools\combiner-0.0.1.jar -v -e -o .\dist\securityApplier_SQLServer_0.0.3.sql .\src\sqlserver\*.sql 2> build.log

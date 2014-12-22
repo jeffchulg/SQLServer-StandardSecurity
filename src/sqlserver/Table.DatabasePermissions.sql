@@ -1,0 +1,257 @@
+/*requires Schema.Security.sql*/
+/*requires Table.DatabasePermissions.sql*/
+
+/**
+  ==================================================================================
+    DESCRIPTION
+		Creation of the [security].[DatabasePermissions] table.
+		This table will contain any permission in a given database. 
+			These permissions can be of class  (at the moment) :
+				'SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER'
+
+	==================================================================================
+  BUGS:
+ 
+    BUGID       Fixed   Description
+    ==========  =====   ==========================================================
+    ----------------------------------------------------------------------------------
+  ==================================================================================
+  Notes :
+ 
+        Exemples :
+        -------
+ 
+  ==================================================================================
+  Revision history
+ 
+    Date        Name                Description
+    ==========  ================    ================================================
+    28/11/2014  Jefferson Elias     Creation
+    ----------------------------------------------------------------------------------
+    17/12/2014  Jefferson Elias     Added 2 computed columns for the unique constraint
+                                    to be correct...
+                                    Changed the unique constraint.
+                                    As previous version wasn't a stable release,
+                                    no ALTER for that.
+    ----------------------------------------------------------------------------------
+  ==================================================================================
+*/
+
+PRINT '--------------------------------------------------------------------------------------------------------------'
+PRINT 'Table [security].[DatabasePermissions] Creation'
+
+
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[DatabasePermissions]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [security].[DatabasePermissions] (
+        [ServerName]        [VARCHAR](256) NOT NULL,
+        [DbName]            [VARCHAR](64) NOT NULL,
+        [Grantee]           [VARCHAR](64) NOT NULL,
+        [isUser]            [BIT] NOT NULL,
+		[ObjectClass]       [VARCHAR](128) NOT NULL,
+		[ObjectType]        [VARCHAR](128) ,
+		[PermissionLevel] 	[varchar](6) DEFAULT 'GRANT' not null,
+        [PermissionName]    [VARCHAR](128) NOT NULL,
+        [SchemaName]        [VARCHAR](64) ,
+        [ObjectName]        [VARCHAR](128) NOT NULL,        
+        [SubObjectName]     [VARCHAR](128), -- column_name , partition_name        		
+        [isWithGrantOption] BIT NOT NULL,
+		[Reason]            VARCHAR(2048),
+        [isActive]          BIT            NOT NULL,
+        [CreationDate]      [datetime] NULL,
+        [lastmodified]      [datetime] NULL,  
+        [FullObjectType]    AS (
+                                [ObjectClass] +  ISNULL([ObjectType],'')
+                            ),
+        [FullObjectName]    AS (
+                                isNULL([SchemaName],'') + [ObjectName] + isNULL([SubObjectName],'')
+                            )
+    )
+    ON [PRIMARY]
+	PRINT '    Table [security].[DatabasePermissions] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[DatabasePermissions]') AND name = N'UN_DatabasePermissions')
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        ADD CONSTRAINT [UN_DatabasePermissions]
+            UNIQUE (
+                [ServerName],
+				[DbName],
+				[Grantee],
+				[FullObjectType],
+				[PermissionName],
+				[FullObjectName]
+            )
+        WITH (
+            PAD_INDEX               = OFF,
+            STATISTICS_NORECOMPUTE  = OFF,
+            SORT_IN_TEMPDB          = OFF,
+            IGNORE_DUP_KEY          = OFF,
+            ONLINE                  = OFF,
+            ALLOW_ROW_LOCKS         = ON,
+            ALLOW_PAGE_LOCKS        = ON
+        )
+    ON [PRIMARY]
+	
+	PRINT '    Primary Key [UN_DatabasePermissions] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_ObjectClass]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        WITH CHECK ADD CONSTRAINT [CK_DatabasePermissions_ObjectClass]
+            CHECK (([ObjectClass] in ('SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER')))
+	PRINT '     Constraint [CK_DatabasePermissions_ObjectClass] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        WITH CHECK ADD CONSTRAINT [CK_DatabasePermissions_PermissionLevel]
+            CHECK (([PermissionLevel] in ('GRANT','REVOKE','DENY')))
+	PRINT '     Constraint [CK_DatabasePermissions_PermissionLevel] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[CK_DatabasePermissions_OnlyGrantWithGrantOption]') AND type = 'C')
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        ADD  CONSTRAINT [CK_DatabasePermissions_OnlyGrantWithGrantOption]
+            CHECK  ((NOT (PermissionLevel <> 'GRANT' AND [isWithGrantOption]=(1))))
+	
+	PRINT '    Constraint [CK_DatabasePermissions_OnlyGrantWithGrantOption] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_isWithGrantOption]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        ADD CONSTRAINT [DF_DatabasePermissions_isWithGrantOption]
+            DEFAULT 0 FOR [isWithGrantOption]
+	
+	PRINT '    Constraint [DF_DatabasePermissions_isWithGrantOption] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_CreationDate]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        ADD CONSTRAINT [DF_DatabasePermissions_CreationDate]
+            DEFAULT (Getdate()) FOR [CreationDate]
+	
+	PRINT '    Constraint [DF_DatabasePermissions_CreationDate] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_LastModified]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        ADD CONSTRAINT [DF_DatabasePermissions_LastModified] DEFAULT (Getdate()) FOR [LastModified]
+	
+	PRINT '    Constraint [DF_DatabasePermissions_LastModified] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_ServerName]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        ADD CONSTRAINT [DF_DatabasePermissions_ServerName] DEFAULT (@@SERVERNAME) FOR [ServerName]
+	
+	PRINT '    Constraint [DF_DatabasePermissions_ServerName] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_isActive]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        ADD CONSTRAINT [DF_DatabasePermissions_isActive] DEFAULT (0) FOR [isActive]
+	
+	PRINT '    Constraint [DF_DatabasePermissions_isActive] created.'
+END
+GO
+
+DECLARE @SQL VARCHAR(MAX)
+
+IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_DatabasePermissions]'))
+BEGIN
+    SET @SQL = 'CREATE TRIGGER [security].[TRG_I_DatabasePermissions] ' + CHAR(13) +
+               '  ON security.DatabasePermissions ' + CHAR(13) +
+               '    FOR INSERT ' + CHAR(13) +
+               'AS' + CHAR(13) +
+               'BEGIN' + CHAR(13) +
+               '    DECLARE @a varchar(MAX)' + CHAR(13) +
+               '    select @a = ''123''' + CHAR(13) +
+               'END' + CHAR(13);
+
+    EXEC (@SQL) ;
+	PRINT '    Trigger [security].[TRG_I_DatabasePermissions] created.'
+END
+
+SET @SQL =  'ALTER TRIGGER [security].[TRG_I_DatabasePermissions]' + CHAR(13) +
+            '    ON security.DatabasePermissions' + CHAR(13) +
+            '    FOR INSERT' +CHAR(13) +
+            'AS' + CHAR(13) +
+            'BEGIN' + CHAR(13) +
+            '    UPDATE [security].DatabasePermissions ' + CHAR(13) +
+            '        SET LastModified = GETDATE()'+CHAR(13) +
+            '        ,   CreationDate = GETDATE() ' + CHAR(13) +
+            '    FROM [security].DatabasePermissions o ' + CHAR(13) +
+            '        INNER JOIN inserted i' +CHAR(13) +
+            '            on o.[ServerName] = i.[ServerName]' +CHAR(13) +
+            '           and o.DbName = i.DbName' +CHAR(13) +
+            '           and o.[grantee] = i.[grantee]' +CHAR(13) +
+            '           and o.[ObjectClass] = i.[ObjectClass]' +CHAR(13) +
+            '           and ISNULL(o.[ObjectType],''null'') = ISNULL(i.[ObjectType],''null'')' +CHAR(13) +
+            '           and o.[PermissionName] = i.[PermissionName]' +CHAR(13) +
+            '           and ISNULL(o.[SchemaName],''null'') = ISNULL(i.[SchemaName],''null'')' +CHAR(13) +
+            '           and o.[objectname] = i.[objectname]' +CHAR(13) +        
+            '           and ISNULL(o.[SubObjectName],''null'') = ISNULL(i.[SubObjectName],''null'')' +CHAR(13) +        
+            'END' ;
+EXEC (@SQL);
+PRINT '    Trigger [security].[TRG_I_DatabasePermissions] altered.'
+
+IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_DatabasePermissions]'))
+BEGIN
+    SET @SQL = 'CREATE TRIGGER [security].[TRG_U_DatabasePermissions] ' + CHAR(13) +
+               '  ON security.DatabasePermissions ' + CHAR(13) +
+               '    FOR UPDATE ' + CHAR(13) +
+               'AS' + CHAR(13) +
+               'BEGIN' + CHAR(13) +
+               '    DECLARE @a varchar(MAX)' + CHAR(13) +
+               '    select @a = ''123''' + CHAR(13) +
+               'END' + CHAR(13);
+
+    EXEC (@SQL) ;
+	
+	PRINT '    Trigger [security].[TRG_U_DatabasePermissions] created.'
+END
+
+SET @SQL =  'ALTER TRIGGER [security].[TRG_U_DatabasePermissions]' + CHAR(13) +
+            '    ON security.DatabasePermissions' + CHAR(13) +
+            '    FOR UPDATE' +CHAR(13) +
+            'AS' + CHAR(13) +
+            'BEGIN' + CHAR(13) +
+            '    UPDATE [security].DatabasePermissions ' + CHAR(13) +
+            '        SET LastModified = GETDATE()'+CHAR(13) +
+            '    FROM [security].DatabasePermissions o ' + CHAR(13) +
+            '        INNER JOIN inserted i' +CHAR(13) +
+            '            on o.[ServerName] = i.[ServerName]' +CHAR(13) +
+            '           and o.DbName = i.DbName' +CHAR(13) +
+            '           and o.[grantee] = i.[grantee]' +CHAR(13) +
+            '           and o.[ObjectClass] = i.[ObjectClass]' +CHAR(13) +
+            '           and ISNULL(o.[ObjectType],''null'') = ISNULL(i.[ObjectType],''null'')' +CHAR(13) +
+            '           and o.[PermissionName] = i.[PermissionName]' +CHAR(13) +
+            '           and ISNULL(o.[SchemaName],''null'') = ISNULL(i.[SchemaName],''null'')' +CHAR(13) +
+            '           and o.[objectname] = i.[objectname]' +CHAR(13) +        
+            '           and ISNULL(o.[SubObjectName],''null'') = ISNULL(i.[SubObjectName],''null'')' +CHAR(13) +     
+            'END' ;
+EXEC (@SQL);
+PRINT '    Trigger [security].[TRG_U_DatabasePermissions] altered.'
+GO
+
+PRINT '--------------------------------------------------------------------------------------------------------------'
+PRINT '' 

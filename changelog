@@ -1,0 +1,73 @@
+---------------------------------
+SecurityApplier 1.0.2, XXXX
+---------------------------------
+
+
+================
+* New Features *
+================
+
+	- Documentation :
+		Added column "Reason" for documentation purpose in tables :
+			* DatabaseRoles
+			* DatabaseRoleMembers
+			* DatabasePermissions
+
+			* onschemaprivs
+			* onobjectprivs
+			* CustomRoles
+			* CustomRoleMembers
+	
+	- Flexibility :
+        - Added parameter for setting separator in standard role naming convention :
+            it was previously : <SCHEMA_NAME>_<ROLE_NAME>
+            it's now          : <SCHEMA_NAME><SEPARATOR><ROLE_NAME>
+                                The name of the parameter is Separator4OnSchemaStandardRole
+                                
+        -   added field "permissionlevel" in tables "standardonschemarolessecurity" 
+            and "onobjectprivs"
+
+            values / effect on user   / effect on role
+            ------   ---------------    --------------
+            revoke /  	revoke 		  / remove membership
+            grant  /  	grant  		  / add membership
+            deny   / 	deny   		  / !! n/a !! 
+
+            at this time, this field is not used for generation.		
+
+================
+* Core Changes *
+================
+	- Added table "DatabaseRoles" which will be the replacement table for
+	  CustomRoles table and which will also contain a generated list of
+	  standard database roles.
+  
+	- Added table "StandardExclusion". 
+		It's in this table that exception to the defined standard will come.
+		At the moment, just 2 available exclusions :
+			* DATABASE
+			* DATABASE_SCHEMA
+		Data provided by this table is taken in account by procedure for standard T-SQL generation.  
+
+	- Added standard role "prog_executors" which is below "end users"
+	  and only has EXECUTE permission on schemas.
+		
+  
+================
+*   Bug Fix    *
+================
+	- Correction for Bug #00016
+
+---------------------------------
+SecurityApplier 1.0.1, 2014-11-17
+---------------------------------
+- Added last testing adaptations for solution as of 2014-05-07
+- Added Table CustomRoleMembers
+- Added Function getCmds4CustomRoleMembers
+- Added management for custom role membership
+- Ajusted testings for these changes
+
+---------------------------------
+SecurityApplier 1.0.0, 2014-05-07
+---------------------------------
+- Initial release

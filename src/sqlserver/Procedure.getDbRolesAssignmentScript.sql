@@ -1,17 +1,17 @@
 /*requires Schema.Security.sql*/
 /*requires Table.DatabaseRoles.sql*/
 /*requires View.Logins.sql*/
-/*requires Function.getDbRoleCreationStatement.sql*/
+/*requires Function.getDbRoleAssignmentStatement.sql*/
 /*requires Procedure.CreateTempTables4Generation.sql*/
 /*requires Procedure.SaveSecurityGenerationResult.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'Procedure [security].[getDbRolesCreationScript] Creation'
+PRINT 'Procedure [security].[getDbRolesAssignmentScript] Creation'
 
-IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getDbRolesCreationScript]') AND type in (N'P'))
+IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getDbRolesAssignmentScript]') AND type in (N'P'))
 BEGIN
-    EXECUTE ('CREATE Procedure [security].[getDbRolesCreationScript] ( ' +
+    EXECUTE ('CREATE Procedure [security].[getDbRolesAssignmentScript] ( ' +
             ' @ServerName    varchar(512), ' +
             ' @DbName    varchar(50) ' +
             ') ' +
@@ -20,14 +20,15 @@ BEGIN
             '   RETURN ''Not implemented'' ' +
             'END')
 			
-	PRINT '    Procedure [security].[getDbRolesCreationScript] created.'
+	PRINT '    Procedure [security].[getDbRolesAssignmentScript] created.'
 END
 GO
 
-ALTER Procedure [security].[getDbRolesCreationScript] (    
+ALTER Procedure [security].[getDbRolesAssignmentScript] (    
     @ServerName  		    varchar(512),    
     @DbName  		        varchar(64),    
     @RoleName               varchar(64)     = NULL,	
+    @MemberName             varchar(64)     = NULL,	
 	@AsOf 				    DATETIME 		= NULL ,
 	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,
     @OutputDatabaseName     NVARCHAR(128) 	= NULL ,
@@ -79,7 +80,8 @@ BEGIN
     DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);   
-    DECLARE	@CurRole   	  	varchar(64)
+    DECLARE	@CurRole   	  	    varchar(64)
+    DECLARE	@CurMember	  	    varchar(64)
 	DECLARE @LineFeed 			VARCHAR(10)
     DECLARE @StringToExecute    VARCHAR(MAX)
     
@@ -97,7 +99,8 @@ BEGIN
         RAISERROR('No value set for @ServerName !',10,1)
     END		
     
-    SET @CurRole = @RoleName
+    SET @CurRole    = @RoleName
+    SET @CurMember  = @MemberName
 
     exec security.CreateTempTables4Generation 
         @CanDropTempTables, 
@@ -208,32 +211,62 @@ BEGIN
                 SET @CurOpName  = null
                 SET @CurOpOrder = null                    
             END
-			if(@CurRole is null) 
+			if(@CurRole is null or @CurMember is null) 
 			BEGIN	
            		if @Debug = 1 
 				BEGIN
-					PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every Role generation detected.'
+					PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every Role membership generation detected.'
 				END
                 
-                DECLARE getRoles CURSOR LOCAL FOR
-                    select
-                        [RoleName]
-                    from 
-                        [security].[DatabaseRoles]        
-                    where 
-                        [ServerName] = @ServerName
-                    and [DbName]     = @DbName
-                
-                open getRoles
+                if @CurRole is null and @CurMember is null 
+                BEGIN 
+                    DECLARE getRolesMembers CURSOR LOCAL FOR
+                        select
+                            [RoleName], 
+                            [MemberName]
+                        from 
+                            [security].[DatabaseRoleMembers]        
+                        where 
+                            [ServerName] = @ServerName
+                        and [DbName]     = @DbName
+                END 
+                ELSE IF @CurRole is null and @CurMember is not null 
+                BEGIN 
+                    DECLARE getRolesMembers CURSOR LOCAL FOR
+                        select
+                            [RoleName], 
+                            [MemberName]
+                        from 
+                            [security].[DatabaseRoleMembers]        
+                        where 
+                            [ServerName] = @ServerName
+                        and [DbName]     = @DbName
+                        and [MemberName] = @MemberName 
+                END 
+                ELSE IF @CurRole is not null and @CurMember is not null
+                BEGIN
+                    DECLARE getRolesMembers CURSOR LOCAL FOR
+                        select
+                            [RoleName], 
+                            [MemberName]
+                        from 
+                            [security].[DatabaseRoleMembers]        
+                        where 
+                            [ServerName] = @ServerName
+                        and [DbName]     = @DbName
+                        and [RoleName]   = @RoleName
+                END
+                open getRolesMembers
 				FETCH NEXT
-				FROM getRoles INTO @CurRole
+				FROM getRolesMembers INTO @CurRole, @CurMember
 
                 WHILE @@FETCH_STATUS = 0
 				BEGIN						
-					EXEC [security].[getDbRolesCreationScript] 
+					EXEC [security].[getDbRolesAssignmentScript] 
 						@ServerName 		    = @ServerName,
 						@DbName 		        = @DbName,
 						@RoleName  		        = @CurRole,
+                        @MemberName             = @CurMember,
 						@OutputType 		    = @OutputType,
 						@OutputDatabaseName     = null,--@OutputDatabaseName,
 						@OutputSchemaName 	    = null,--@OutputSchemaName,
@@ -243,44 +276,49 @@ BEGIN
 						@Debug 				    = @Debug
 					-- carry on ...
 					FETCH NEXT
-					FROM getRoles INTO @CurRole
+					FROM getRolesMembers INTO @CurRole, @CurMember
 				END
-				CLOSE getRoles
-				DEALLOCATE getRoles			
+				CLOSE getRolesMembers
+				DEALLOCATE getRolesMembers			
             END
             ELSE  -- a role name is given
             BEGIN                        
-                DECLARE @isStandard BIT
-                DECLARE @isActive   BIT
+                DECLARE @PermissionLevel    VARCHAR(10)
+                DECLARE @MemberIsRole       BIT
+                DECLARE @isActive           BIT
                 
                 select 
-                    @isActive   = isActive,
-                    @isStandard = isStandard
+                    @PermissionLevel    = PermissionLevel,
+                    @isActive           = isActive,
+                    @MemberIsRole       = MemberIsRole
                 from 
-                    [security].[DatabaseRoles]        
+                    [security].[DatabaseRoleMembers]        
                 where 
                     [ServerName] = @ServerName
                 and [DbName]     = @DbName 
                 and [RoleName]   = @CurRole
+                and [MemberName] = @CurMember
     
                 if @isActive is null 
                 BEGIN
-					DECLARE @ErrMsg VARCHAR(512) = 'The provided role ' + QUOTENAME(@CurRole) + ' does not exist.'
+					DECLARE @ErrMsg VARCHAR(512) = 'The provided role assignement ' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + ' does not exist.'
                     RAISERROR(@ErrMsg,16,0)
                 END 
                                 
                 
-                SET @StringToExecute = 'PRINT ''. Commands for role "' + @CurRole + '" in database "' + @DbName + '"' + @LineFeed +
-                                       [security].[getDbRoleCreationStatement](
+                SET @StringToExecute = 'PRINT ''. Commands for role assignment "' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + '" on ' + @DbName + '"' + @LineFeed +
+                                       [security].[getDbRoleAssignmentStatement](
                                             @DbName,
                                             @CurRole,
-                                            @isStandard,
+                                            @CurMember,
+                                            @PermissionLevel,
+                                            @MemberIsRole,
                                             @isActive,                                            
                                             1, -- no header
-                                            1, -- no db check 
+                                            1, -- no dependency check 
                                             @Debug
                                         ) 
-                SET @CurOpName = 'CHECK_AND_CREATE_DB_ROLE'
+                SET @CurOpName = 'CHECK_AND_ASSIGN_DBROLE_MEMBERSHIP'
                 
                 select @CurOpOrder = OperationOrder 
                 from ##SecurityScriptResultsCommandsOrder 
@@ -297,7 +335,7 @@ BEGIN
                 values (
                     @ServerName,		
                     @DbName,		
-                    @CurRole,
+                    QUOTENAME(@CurMember) + ' to ' + QUOTENAME(@CurRole),
                     @CurOpName,
                     @CurOpOrder,
                     @StringToExecute
@@ -334,10 +372,10 @@ BEGIN
 			,ERROR_LINE() AS ErrorLine
 			,ERROR_MESSAGE() AS ErrorMessage;
 			
-			if CURSOR_STATUS('local','getRoles') >= 0 
+			if CURSOR_STATUS('local','getRolesMembers') >= 0 
 			begin
-				close getRoles
-				deallocate getRoles 
+				close getRolesMembers
+				deallocate getRolesMembers 
 			end
 
             IF @@TRANCOUNT > 0
@@ -348,7 +386,7 @@ END
 GO            
 
 
-PRINT '    Procedure [security].[getDbRolesCreationScript] altered.'
+PRINT '    Procedure [security].[getDbRolesAssignmentScript] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT '' 

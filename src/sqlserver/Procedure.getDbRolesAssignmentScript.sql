@@ -1,6 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires View.Logins.sql*/
+/*requires Table.DatabaseRoleMembers.sql*/
 /*requires Function.getDbRoleAssignmentStatement.sql*/
 /*requires Procedure.CreateTempTables4Generation.sql*/
 /*requires Procedure.SaveSecurityGenerationResult.sql*/

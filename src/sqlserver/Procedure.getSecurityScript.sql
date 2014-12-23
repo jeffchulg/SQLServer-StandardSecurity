@@ -10,6 +10,7 @@
 /*requires Procedure.getDbSchemasCreationScript.sql*/
 /*requires Procedure.getLoginsCreationScript.sql*/
 /*requires Procedure.getDbUsersCreationScript.sql*/
+/*requires Procedure.getDbRolesCreationScript.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -364,7 +365,18 @@ BEGIN
 				BEGIN
                     PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Database Roles creation and assignment statements'
                 END   
-                
+                EXEC [security].[getDbRolesCreationScript] 
+                    @ServerName  		    = @ServerName,    
+                    @DbName  		        = @CurDbName,    
+                    @RoleName               = NULL,	
+                    @AsOf 				    = NULL ,
+                    @OutputType 		    = @OutputType,
+                    @OutputDatabaseName     = NULL ,
+                    @OutputSchemaName 	    = NULL ,
+                    @OutputTableName 	    = NULL ,	
+                    @NoDependencyCheckGen   = 0,
+                    @CanDropTempTables      = 0,
+                    @Debug		 		    = @Debug
                 
                 if @Debug = 1
 				BEGIN

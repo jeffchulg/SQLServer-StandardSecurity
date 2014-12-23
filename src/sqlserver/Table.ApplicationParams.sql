@@ -29,6 +29,9 @@
     --------------------------------------------------------------------------------
     17/12/2014  Jefferson Elias     Added MERGE statement for default parameters    
     --------------------------------------------------------------------------------
+    23/12/2014  Jefferson Elias     Added parameter RoleAuthorization4Creation as 
+                                    ParamName in this table.
+    --------------------------------------------------------------------------------
   ==================================================================================
 */
 
@@ -203,6 +206,8 @@ using (
 	select 'ObjectPermissionGrantorDenier','dbo','dbo',0,'Name of the grantor to use for object permission grant/deny GRANT <PERMISSION> ON <OBJECT> TO <GRANTEE> AS <ObjectPermissionGrantorDenier>'
 	union all
 	select 'SchemaAuthorization4Creation','dbo','dbo',0,'Value in the TSQL Command CREATE SCHEMA ... AUTHORIZATION [<SchemaAuthorization4Creation>]'
+	union all 	
+    select 'RoleAuthorization4Creation','dbo','dbo',0,'Value in the TSQL Command CREATE ROLE ... AUTHORIZATION [<RoleAuthorization4Creation>]'
 	union all 
 	select 'Version','0.1.0','0.1.0',0,'Version number for the solution'
 ) i

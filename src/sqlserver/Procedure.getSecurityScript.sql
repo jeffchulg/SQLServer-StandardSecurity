@@ -399,7 +399,19 @@ BEGIN
                 END 
                 
                 
-                
+                EXEC [security].[getObjectPermissionAssignmentScript] 
+                    @ServerName  		    = @ServerName,    
+                    @DbName  		        = @CurDbName,    
+                    @Grantee                = NULL,	
+                    @isUser                 = NULL,	
+                    @AsOf 				    = NULL ,
+                    @OutputType 		    = @OutputType,
+                    @OutputDatabaseName     = NULL ,
+                    @OutputSchemaName 	    = NULL ,
+                    @OutputTableName 	    = NULL ,	
+                    @NoDependencyCheckGen   = 0,
+                    @CanDropTempTables      = 0,
+                    @Debug		 		    = @Debug
                 
                 PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Generation successful'
                 

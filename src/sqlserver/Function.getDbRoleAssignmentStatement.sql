@@ -21,6 +21,7 @@ BEGIN
 	PRINT '    Function [security].[getDbRoleAssignmentStatement] created.'
 END
 GO
+
 ALTER Function [security].[getDbRoleAssignmentStatement] (
     @DbName                         VARCHAR(64),
     @RoleName                       VARCHAR(max),
@@ -37,7 +38,7 @@ AS
 /*
  ===================================================================================
   DESCRIPTION:
-    This function returns a string with the statements for a database role creation 
+    This function returns a string with the statements for a database role assignment 
     based on the given parameters.
  
   ARGUMENTS :

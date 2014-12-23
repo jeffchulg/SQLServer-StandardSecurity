@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Schema.ApplicationParams.sql*/
+/*requires Table.ApplicationParams.sql*/
 /*requires Function.getDbRoleCreationStatement.sql*/
 /*requires Function.getDbUserCreationStatement.sql*/
 

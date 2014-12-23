@@ -27,7 +27,7 @@ ALTER FUNCTION [security].getLogin2DbUserMappingStatement (
     @NoHeader               BIT = 0,
     @NoDependencyCheckGen   BIT = 0,
     @forceUserCreation	    bit = 0,
-    @NoGrantConnect      BIT = 0,
+    @NoGrantConnect         BIT = 0,
     @Debug                  BIT = 0    
 )
 RETURNS VARCHAR(max)

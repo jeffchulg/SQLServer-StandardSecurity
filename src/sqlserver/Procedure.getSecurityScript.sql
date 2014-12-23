@@ -12,6 +12,7 @@
 /*requires Procedure.getDbUsersCreationScript.sql*/
 /*requires Procedure.getDbRolesCreationScript.sql*/
 /*requires Procedure.getDbRolesAssignmentScript.sql*/
+/*requires Procedure.getLogin2DbUserMappingsScript.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -109,7 +110,7 @@ exec [security].[getSecurityScript]
   
      Date        Nom         Description
      ==========  =====       ==========================================================
-     18/12/2014  JEL         Version 0.0.1
+     23/12/2014  JEL         Version 0.0.1
      ----------------------------------------------------------------------------------
   ===================================================================================
 */
@@ -333,7 +334,7 @@ BEGIN
                     @OutputDatabaseName     = NULL ,
                     @OutputSchemaName 	    = NULL ,
                     @OutputTableName 	    = NULL ,	
-                    @NoDependencyCheckGen   = 0,
+                    @NoDependencyCheckGen   = 1,
                     @CanDropTempTables      = 0,
                     @Debug		 		    = @Debug
                     
@@ -352,7 +353,7 @@ BEGIN
                     @OutputDatabaseName     = NULL ,
                     @OutputSchemaName 	    = NULL ,
                     @OutputTableName 	    = NULL ,	
-                    @NoDependencyCheckGen   = 0,
+                    @NoDependencyCheckGen   = 1,
                     @CanDropTempTables      = 0,
                     @Debug		 		    = @Debug
                     
@@ -360,8 +361,19 @@ BEGIN
 				BEGIN
                     PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Login to database user creation statements'
                 END  
-                
-                
+                EXEC [security].[getLogin2DbUserMappingsScript] 
+                    @ServerName  		    = @ServerName,    
+                    @DbName  		        = @CurDbName,    
+                    @LoginName              = NULL,	
+                    @AsOf 				    = NULL ,
+                    @OutputType 		    = @OutputType,
+                    @OutputDatabaseName     = NULL ,
+                    @OutputSchemaName 	    = NULL ,
+                    @OutputTableName 	    = NULL ,	
+                    @NoDependencyCheckGen   = 1,
+                    @CanDropTempTables      = 0,
+                    @Debug		 		    = @Debug
+  
                 if @Debug = 1
 				BEGIN
                     PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Database Roles creation and assignment statements'
@@ -375,7 +387,7 @@ BEGIN
                     @OutputDatabaseName     = NULL ,
                     @OutputSchemaName 	    = NULL ,
                     @OutputTableName 	    = NULL ,	
-                    @NoDependencyCheckGen   = 0,
+                    @NoDependencyCheckGen   = 1,
                     @CanDropTempTables      = 0,
                     @Debug		 		    = @Debug                
                 
@@ -389,7 +401,7 @@ BEGIN
                     @OutputDatabaseName     = NULL ,
                     @OutputSchemaName 	    = NULL ,
                     @OutputTableName 	    = NULL ,	
-                    @NoDependencyCheckGen   = 0,
+                    @NoDependencyCheckGen   = 1,
                     @CanDropTempTables      = 0,
                     @Debug		 		    = @Debug
                 
@@ -409,7 +421,7 @@ BEGIN
                     @OutputDatabaseName     = NULL ,
                     @OutputSchemaName 	    = NULL ,
                     @OutputTableName 	    = NULL ,	
-                    @NoDependencyCheckGen   = 0,
+                    @NoDependencyCheckGen   = 1,
                     @CanDropTempTables      = 0,
                     @Debug		 		    = @Debug
                 

@@ -37,7 +37,11 @@ AS
 		perform the inserts.
   
    ARGUMENTS :
-
+    @OutputDatabaseName     name of the database where we'll keep track of the generated script 
+    @OutputSchemaName       name of the database schema in which we'll keep track of the generated script 
+    @OutputTableName        name of the table in which we'll actually keep track of the generated script 
+    @VersionNumber          version number to store in the generation table, if set to null, it's the one
+                            in ApplicationParams table which will be taken.
   
    REQUIREMENTS:
   
@@ -62,7 +66,7 @@ AS
   
      Date        Nom         Description
      ==========  =====       ==========================================================
-     19/12/2014  JEL         Version 0.0.1
+     24/12/2014  JEL         Version 0.0.1
      ----------------------------------------------------------------------------------
   ===================================================================================
 */

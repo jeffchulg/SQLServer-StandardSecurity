@@ -20,7 +20,7 @@ END
 GO
 ALTER Function [security].[getLoginCreationStatement] (
     @LoginName                      VARCHAR(max),
-    @AuthMode                       VARCHAR(7) = 'SQLSRVR',-- Autre possibilité  'WINDOWS'
+    @AuthMode                       VARCHAR(7) = 'SQLSRVR',-- Other possibility  'WINDOWS'
     @Passwd                         VARCHAR(64) = '',
     @DefaultDatabase                VARCHAR(32),
     @isActive                       BIT = 1,
@@ -38,12 +38,18 @@ AS
     the given parameters.
  
   ARGUMENTS :
-    @LoginName          Name of the login to create
-    @AuthMode           Authentication mode : WINDOWS,SQLSRVR
-    @Passwd             If @AuthMode = 'SQLSRVR', this parameter defines the password
-                        to set by default
-    @DefaultDatabase    Name of the default database for the given login
- 
+    @LoginName              Name of the login to create
+    @AuthMode               Authentication mode : WINDOWS,SQLSRVR
+    @Passwd                 If @AuthMode = 'SQLSRVR', this parameter defines the password
+                            to set by default
+    @DefaultDatabase        Name of the default database for the given login
+    @isActive               If set to 1, the assignment is active and must be done,
+                            TODO if set to 0, this should be like a REVOKE !    
+    @NoHeader               If set to 1, no header will be displayed in the generated statements
+    @NoDependencyCheckGen   if set to 1, no check for server name, database name and so on are generated
+    @Debug                  If set to 1, then we are in debug mode 
+    
+    
   REQUIREMENTS:
  
   ==================================================================================
@@ -51,14 +57,6 @@ AS
  
     BUGID       Fixed   Description
     ==========  =====   ==========================================================
-	00001		0.1.3	ALTER LOGIN [XXX] WITH CHECK_EXPIRATION=OFF, CHECK_POLICY=OFF
-							>> Cannot use parameter CHECK_EXPIRATION for a Windows login.
-							>> Cannot use parameter CHECK_POLICY for a Windows login.
-    ----------------------------------------------------------------------------------
-	00003		0.1.3	No "GO" is added for login creation and default standard settings statements
-						Add two extra spaces in addition after the GO statement
-    ----------------------------------------------------------------------------------
-	00016		0.1.4	Unable to set default database for logins that were not created before.
     ----------------------------------------------------------------------------------
   ==================================================================================
   NOTES:
@@ -73,40 +71,14 @@ AS
  
     Date        Name        Description
     ==========  =====       ==========================================================
-    22/04/2014  JEL         Version 0.1.0
- 							TODO : gérer les guids
+    24/12/2014  JEL         Version 0.1.0
+ 							TODO : manage GUIDs
     ----------------------------------------------------------------------------------
-	23/04/2014	JEL			Added missing quotes in RAISEERROR statement
-							Version 0.1.1
-	----------------------------------------------------------------------------------							
-	24/04/2014	JEL			Removed "DefaultSchema" parameter.
-							Added password policy management : 
-								by default, no password policy
-							Removed parenthesis surrounding sp_defaultdb level
-							Version 0.1.2
-	----------------------------------------------------------------------------------	
-	07/05/2014	JEL			Correcting Bug #00001
-	07/05/2014	JEL			Correcting Bug #00003
-							Version 0.1.3
-	----------------------------------------------------------------------------------	
-	16/12/2014	JEL			Correction for Bug #00016
-							Version 0.1.4
-	----------------------------------------------------------------------------------	
-    22/12/2014  JEL         Added some parameters :
-                                @isActive                       BIT = 1,
-                                @NoHeader                       BIT = 0,
-                                @NoDependencyCheckGen           BIT = 0
-                            and modified code associated with them
-                            
-                            make use of variables for minimizing ad hoc queries (usage of
-                            the variable @loginToPlayWith set at the beginning of this function)
-                            Added locking functionality
-                            Version 0.2.0
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb              VARCHAR(16) = '0.2.0';
+    DECLARE @versionNb              VARCHAR(16) = '0.1.0';
     DECLARE @tsql                   VARCHAR(max);
     DECLARE @LoginDeclaration       VARCHAR(512);
     DECLARE @ErrorDbNotExists       VARCHAR(max);

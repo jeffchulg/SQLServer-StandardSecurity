@@ -51,6 +51,9 @@ AS
      @SchemaName    name of the schema for which execute this procedure
      
      @StdRoleName   name of the standard role for which execute this procedure
+     
+     @Debug                  If set to 1, then we are in debug mode
+
   
    REQUIREMENTS:
   
@@ -89,7 +92,7 @@ AS
   
     Date        Nom         Description
     ==========  =====       ==========================================================
-    17/12/2014  JEL         Version 0.0.1
+    24/12/2014  JEL         Version 0.0.1
     ----------------------------------------------------------------------------------    
   ===================================================================================
 */

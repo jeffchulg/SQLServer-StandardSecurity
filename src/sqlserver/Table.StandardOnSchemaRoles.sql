@@ -23,13 +23,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    16/04/2014  Jefferson Elias     Creation
-    23/04/2014  Jefferson Elias     VERSION 1.0.0
-	--------------------------------------------------------------------------------
-	25/11/2014	Jefferson Elias		Date columns transformed to datetime
-    --------------------------------------------------------------------------------	
-	28/11/2014	Jefferson Elias		Added column 'Description'
-    --------------------------------------------------------------------------------	
+    24/12/2014  Jefferson Elias     Version 0.1.0
   ==================================================================================
 */
 
@@ -47,50 +41,11 @@ BEGIN
     ) ON [PRIMARY]
 	PRINT '    Table [security].[StandardOnSchemaRoles] created.'
 END
+/*
 ELSE
-BEGIN
-
-	IF EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'CreationDate' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRoles]') and system_type_id = 40
-    )
-	BEGIN
-		-- no other way I know ... drop default constraint and it will be re-created afterwards in this script.
-		
-		IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRoles_CreationDate]') AND type = 'D')
-		BEGIN
-			execute sp_executesql N'alter table [security].[StandardOnSchemaRoles] drop constraint DF_StandardOnSchemaRoles_CreationDate'
-		END 
-		
-	    execute sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRoles] ALTER COLUMN [CreationDate] datetime not null'
-		PRINT '    Column CreationDate from [security].[StandardOnSchemaRoles] modified from date to datetime.'
-	END
-	
-	IF EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'lastmodified' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRoles]') and system_type_id = 40
-    )
-	BEGIN
-		
-		-- no other way I know ... drop default constraint and it will be re-created afterwards in this script.
-		
-		IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRoles_lastmodified]') AND type = 'D')
-		BEGIN
-			execute sp_executesql N'alter table [security].[StandardOnSchemaRoles] drop constraint DF_StandardOnSchemaRoles_lastmodified'
-		END 
-		
-	    execute sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRoles] ALTER COLUMN [lastmodified] datetime not null'
-		PRINT '    Column lastmodified from [security].[StandardOnSchemaRoles] modified from date to datetime.'
-	END
-
-	IF NOT EXISTS( SELECT * from sys.columns where OBJECT_SCHEMA_NAME(object_id) = 'security' and OBJECT_NAME(object_id) = 'StandardOnSchemaRoles' and name = 'Description')
-	BEGIN
-		ALTER TABLE [security].[StandardOnSchemaRoles] add [Description] [varchar](2048)
-		PRINT '   Table altered : column Description added.'
-	END
+BEGIN 
 END
+*/
 GO
 
 IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRoles_CreationDate]') AND type = 'D')

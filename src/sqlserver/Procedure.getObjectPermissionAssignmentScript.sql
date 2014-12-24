@@ -43,12 +43,23 @@ AS
 /*
  ===================================================================================
   DESCRIPTION:
-    This Procedure generates the statements for all the database roles according to 
-    given parameters
+    This Procedure generates the statements for all the permission assignments that
+    need to be considered according to given parameters
  
   ARGUMENTS :
-    @ServerName     name of the server on which the SQL Server instance we want to modify is running.
- 
+    @ServerName             name of the server on which the SQL Server instance we want to modify is running.
+    @DbName                 name of the database in which we have some job to do 
+    @Grantee                name of the database user or role which will be granted some permissions
+    @isUser                 if set to 1, the grantee is a database user 
+    @AsOf                   to see a previous generated script result
+    @OutputType             the output type you want : TABLE or SCRIPT at the moment
+    @OutputDatabaseName     name of the database where we'll keep track of the generated script 
+    @OutputSchemaName       name of the database schema in which we'll keep track of the generated script 
+    @OutputTableName        name of the table in which we'll actually keep track of the generated script 
+    @NoDependencyCheckGen   if set to 1, no check for server name and database name are generated
+    @CanDropTempTables      if set to 1, the temporary tables required for this procedure to succeed can be dropped by the tool.
+                            It will create them if they don't exist
+    @Debug                  If set to 1, then we are in debug mode 
   REQUIREMENTS:
  
   ==================================================================================
@@ -70,7 +81,7 @@ AS
  
     Date        Name	        	Description
     ==========  =================	===========================================================
-    23/12/2014  Jefferson Elias		Creation
+    24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
  ===================================================================================
 */

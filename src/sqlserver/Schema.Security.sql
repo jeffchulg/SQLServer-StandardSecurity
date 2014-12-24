@@ -20,8 +20,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    16/04/2014  Jefferson Elias     Creation
-    23/04/2014  Jefferson Elias     VERSION 1.0.0
+    24/12/2014  Jefferson Elias     VERSION 1.0.0
     --------------------------------------------------------------------------------
   ==================================================================================
 */
@@ -34,6 +33,7 @@ BEGIN
     DECLARE @SQL VARCHAR(MAX);
     SET @SQL = 'CREATE SCHEMA [security] AUTHORIZATION [dbo]'
     EXEC (@SQL)
+    
 	PRINT '   SCHEMA [security] created.'
 END
 ELSE

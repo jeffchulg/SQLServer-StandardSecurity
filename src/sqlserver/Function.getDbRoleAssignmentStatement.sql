@@ -42,6 +42,16 @@ AS
     based on the given parameters.
  
   ARGUMENTS :
+        @DbName                 name of the database in which we have some job to do 
+        @RoleName               name of the role we need to take care of
+        @MemberName             name of the member of the role we need to take care of
+        @PermissionLevel        'GRANT','REVOKE','DENY'
+        @MemberIsRole           If set to 1, the MemberName is actually a role in @DbName database
+        @isActive               If set to 1, the assignment is active and must be done,
+                                TODO if set to 0, this should be like a REVOKE !
+        @NoHeader               If set to 1, no header will be displayed in the generated statements
+        @NoDependencyCheckGen   if set to 1, no check for server name, database name and so on are generated
+        @Debug                  If set to 1, then we are in debug mode
 
  
   REQUIREMENTS:
@@ -71,7 +81,7 @@ AS
  
     Date        Name        Description
     ==========  =====       ==========================================================
-    23/12/2014  JEL         Version 0.1.0 
+    24/12/2014  JEL         Version 0.1.0 
  ===================================================================================
 */
 BEGIN

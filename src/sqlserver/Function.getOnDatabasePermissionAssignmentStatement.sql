@@ -43,7 +43,17 @@ AS
     
  
   ARGUMENTS :
-
+        @DbName                 name of the database in which we have some job to do 
+        @Grantee                name of the role or user which has a permission to be granted 
+        @isUser                 If set to 1, @Grantee is a user 
+        @PermissionLevel        'GRANT','REVOKE','DENY'
+        @PermissionName         Name of the permission to assign to @Grantee 
+        @isWithGrantOption      If set to 1, @Grantee can grant this permission
+        @isActive               If set to 1, the assignment is active and must be done,
+                                TODO if set to 0, this should be like a REVOKE !
+        @NoHeader               If set to 1, no header will be displayed in the generated statements
+        @NoDependencyCheckGen   if set to 1, no check for server name, database name and so on are generated
+        @Debug                  If set to 1, then we are in debug mode
  
   REQUIREMENTS:
   

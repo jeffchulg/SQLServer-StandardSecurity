@@ -26,13 +26,15 @@ AS
 /*
   ===================================================================================
    DESCRIPTION:
-		This procedure saves the content of ##SecurityGenerationResults table
-		to the table provided in parameters.
-		If this table doesn't exist, it will create it.
-		If this table exists, it will check that it is suitable for insertion and then
-		perform the inserts.
+		This procedure creates temporary tables 
+            ##SecurityGenerationResults 
+            ##SecurityScriptResultsCommandsOrder
+        
+		mandatory for the standard security script generation.
   
    ARGUMENTS :
+        @CanDropTempTables      If set to 1, this procedure can drop temp tables when they exists
+        @Debug                  If set to 1, then we are in debug mode
 
   
    REQUIREMENTS:
@@ -58,7 +60,7 @@ AS
   
      Date        Nom         Description
      ==========  =====       ==========================================================
-     19/12/2014  JEL         Version 0.0.1
+     24/12/2014  JEL         Version 0.0.1
      ----------------------------------------------------------------------------------
   ===================================================================================
 */

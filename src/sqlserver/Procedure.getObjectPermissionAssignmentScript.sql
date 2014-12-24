@@ -307,19 +307,6 @@ BEGIN
                 
                     if @ObjectClass = 'DATABASE_SCHEMA'
                     BEGIN 
-                        PRINT   '[security].[getOnDbSchemaPermissionAssignmentStatement](
-                                                    ' + isnull(@DbName,'!!null') + ',
-                                                    ' + isnull(@CurGrantee ,'!!null')+ ',
-                                                    ' + isnull(CAST(@CurGranteeIsUser AS CHAR(1)),'!!null')+ ',
-                                                    ' + isnull(@PermissionLevel ,'!!null')+ ',
-                                                    ' + isnull(@PermissionName ,'!!null')+ ',
-                                                    ' + isnull(CAST(@isWithGrantOption AS CHAR(1)),'!!null') + ',
-                                                    ' + isnull(@ObjectName ,'!!null')+ ',
-                                                    ' + CAST(@isActive AS CHAR(1)) + ',                                            
-                                                    ' + '1,'  + '
-                                                    ' + '1,'  + '
-                                                    ' + CAST(@Debug AS CHAR(1)) + '
-                                                )             '         
                         SET @StringToExecute = 'PRINT ''. Commands for permission assignment on database schema ''' + @ObjectName + ''' for database principal ''' + @CurGrantee + ''' on database ''' + @DbName  + @LineFeed +
                                                [security].[getOnDbSchemaPermissionAssignmentStatement](
                                                     @DbName,
@@ -338,24 +325,6 @@ BEGIN
                     END 
                     ELSE IF @ObjectClass = 'SCHEMA_OBJECT'
                     BEGIN 
-                        PRINT   '[security].[getOnUserObjectPermissionAssignmentStatement](
-                                                    ' + isnull(@DbName,'!!null') + ',
-                                                    ' + isnull(@CurGrantee ,'!!null')+ ',
-                                                    ' + isnull(CAST(@CurGranteeIsUser AS CHAR(1)),'!!null')+ ',
-                                                    ' + isnull(@PermissionLevel ,'!!null')+ ',
-                                                    ' + isnull(@PermissionName ,'!!null')+ ',
-                                                    ' + isnull(CAST(@isWithGrantOption AS CHAR(1)),'!!null') + ',
-                                                    ' + isnull(@ObjectClass ,'!!null')+ ',
-                                                    ' + isnull(@ObjectType ,'!!null')+ ',
-                                                    ' + isnull(@SchemaName ,'!!null')+ ',
-                                                    ' + isnull(@ObjectName ,'!!null')+ ',
-                                                    ' + isnull(@SubObjectName ,'!!null')+ ',
-                                                    ' + CAST(@isActive AS CHAR(1)) + ',                                            
-                                                    ' + '1,'  + '
-                                                    ' + '1,'  + '
-                                                    ' + CAST(@Debug AS CHAR(1)) + '
-                                                )                            '
-                        
                         SET @StringToExecute = 'PRINT ''. Commands for permission assignment on object "' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) + ' to ' + QUOTENAME(@CurGrantee) + '" on ' + @DbName + '"' + @LineFeed +
                                                [security].[getOnUserObjectPermissionAssignmentStatement](
                                                     @DbName,

@@ -54,7 +54,7 @@ BEGIN
 END
 GO
 
-IF (OBJECTPROPERTY( OBJECT_ID( '[security].[PK_StandardExclusion]' ), 'TableHasPrimaryKey' ) <> 1)
+IF (OBJECTPROPERTY( OBJECT_ID( '[security].[StandardExclusion]' ), 'TableHasPrimaryKey' ) <> 1)
 BEGIN
     ALTER TABLE [security].[StandardExclusion]
         ADD  CONSTRAINT [PK_StandardExclusion ]

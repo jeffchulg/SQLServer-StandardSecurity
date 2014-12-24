@@ -199,5 +199,43 @@ EXEC (@SQL);
 PRINT '    Trigger [security].[TRG_U_StandardOnSchemaRoles] altered.'
 GO
 
+PRINT '    Adding default data to [security].[StandardOnSchemaRoles].'
+
+--[StandardOnSchemaRoles]---------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+set nocount on;
+;with cte_data(
+[RoleName],[isActive],[CreationDate],[lastmodified],[Description])
+as (
+    select * 
+    from (
+        values
+        ('data_modifier',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
+        ('data_reader',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
+        ('endusers',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
+        ('full_access',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
+        ('managers',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
+        ('prog_executors',1,'2014-11-25 00:00:00.000','2014-11-25 00:00:00.000',null),
+        ('responsible',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
+        ('struct_modifier',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
+        ('struct_viewer',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null)
+    ) c (
+        [RoleName],[isActive],[CreationDate],[lastmodified],[Description]
+    )
+)
+merge [security].[StandardOnSchemaRoles] as t
+using cte_data as s
+on		1=1 and t.[RoleName] = s.[RoleName]
+when matched then
+	update set
+	[isActive] = s.[isActive],[CreationDate] = s.[CreationDate],[lastmodified] = s.[lastmodified],[Description] = s.[Description]
+when not matched by target then
+	insert([RoleName],[isActive],[CreationDate],[lastmodified],[Description])
+	values(s.[RoleName],s.[isActive],s.[CreationDate],s.[lastmodified],s.[Description])
+;
+
+
+
+
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT '' 

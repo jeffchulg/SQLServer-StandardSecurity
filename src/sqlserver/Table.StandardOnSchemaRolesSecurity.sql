@@ -289,6 +289,56 @@ EXEC (@SQL);
 PRINT '    Trigger [security].[TRG_U_StandardOnSchemaRolesSecurity] altered.'
 GO
 
+PRINT '    Adding default data to [security].[StandardOnSchemaRolesSecurity].'
+
+set nocount on;
+;with cte_data(
+[RoleName],[PrivName],[isRoleMembership],[isDeny],[isActive],[CreationDate],[lastmodified],[PermissionLevel])
+as (
+    select * 
+    from (
+        values
+        ('data_modifier','DELETE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('data_modifier','EXECUTE',0,0,1,'2014-04-23 00:00:00.000','2014-11-26 14:08:40.320','REVOKE'),
+        ('data_modifier','INSERT',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('data_modifier','UPDATE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('data_reader','EXECUTE',0,0,1,'2014-04-23 00:00:00.000','2014-11-26 14:08:48.553','REVOKE'),
+        ('data_reader','SELECT',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('endusers','data_modifier',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('endusers','data_reader',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('endusers','prog_executors',1,0,1,'2014-11-25 00:00:00.000','2014-11-25 00:00:00.000','GRANT'),
+        ('full_access','endusers',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('full_access','managers',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('managers','struct_modifier',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('managers','struct_viewer',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('prog_executors','EXECUTE',0,0,1,'2014-11-25 00:00:00.000','2014-11-25 00:00:00.000','GRANT'),
+        ('responsible','data_modifier',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('responsible','data_reader',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('responsible','managers',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','ALTER',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','CREATE FUNCTION',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','CREATE PROCEDURE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','CREATE SYNONYM',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','CREATE TABLE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','CREATE TYPE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','CREATE VIEW',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_modifier','REFERENCES',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
+        ('struct_viewer','VIEW DEFINITION',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT')
+    ) c (
+        [RoleName],[PrivName],[isRoleMembership],[isDeny],[isActive],[CreationDate],[lastmodified],[PermissionLevel]
+    )
+)
+merge [security].[StandardOnSchemaRolesSecurity] as t
+using cte_data as s
+on		1=1 and t.[RoleName] = s.[RoleName] and t.[PrivName] = s.[PrivName]
+when matched then
+	update set
+	[isRoleMembership] = s.[isRoleMembership],[isDeny] = s.[isDeny],[isActive] = s.[isActive],[CreationDate] = s.[CreationDate],[lastmodified] = s.[lastmodified],[PermissionLevel] = s.[PermissionLevel]
+when not matched by target then
+	insert([RoleName],[PrivName],[isRoleMembership],[isDeny],[isActive],[CreationDate],[lastmodified],[PermissionLevel])
+	values(s.[RoleName],s.[PrivName],s.[isRoleMembership],s.[isDeny],s.[isActive],s.[CreationDate],s.[lastmodified],s.[PermissionLevel])
+;
+
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT '' 

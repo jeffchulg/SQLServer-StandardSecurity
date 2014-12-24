@@ -27,19 +27,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    24/04/2014  Jefferson Elias     Creation
-    --------------------------------------------------------------------------------
-	25/04/2014	Jefferson Elias		Added column isLocked
-									Changed foreign key from Contacts to SQLLogins as
-									a login must be defined on a given server to be 
-									able to be mapped.
-									TODO: make the DbUserName column to be filled 
-									automatically when it's null (for insert)
-									VERSION 1.0.0
-    --------------------------------------------------------------------------------
-	28/11/2014	Jefferson Elias		Modified triggers I/U so that database schema 
-									referenced in this table are always also in the
-									DatabaseSchema table.
+    24/12/2014  Jefferson Elias     Version 0.1.0
   ==================================================================================
 */
 
@@ -69,34 +57,6 @@ BEGIN
 		RETURN
 	END
 END
-GO
-
-IF NOT EXISTS( SELECT * from sys.columns where OBJECT_SCHEMA_NAME(object_id) = 'security' and OBJECT_NAME(object_id) = 'SQLMappings' and name = 'isLocked')
-BEGIN
-	ALTER TABLE [security].[SQLMappings] add [isLocked] BIT
-	if @@ERROR = 0	
-		PRINT '   Table altered : column isLocked added.'
-	ELSE
-		return
-END
-GO
-
-IF (COLUMNPROPERTY(OBJECT_ID('[security].[SQLMappings]'),'isLocked','AllowsNull') = 1)
-BEGIN
-	update [security].[SQLMappings] set [isLocked] = 1 where [SQLLogin] in (select SQLLogin from [security].[Contacts] where isLocked = 1)
-	update [security].[SQLMappings] set [isLocked] = 0 where [SQLLogin] not in (select SQLLogin from [security].[Contacts] where isLocked = 1)
-	
-	alter table [security].[SQLMappings] ALTER column isLocked BIT NOT NULL
-	
-	if @@ERROR = 0	
-		PRINT '   Table altered : column isLocked altered.'
-	ELSE
-		return	
-END
-GO
-
-IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_SQLMappings_Contacts]') AND parent_object_id = OBJECT_ID(N'[security].[SQLMappings]'))
-	ALTER TABLE [security].[SQLMappings] DROP CONSTRAINT [FK_SQLMappings_Contacts]
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_SQLMappings_SQLLogins]') AND parent_object_id = OBJECT_ID(N'[security].[SQLMappings]'))

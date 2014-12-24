@@ -25,29 +25,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    16/04/2014  Jefferson Elias     Creation
-    23/04/2014  Jefferson Elias     VERSION 1.0.0
-    --------------------------------------------------------------------------------
-	25/11/2014  Jefferson Elias     Added a column "PermissionLevel" 
-									where 0 = revoke / remove membership
-									      1 = grant  / add membership
-										  2 = deny   / N/A
-									Date columns transformed to datetime
-	--------------------------------------------------------------------------------
-	26/11/2014	Jefferson Elias		Switched Permission level from tinyint to varchar
-									with GRANT, DENY, REVOKE as possible values.									
-									Added check constraint for it to stick to those
-									values
-									Added check constraint to be sure a DENY is not 
-									set to a roleMembership.
-    --------------------------------------------------------------------------------
-    17/12/2014  Jefferson Elias     Dropped constraint CK_StandardOnSchemaRolesSecurity_PermissionLevel_NoDeny
-                                    Modified check constraint named 
-                                    CK_StandardOnSchemaRolesSecurity_PermissionLevel
-                                    for it to be more precise : no DENY for group membership                                    
-                                    I preferred one constraint instead of 2...
-    --------------------------------------------------------------------------------
-    24/12/2014  Jefferson Elias     Added column PermissionClass which can be 'SERVER','DATABASE' or 'DATABASE_SCHEMA'
+    24/12/2014  Jefferson Elias     Version 0.1.0
   ==================================================================================
 */
 
@@ -61,7 +39,7 @@ BEGIN
         [RoleName] 				[varchar](64) NOT NULL,
         [PrivName] 				[varchar](128) NOT NULL,
         [isRoleMembership] 		[bit] NOT NULL,
-        [PermissionClass]       [varchar](16) DEFAULT 'DATABASE_SCHEMA' not null,
+        [PermissionClass]       [varchar](16) DEFAULT 'DATABASE_SCHEMA' not null, -- can be 'SERVER','DATABASE' or 'DATABASE_SCHEMA'
 		[PermissionLevel] 		[varchar](6) DEFAULT 'GRANT' not null,
         [isActive] 				[bit] NOT NULL,
         [CreationDate] 			[date] NOT NULL,
@@ -70,87 +48,12 @@ BEGIN
 	
 	PRINT '    Table [security].[StandardOnSchemaRolesSecurity] created.'
 END
+/*
 ELSE
 BEGIN
     
-	IF EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'CreationDate' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]') and system_type_id = 40
-    )
-	BEGIN
-		-- no other way I know ... drop default constraint and it will be re-created afterwards in this script.
-		
-		IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRolesSecurity_CreationDate]') AND type = 'D')
-		BEGIN
-			execute sp_executesql N'alter table [security].[StandardOnSchemaRolesSecurity] drop constraint DF_StandardOnSchemaRolesSecurity_CreationDate'
-		END 
-		
-	    execute sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRolesSecurity] ALTER COLUMN [CreationDate] datetime not null'
-		PRINT '    Column CreationDate from [security].[StandardOnSchemaRolesSecurity] modified from date to datetime.'
-	END
-	
-	IF EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'lastmodified' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]') and system_type_id = 40
-    )
-	BEGIN
-		
-		-- no other way I know ... drop default constraint and it will be re-created afterwards in this script.
-		
-		IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRolesSecurity_lastmodified]') AND type = 'D')
-		BEGIN
-			execute sp_executesql N'alter table [security].[StandardOnSchemaRolesSecurity] drop constraint DF_StandardOnSchemaRolesSecurity_lastmodified'
-		END 
-		
-	    execute sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRolesSecurity] ALTER COLUMN [lastmodified] datetime not null'
-		PRINT '    Column lastmodified from [security].[StandardOnSchemaRolesSecurity] modified from date to datetime.'
-	END
-	
-	/** Adding permissionlevel column if necessary AND modify it according to the value in isDeny column */
-    IF NOT EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'PermissionLevel' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]')
-    )
-	BEGIN
-	    execute sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRolesSecurity] add [PermissionLevel] [varchar](6) DEFAULT ''GRANT'' not null'
-		PRINT '    Column PermissionLevel added to [security].[StandardOnSchemaRolesSecurity].'
-		
-		IF NOT EXISTS( 
-			SELECT 1 
-			FROM  sys.columns 
-			WHERE Name = 'isDeny' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]')
-		)
-		BEGIN
-			execute sp_executesql N'update security.StandardOnSchemaRolesSecurity set PermissionLevel = ''DENY'' where isDeny = 1'
-		END
-	END    
-    
-    IF EXISTS( 
-        SELECT 1 
-        FROM  sys.columns 
-        WHERE Name = 'isDeny' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]')
-    )
-    BEGIN
-        execute sp_executesql N'alter table security.StandardOnSchemaRolesSecurity DROP COLUMN [isDeny]'
-    END
-    
-    IF NOT EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'PermissionClass' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]')
-    )
-	BEGIN
-		PRINT '    Column PermissionClass added to [security].[StandardOnSchemaRolesSecurity].'
-		
-	    execute sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRolesSecurity] add [PermissionClass] [varchar](16) DEFAULT ''DATABASE_SCHEMA'' not null'
-		PRINT '    Column PermissionClass added to [security].[StandardOnSchemaRolesSecurity].'
-		
-		execute sp_executesql N'update security.StandardOnSchemaRolesSecurity set PermissionClass = ''DATABASE'' where PrivName in (''CREATE VIEW'',''CREATE FUNCTION'',''CREATE PROCEDURE'',''CREATE SYNONYM'',''CREATE TABLE'',''CREATE TYPE'')'		
-	END
 END
+*/
 GO
 
 IF  EXISTS (SELECT 1 FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnSchemaRolesSecurity_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]'))
@@ -333,10 +236,10 @@ as (
     from (
         values
         ('data_modifier','DELETE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        ('data_modifier','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+--        ('data_modifier','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('data_modifier','INSERT',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('data_modifier','UPDATE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        ('data_reader','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+--        ('data_reader','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('data_reader','SELECT',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('endusers','data_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('endusers','data_reader',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),

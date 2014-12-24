@@ -22,12 +22,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    16/04/2014  Jefferson Elias     Creation
-    23/04/2014  Jefferson Elias     VERSION 1.0.0
-    --------------------------------------------------------------------------------
-	26/11/2014	Jefferson Elias		Added enclosing BEGIN-END in the creation of 
-									CK_Contacts_AuthMode.
-									VERSION 1.0.1
+    24/12/2014  Jefferson Elias     Version 0.1.0
     --------------------------------------------------------------------------------
   ==================================================================================
 */
@@ -53,18 +48,7 @@ BEGIN
 END
 GO
 
-if EXISTS (
-	SELECT c.name AS ColName, t.name AS TableName
-	FROM sys.columns c
-		JOIN sys.tables t 
-			ON c.object_id = t.object_id
-	WHERE t.name = 'Contacts' 
-	  and c.name = 'Nom'
-)
-BEGIN
-	EXEC sp_RENAME '[security].[Contacts].[Nom]' , 'Name', 'COLUMN'
-	PRINT '    Column ''Nom'' transformed to ''Name''.'
-END
+
 
 IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[Contacts]') AND name = N'PK_Contacts')
 BEGIN
@@ -102,7 +86,7 @@ IF NOT EXISTS (SELECT NULL FROM SYS.EXTENDED_PROPERTIES WHERE [major_id] = OBJEC
 BEGIN 
     EXEC sys.Sp_addextendedproperty
       @name=N'MS_Description',
-      @value=N'Vérifie que la valeur est dans (''WINDOWS'',''SQLSRVR)',
+      @value=N'Checks that Authmode is in (''WINDOWS'',''SQLSRVR)',
       @level0type=N'SCHEMA',
       @level0name=N'security',
       @level1type=N'TABLE',

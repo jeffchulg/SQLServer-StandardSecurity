@@ -26,11 +26,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    27/11/2014  Jefferson Elias     Creation
-    ----------------------------------------------------------------------------------
-    17/12/2014  Jefferson Elias     Added column "PermissionLevel" with 
-                                    available values  : GRANT, REVOKE 
-                                    and default value GRANT
+    24/12/2014  Jefferson Elias     Version 0.1.0
     ----------------------------------------------------------------------------------                                    
   ==================================================================================
 */
@@ -57,6 +53,7 @@ BEGIN
 	PRINT '    Table [security].[DatabaseRoleMembers] created.'
 END
 /*
+ESLE
 BEGIN
 	PRINT '    Table [security].[DatabaseRoleMembers] modified.'	
 END

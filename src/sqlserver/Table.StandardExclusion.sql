@@ -27,12 +27,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    25/11/2014  Jefferson Elias     Creation
-    --------------------------------------------------------------------------------
-	26/11/2014	Jefferson Elias		Added merge statements for default exclusion
-									to force the upsert of values.
-									Added check constraint for ObjectType to be in 
-										(DATABASE,DATABASE_SCHEMA)
+    24/12/2014  Jefferson Elias     Version 0.1.0
   ==================================================================================
 */
 

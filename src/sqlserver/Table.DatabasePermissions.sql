@@ -26,17 +26,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    28/11/2014  Jefferson Elias     Creation
-    ----------------------------------------------------------------------------------
-    17/12/2014  Jefferson Elias     Added 2 computed columns for the unique constraint
-                                    to be correct...
-                                    Changed the unique constraint.
-                                    As previous version wasn't a stable release,
-                                    no ALTER for that.
-    ----------------------------------------------------------------------------------
-    24/12/2014  Jefferson Elias     Modified I/U triggers so that it creates automatically
-                                    the specified schema if it doesn't exist.
-                                    Added FK_DatabasePermissions_SchemaName
+    24/12/2014  Jefferson Elias     Version 0.1.0
     ----------------------------------------------------------------------------------
   ==================================================================================
 */

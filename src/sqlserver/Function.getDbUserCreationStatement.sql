@@ -42,6 +42,11 @@ AS
 	@LoginName		Name of the login that will be used to connect on this database
  	@UserName		the database user to create
  	@SchemaName		the database schema to use by default for the specified user name
+    @isActive               If set to 1, the operation is active and must be done,
+                            TODO if set to 0, this should be like a REVOKE !
+    @NoHeader               If set to 1, no header will be displayed in the generated statements
+    @NoDependencyCheckGen   if set to 1, no check for server name, database name and so on are generated
+    @Debug                  If set to 1, then we are in debug mode    
  
   REQUIREMENTS:
   
@@ -68,10 +73,7 @@ AS
  
     Date        Name        Description
     ==========  =====       ==========================================================
-    24/04/2014  JEL         Version 0.1.0
-    ----------------------------------------------------------------------------------
-    22/12/2014  JEL         Added some parameter for new generator with backward compatibility
-                            Version 0.2.0
+    24/12/2014  JEL         Version 0.1.0
     ----------------------------------------------------------------------------------
  ===================================================================================
 */

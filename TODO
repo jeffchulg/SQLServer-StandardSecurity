@@ -2,11 +2,9 @@ A FAIRE A CHAQUE MODIF :
 -- TODO: Tester le tout et le valider pour passer aux étapes documentation et utilisation
 
 URGENT :
--- TODO: utilisation de sp_execute_sql + gestion des exceptions.
 -- TODO: ajouter la gestion des désactivations => révocation/désactivation. (mise en commentaire et laissé à l'appréciation)
 
 MOINS URGENT :	
--- TODO: Creation of the [OnObjectPrivs] table              - vérifier que les associations de privilèges objet correspondent au type d'objet
 -- TODO: [security].[getLoginCreationStatement] : gérer les guids dans la création de logins. 
 -- TODO: [security].[getLoginCreationStatement] : Si login existant mais GUID différent => procédure de mise en adéquation.
 -- TODO : Database user creation version 0.1.0 => !!! create user for login sans vérification préalable et sans paramètre login !
@@ -15,6 +13,5 @@ DU LUXE :
 -- TODO: ajouter gestion du nom d'instance dans les paramètres impliquant ServerName
 -- TODO: uninstallation script
 -- TODO: Contraintes foreign key et uniques
--- TODO: logging au niveau des scripts générés
 -- TODO : Faire des procédures "helper" de manière à aider l'utilisation.
 -- TODO : interface graphique en perl

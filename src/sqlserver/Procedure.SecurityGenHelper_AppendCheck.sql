@@ -32,11 +32,25 @@ AS
 /*
 DESCRIPTION:
     Generates the code necessary for a given check like ServerName check or 
-    database name check 
+    database name check.
+    It can also be used to append any statement with the CheckName set to "STATEMENT_APPEND"
  
   ARGUMENTS :
+    @CheckName      name of the check we want to generate
+                    Values :
+                        * SERVER_NAME       :   generates and appends the statements to check Servername 
+                        * DATABASE_NAME     :   generates  and appends the statements to check the given database exists
+                        * STATEMENT_APPEND  :   appends the given statements 
+    @ServerName     Name of the server on which there is something to do
+    @DbName         Name of the database in or for which there is something to do
+    @ObjectName     Name of the object which has to be taken into account (for SERVER_NAME and DATABASE_NAME, it's set to NULL)
+    @Statements     Used for STATEMENT_APPEND mode. In that case, it cannot be null 
+    @CurOpName      Used for STATEMENT_APPEND mode. It stores the operation mode (@see Procedure.CreateTempTables4Generation.sql). 
+                    In that case, it cannot be null     
+    @CurOpOrder     Used for STATEMENT_APPEND mode. It stores the operation order(@see Procedure.CreateTempTables4Generation.sql). 
+                    In that case, it cannot be null 
+    @Debug          If set to 1, then we are in debug mode
 
- 
   REQUIREMENTS:
  
     EXAMPLE USAGE :

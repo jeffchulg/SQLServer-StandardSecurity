@@ -39,14 +39,19 @@ AS
  	user to a given SQL Login.
  
   ARGUMENTS :
-    @LoginName			Name of the login to map
-    @DbName				Name of the database on on which map the SQL Login
- 	@UserName			Name of the database user in that database to map with the 
- 						SQL Login. If this user doesn't exist in the database, it will be
- 						created if @forceUserCreation is set to true (default behaviour).
- 	@DefaultSchemaName	default schema for the given database user in the given SQL Server database.
- 	@forceUserCreation	Set it to true if you want this procedure to force the database user
- 						to be created
+    @LoginName			    Name of the login to map
+    @DbName				    Name of the database on on which map the SQL Login
+ 	@UserName			    Name of the database user in that database to map with the 
+                            SQL Login. If this user doesn't exist in the database, it will be
+                            created if @forceUserCreation is set to true (default behaviour).
+ 	@DefaultSchemaName	    default schema for the given database user in the given SQL Server database.
+    @NoHeader               If set to 1, no header will be displayed in the generated statements
+    @NoDependencyCheckGen   if set to 1, no check for server name, database name and so on are generated        
+ 	@forceUserCreation	    Set it to true if you want this procedure to force the database user
+                            to be created
+    @NoGrantConnect         If set to 1, the GRANT connect statement to the database principal is not generated
+    @Debug                  If set to 1, then we are in debug mode
+    
  
   REQUIREMENTS:
  
@@ -71,16 +76,14 @@ AS
  
     Date        Nom         Description
     ==========  =====       ==========================================================
-    24/04/2014  JEL         Version 0.1.0
-    ----------------------------------------------------------------------------------
-    22/12/2014  JEL         New generation version => adjustments
+    24/12/2014  JEL         Version 0.1.0
     ----------------------------------------------------------------------------------
  ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb        varchar(16) = '0.2.0';
+    DECLARE @versionNb        varchar(16) = '0.1.0';
     DECLARE @tsql             varchar(max);   
     DECLARE @ErrorDbNotExists varchar(max);
     

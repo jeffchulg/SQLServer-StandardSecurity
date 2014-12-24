@@ -52,7 +52,9 @@ AS
      
      @StdRoleName   name of the standard role for which execute this procedure
                     if NULL given, all standard roles are being taken into account
-  
+
+     @Debug         If set to 1, then we are in debug mode
+
    REQUIREMENTS:
   
     EXAMPLE USAGE :
@@ -91,26 +93,14 @@ AS
   
     Date        Nom         Description
     ==========  =====       ==========================================================
-    28/11/2014  JEL         Version 0.0.1
-    ----------------------------------------------------------------------------------
-    16/12/2014  JEL         Added the possibility to set standard schema role for
-    17/12/2014              either a single schema on a database, or a single 
-                            standard role (the OR isn't exclusive).
-                            
-                            We can now ensure that roles are created in the correct
-                            order.
-                            
-                            We can now set permissions for roles 
-                                (Database and role assignments)
-                            
-                            Version 0.0.2
+    24/12/2014  JEL         Version 0.0.1
     ----------------------------------------------------------------------------------
   ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.0.2';
+    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @tsql               varchar(max);
     DECLARE @CurServerName      varchar(512)
     DECLARE @CurDbName          varchar(64)

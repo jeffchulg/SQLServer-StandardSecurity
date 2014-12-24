@@ -41,12 +41,23 @@ AS
 /*
  ===================================================================================
   DESCRIPTION:
-    This Procedure generates the statements for all the database roles according to 
-    given parameters
+    This Procedure generates the statements for all the database role memberships 
+    according to given parameters
  
   ARGUMENTS :
-    @ServerName     name of the server on which the SQL Server instance we want to modify is running.
- 
+    @ServerName             name of the server on which the SQL Server instance we want to modify is running.
+    @DbName                 name of the database in which we have some job to do 
+    @RoleName               name of the database role we need to take care of
+    @MemberName             name of the database role member (user or role) we need to take care of
+    @AsOf                   to see a previous generated script result
+    @OutputType             the output type you want : TABLE or SCRIPT at the moment
+    @OutputDatabaseName     name of the database where we'll keep track of the generated script 
+    @OutputSchemaName       name of the database schema in which we'll keep track of the generated script 
+    @OutputTableName        name of the table in which we'll actually keep track of the generated script 
+    @NoDependencyCheckGen   if set to 1, no check for server name and database name are generated
+    @CanDropTempTables      if set to 1, the temporary tables required for this procedure to succeed can be dropped by the tool.
+                            It will create them if they don't exist
+    @Debug                  If set to 1, then we are in debug mode 
   REQUIREMENTS:
  
   ==================================================================================
@@ -68,7 +79,7 @@ AS
  
     Date        Name	        	Description
     ==========  =================	===========================================================
-    23/12/2014  Jefferson Elias		Creation
+    24/12/2014  Jefferson Elias		Version 0.1.0
     ----------------------------------------------------------------------------------
  ===================================================================================
 */
@@ -76,7 +87,7 @@ BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.0.1';
+    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);   
     DECLARE	@CurRole   	  	    varchar(64)

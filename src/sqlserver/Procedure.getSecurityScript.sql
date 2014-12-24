@@ -51,20 +51,29 @@ AS
 /*
   ===================================================================================
    DESCRIPTION:
-		This function is a helper for one to quickly copy the security model set
-		for a database in a server. If no database is set, the whole server is used.
-		This can lead to problematic situations as there can be databases that exists
-		on the source server and doesn't on the target server.
-		So, be aware of what you are doing !
+		This procedure will generate a script which will be applicable on the
+        specified server. It will create all the statements for the application
+        of security standard on that server.
   
    ARGUMENTS :
-     @ServerName    name of the server from which the we want to copy the security
-					By default, it's the current server
-	
-	 @DbName		name of the database to consider on that server.
-					A NULL value (which is the default value) means that this procedure
-					has to take care of every databases existing on that server.
+    @ServerName             name of the server from which the we want to copy the security
+                            By default, it's the current server
 
+    @DbName		            name of the database to consider on that server.
+                            A NULL value (which is the default value) means that this procedure
+                            has to take care of every databases existing on that server.
+    @UserName               name of the database user we need to take care of
+    @AsOf                   to see a previous generated script result
+    @OutputType             the output type you want : TABLE or SCRIPT at the moment
+    @OutputDatabaseName     name of the database where we'll keep track of the generated script 
+    @OutputSchemaName       name of the database schema in which we'll keep track of the generated script 
+    @OutputTableName        name of the table in which we'll actually keep track of the generated script 
+    @NoServerNameCheckGen   if set to 1, no check for server name is generated
+    @NoLoginGen             if set to 1, no generation for login creation statements is launched
+    @CanDropTempTables      if set to 1, the temporary tables required for this procedure to succeed can be dropped by the tool.
+                            It will create them if they don't exist
+    @DisplayResult          If set to 1, then we'll display the results on standard output
+    @Debug                  If set to 1, then we are in debug mode
   
    REQUIREMENTS:
   
@@ -111,7 +120,7 @@ exec [security].[getSecurityScript]
   
      Date        Nom         Description
      ==========  =====       ==========================================================
-     23/12/2014  JEL         Version 0.0.1
+     24/12/2014  JEL         Version 0.0.1
      ----------------------------------------------------------------------------------
   ===================================================================================
 */

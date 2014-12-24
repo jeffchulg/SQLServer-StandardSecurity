@@ -1,4 +1,6 @@
 /*requires Schema.Security.sql*/
+
+
 /**
   ==================================================================================
     DESCRIPTION
@@ -22,15 +24,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    16/04/2014  Jefferson Elias     Creation
-    23/04/2014  Jefferson Elias     VERSION 1.0.0
-    --------------------------------------------------------------------------------
-	25/11/2014	Jefferson Elias		Date columns transformed to datetime
-    --------------------------------------------------------------------------------
-    17/12/2014  Jefferson Elias     Added MERGE statement for default parameters    
-    --------------------------------------------------------------------------------
-    23/12/2014  Jefferson Elias     Added parameter RoleAuthorization4Creation as 
-                                    ParamName in this table.
+    24/12/2014  Jefferson Elias     VERSION 1.0.0
     --------------------------------------------------------------------------------
   ==================================================================================
 */
@@ -61,46 +55,11 @@ BEGIN
         )
         ON [PRIMARY]
     )ON [PRIMARY]
-	PRINT '   Table [ApplicationParams] created.'
+	PRINT '   Table [security].[ApplicationParams] created.'
 END
 ELSE
-BEGIN
-
-	IF EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'CreationDate' and Object_ID = Object_ID(N'[security].[ApplicationParams]') and system_type_id = 40
-    )
-	BEGIN
-		-- no other way I know ... drop default constraint and it will be re-created afterwards in this script.
-		
-		IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_ApplicationParams_CreationDate]') AND type = 'D')
-		BEGIN
-			execute sp_executesql N'alter table [security].[ApplicationParams] drop constraint DF_ApplicationParams_CreationDate'
-		END 
-		
-	    execute sp_executesql N'ALTER TABLE [security].[ApplicationParams] ALTER COLUMN [CreationDate] datetime not null'
-		PRINT '    Column CreationDate from [security].[ApplicationParams] modified from date to datetime.'
-	END
-	
-	IF EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'lastmodified' and Object_ID = Object_ID(N'[security].[ApplicationParams]') and system_type_id = 40
-    )
-	BEGIN
-		
-		-- no other way I know ... drop default constraint and it will be re-created afterwards in this script.
-		
-		IF EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_ApplicationParams_lastmodified]') AND type = 'D')
-		BEGIN
-			execute sp_executesql N'alter table [security].[ApplicationParams] drop constraint DF_ApplicationParams_lastmodified'
-		END 
-		
-	    execute sp_executesql N'ALTER TABLE [security].[ApplicationParams] ALTER COLUMN [lastmodified] datetime not null'
-		PRINT '    Column lastmodified from [security].[ApplicationParams] modified from date to datetime.'
-	END
-
+BEGIN		
+    PRINT '   Table [security].[ApplicationParams] already exists.'
 END
 GO
 

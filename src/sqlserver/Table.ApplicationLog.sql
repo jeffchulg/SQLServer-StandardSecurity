@@ -1,4 +1,6 @@
 /*requires Schema.Security.sql*/
+
+
 /**
     Creation of an application log table
 */
@@ -25,10 +27,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    16/04/2014  Jefferson Elias     Creation
-    23/04/2014  Jefferson Elias     VERSION 0.1.0
-    --------------------------------------------------------------------------------
-	25/11/2014	Jefferson Elias		Date columns transformed to datetime.
+    24/12/2014  Jefferson Elias     VERSION 0.1.0
     --------------------------------------------------------------------------------
   ==================================================================================
 */
@@ -51,15 +50,7 @@ BEGIN
 END
 ELSE
 BEGIN
-    IF EXISTS( 
-	    SELECT 1 
-		FROM  sys.columns 
-        WHERE Name = 'moment' and Object_ID = Object_ID(N'[security].[ApplicationLog]') and system_type_id = 40
-    )
-	BEGIN
-	    execute sp_executesql N'ALTER TABLE [security].[ApplicationLog] ALTER COLUMN [moment] datetime not null'
-		PRINT '    Column moment from [security].[ApplicationLog] modified from date to datetime.'
-	END
+    PRINT '    Table [security].[ApplicationLog] already exists.'
 END
 GO
 

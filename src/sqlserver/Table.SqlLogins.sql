@@ -26,15 +26,7 @@
  
     Date        Name                Description
     ==========  ================    ================================================
-    16/04/2014  Jefferson Elias     Creation
-    --------------------------------------------------------------------------------
-    23/04/2014  Jefferson Elias     VERSION 1.0.0
-    --------------------------------------------------------------------------------
-	25/04/2014	Jefferson Elias		Added BEGIN END at each IF
-									Removed columns defaultDatabase and DefaultSchema
-									As there is the table SQLMappings for this
-									Added isActive column.
-									VERSION 1.0.1
+    24/12/2014  Jefferson Elias     Version 0.1.0
     --------------------------------------------------------------------------------
   ==================================================================================
 */
@@ -47,64 +39,12 @@ BEGIN
     CREATE TABLE [security].[SQLlogins] (
         [ServerName]      [VARCHAR](256) NOT NULL,
         [SqlLogin]        [VARCHAR](256) NOT NULL,
-		[isActive]	  BIT		NOT NULL,
+		[isActive]	      BIT		NOT NULL,
         [CreationDate]    datetime NOT NULL,
         [lastmodified]    datetime NOT NULL
     )
     ON [PRIMARY]
 	PRINT '   Table [SQLlogins] created.'
-END
-GO
-
-IF EXISTS( SELECT * from sys.columns where OBJECT_SCHEMA_NAME(object_id) = 'security' and OBJECT_NAME(object_id) = 'SQLLogins' and name = 'defaultdatabase')
-BEGIN
-	ALTER TABLE [security].[SQLLogins] drop column [DefaultDatabase]
-	if @@ERROR = 0	
-		PRINT '   Table altered : column DefaultDatabase dropped.'
-END
-GO
-
-IF EXISTS( SELECT * from sys.columns where OBJECT_SCHEMA_NAME(object_id) = 'security' and OBJECT_NAME(object_id) = 'SQLLogins' and name = 'defaultschema')
-BEGIN
-	ALTER TABLE [security].[SQLLogins] drop column [defaultschema]
-	if @@ERROR = 0	
-		PRINT '   Table altered : column defaultschema dropped.'
-END
-GO
-
-IF NOT EXISTS( SELECT * from sys.columns where OBJECT_SCHEMA_NAME(object_id) = 'security' and OBJECT_NAME(object_id) = 'SQLLogins' and name = 'isActive')
-BEGIN
-	ALTER TABLE [security].[SQLLogins] add [isActive] BIT
-	if @@ERROR = 0	
-		PRINT '   Table altered : column isActive added.'
-	ELSE
-		return
-END
-GO
-
-IF (COLUMNPROPERTY(OBJECT_ID('[security].[SQLLogins]'),'isActive','AllowsNull') = 1)
-BEGIN
-	update [security].[SQLLogins] set [isActive] = 1 where [SQLLogin] in (select SQLLogin from [security].[Contacts] where isActive = 1)
-	update [security].[SQLLogins] set [isActive] = 0 where [SQLLogin] not in (select SQLLogin from [security].[Contacts] where isActive = 1)
-	
-	alter table [security].[SQLLogins] ALTER column isActive BIT NOT NULL
-	
-	if @@ERROR = 0	
-		PRINT '   Table altered : column isActive altered.'
-	ELSE
-		return	
-END
-
-
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_SQLlogins_Contacts]') AND parent_object_id = OBJECT_ID(N'[security].[SQLlogins]'))
-BEGIN
-    ALTER TABLE [security].[SQLlogins]
-        ADD  CONSTRAINT [FK_SQLlogins_Contacts]
-            FOREIGN KEY (
-                [SqlLogin]
-            )
-        REFERENCES [security].[Contacts] ([SqlLogin])
-	PRINT '   Foreign Key [FK_SQLlogins_Contacts] created.'
 END
 GO
 
@@ -116,6 +56,18 @@ BEGIN
                 [ServerName],[SqlLogin]
             )
 	PRINT '   Primary Key [PK_SQLlogins] created.'
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_SQLlogins_Contacts]') AND parent_object_id = OBJECT_ID(N'[security].[SQLlogins]'))
+BEGIN
+    ALTER TABLE [security].[SQLlogins]
+        ADD  CONSTRAINT [FK_SQLlogins_Contacts]
+            FOREIGN KEY (
+                [SqlLogin]
+            )
+        REFERENCES [security].[Contacts] ([SqlLogin])
+	PRINT '   Foreign Key [FK_SQLlogins_Contacts] created.'
 END
 GO
 

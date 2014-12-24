@@ -116,6 +116,7 @@ BEGIN
         CURSOR LOCAL FOR
             select 
                 @SchemaName + @SchemaRoleSep + RoleName,
+                PermissionClass,
                 PermissionLevel,
                 case WHEN isRoleMembership = 1 THEN @SchemaName + @SchemaRoleSep + PrivName
                     ELSE PrivName 
@@ -127,6 +128,7 @@ BEGIN
             
     
         DECLARE @RoleName        VARCHAR(64)
+        DECLARE @PermissionClass VARCHAR(16)
         DECLARE @PermissionLevel VARCHAR(6)
         DECLARE @PrivName        VARCHAR(128)
         DECLARE @isRoleMembership BIT
@@ -139,7 +141,7 @@ BEGIN
         
         open getPermissions
         FETCH NEXT
-        FROM getPermissions INTO @RoleName,@PermissionLevel,@PrivName,@isRoleMembership,@isActive
+        FROM getPermissions INTO @RoleName,@PermissionClass,@PermissionLevel,@PrivName,@isRoleMembership,@isActive
         
         if @Debug = 1
         BEGIN
@@ -157,12 +159,18 @@ BEGIN
                         @DbName                 as DbName,
                         @RoleName               as Grantee,
                         0                       as isUser,
-                        'DATABASE_SCHEMA'       as ObjectClass,
+                        @PermissionClass        as ObjectClass,
                         null                    as ObjectType,
                         @PermissionLevel        as PermissionLevel,
                         @PrivName               as PermissionName,
                         null                    as SchemaName,
-                        @SchemaName             as ObjectName,
+                        CASE 
+                            WHEN @PermissionClass = 'DATABASE_SCHEMA'
+                                THEN @SchemaName
+                            WHEN @PermissionClass = 'DATABASE' 
+                                THEN @Dbname 
+                            ELSE NULL
+                        END           as ObjectName,
                         null                    as SubObjectName,
                         0                       as isWithGrantOption,
                         'Defined by standard'   as Reason,
@@ -261,7 +269,7 @@ BEGIN
             END
         
             FETCH NEXT
-            FROM getPermissions INTO @RoleName,@PermissionLevel,@PrivName,@isRoleMembership,@isActive        
+            FROM getPermissions INTO @RoleName,@PermissionClass,@PermissionLevel,@PrivName,@isRoleMembership,@isActive        
                     
         END
         CLOSE getPermissions

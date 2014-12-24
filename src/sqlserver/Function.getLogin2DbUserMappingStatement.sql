@@ -27,55 +27,55 @@ ALTER FUNCTION [security].getLogin2DbUserMappingStatement (
     @NoHeader               BIT = 0,
     @NoDependencyCheckGen   BIT = 0,
     @forceUserCreation	    bit = 0,
-    @NoGrantConnect      BIT = 0,
+    @NoGrantConnect         BIT = 0,
     @Debug                  BIT = 0    
 )
 RETURNS VARCHAR(max)
 AS
 /*
-#===================================================================================
-# DESCRIPTION:
-#   This function returns a string with all statements for mapping a given database 
-#	user to a given SQL Login.
-#
-# ARGUMENTS :
-#   @LoginName			Name of the login to map
-#   @DbName				Name of the database on on which map the SQL Login
-#	@UserName			Name of the database user in that database to map with the 
-#						SQL Login. If this user doesn't exist in the database, it will be
-#						created if @forceUserCreation is set to true (default behaviour).
-#	@DefaultSchemaName	default schema for the given database user in the given SQL Server database.
-#	@forceUserCreation	Set it to true if you want this procedure to force the database user
-#						to be created
-#
-# REQUIREMENTS:
-#
-#   EXAMPLE USAGE :
+ ===================================================================================
+  DESCRIPTION:
+    This function returns a string with all statements for mapping a given database 
+ 	user to a given SQL Login.
+ 
+  ARGUMENTS :
+    @LoginName			Name of the login to map
+    @DbName				Name of the database on on which map the SQL Login
+ 	@UserName			Name of the database user in that database to map with the 
+ 						SQL Login. If this user doesn't exist in the database, it will be
+ 						created if @forceUserCreation is set to true (default behaviour).
+ 	@DefaultSchemaName	default schema for the given database user in the given SQL Server database.
+ 	@forceUserCreation	Set it to true if you want this procedure to force the database user
+ 						to be created
+ 
+  REQUIREMENTS:
+ 
+    EXAMPLE USAGE :
         PRINT [security].getLogin2DbUserMappingStatement ('test_jel','TESTING_ONLY_TESTING','test_jel','dbo',1,1,0,0,1)
-# ==================================================================================
-# BUGS:
-#
-#   BUGID       Fixed   Description
-#   ==========  =====   ==========================================================
-#   ----------------------------------------------------------------------------------
-# ==================================================================================
-# NOTES:
-# AUTHORS:
-#      .   VBO     Vincent Bouquette   (vincent.bouquette@chu.ulg.ac.be)
-#      .   BBO     Bernard Bozert      (bernard.bozet@chu.ulg.ac.be)
-#      .   JEL     Jefferson Elias     (jelias@chu.ulg.ac.be)
-#
-# COMPANY: CHU Liege
-# ==================================================================================
-# Revision History
-#
-#   Date        Nom         Description
-#   ==========  =====       ==========================================================
-#   24/04/2014  JEL         Version 0.1.0
-#   ----------------------------------------------------------------------------------
-#   22/12/2014  JEL         New generation version => adjustments
-#   ----------------------------------------------------------------------------------
-#===================================================================================
+  ==================================================================================
+  BUGS:
+ 
+    BUGID       Fixed   Description
+    ==========  =====   ==========================================================
+    ----------------------------------------------------------------------------------
+  ==================================================================================
+  NOTES:
+  AUTHORS:
+       .   VBO     Vincent Bouquette   (vincent.bouquette@chu.ulg.ac.be)
+       .   BBO     Bernard Bozert      (bernard.bozet@chu.ulg.ac.be)
+       .   JEL     Jefferson Elias     (jelias@chu.ulg.ac.be)
+ 
+  COMPANY: CHU Liege
+  ==================================================================================
+  Revision History
+ 
+    Date        Nom         Description
+    ==========  =====       ==========================================================
+    24/04/2014  JEL         Version 0.1.0
+    ----------------------------------------------------------------------------------
+    22/12/2014  JEL         New generation version => adjustments
+    ----------------------------------------------------------------------------------
+ ===================================================================================
 */
 BEGIN
 

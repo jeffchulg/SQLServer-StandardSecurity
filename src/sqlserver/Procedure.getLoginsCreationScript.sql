@@ -4,6 +4,7 @@
 /*requires Function.getLoginCreationStatement.sql*/
 /*requires Procedure.CreateTempTables4Generation.sql*/
 /*requires Procedure.SaveSecurityGenerationResult.sql*/
+/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -142,40 +143,12 @@ BEGIN
         
 		BEGIN TRY
 		BEGIN TRANSACTION           
-            SET @CurOpName = 'CHECK_EXPECTED_SERVERNAME'
-                
-            if(@NoDependencyCheckGen = 0 and not exists (select 1 from ##SecurityGenerationResults where ServerName = @ServerName and OperationType = @CurOpName))
+            
+            if(@NoDependencyCheckGen = 0)
             BEGIN     
-                
-                if @Debug = 1
-                BEGIN
-                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Adding Server name check'
-                END                    
-                
-                select @CurOpOrder = OperationOrder 
-                from ##SecurityScriptResultsCommandsOrder 
-                where OperationType = @CurOpName
-
-                insert ##SecurityGenerationResults (
-                    ServerName,		
-                    DbName,			
-                    OperationType, 	
-                    OperationOrder,
-                    QueryText 		
-                )
-                values (
-                    @ServerName,		
-                    null,
-                    @CurOpName,
-                    @CurOpOrder,
-                    'IF (@@SERVERNAME <> ''' + (@ServerName) + '''' +  @LineFeed +
-                    'BEGIN' + @LineFeed +
-                    '    RAISERROR(''Expected @@ServerName : "' + @ServerName + '"'', 16, 0)'  + @LineFeed +
-                    'END' 
-                )
-                SET @CurOpName  = null
-                SET @CurOpOrder = null
-            END
+                EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'SERVER_NAME', @ServerName = @ServerName
+            END   
+            
 			if(@CurLogin is null) 
 			BEGIN	
            		if @Debug = 1 
@@ -268,22 +241,18 @@ BEGIN
                 from ##SecurityScriptResultsCommandsOrder 
                 where OperationType = @CurOpName
 
-                insert ##SecurityGenerationResults (
-                    ServerName,		
-                    ObjectName,			
-                    OperationType, 	
-                    OperationOrder,
-                    QueryText 		
-                )
-                values (
-                    @ServerName,		
-                    @CurLogin,
-                    @CurOpName,
-                    @CurOpOrder,
-                    @StringToExecute
-                )
+                EXEC [security].[SecurityGenHelper_AppendCheck] 
+                    @CheckName   = 'STATEMENT_APPEND', 
+                    @ServerName  = @ServerName, 
+                    @DbName      = NULL,
+                    @ObjectName  = @CurLogin,
+                    @CurOpName   = @CurOpName,
+                    @CurOpOrder  = @CurOpOrder,
+                    @Statements  = @StringToExecute
+                            
                 SET @CurOpName  = null
-                SET @CurOpOrder = null
+                SET @CurOpOrder = null                
+                                
             END 
             
             /*

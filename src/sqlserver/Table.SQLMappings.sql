@@ -117,7 +117,7 @@ BEGIN
 END
 GO
 
-IF (OBJECTPROPERTY( OBJECT_ID( '[security].[PK_SQLMappings]' ), 'TableHasPrimaryKey' ) <> 1)
+IF (OBJECTPROPERTY( OBJECT_ID( '[security].[SQLMappings]' ), 'TableHasPrimaryKey' ) <> 1)
 BEGIN
     ALTER TABLE [security].[SQLMappings]
         ADD  CONSTRAINT [PK_SQLMappings ]
@@ -140,6 +140,20 @@ BEGIN
 		[isDefaultDb]
 	)
     WHERE [isDefaultDb] = 1
+	
+	IF @@ERROR = 0 
+		PRINT '    Index [security].[IDX_UN_SQLMappings_DefaultDb] created.'
+END
+
+IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[SQLMappings]') AND name = N'IDX_UN_SQLMappings_DbUser')
+BEGIN
+	CREATE UNIQUE INDEX 
+		[IDX_UN_SQLMappings_DbUser] 
+	ON [security].[SQLMappings] (
+		[ServerName],
+		[DbName],
+        [DbUserName]
+	)   
 	
 	IF @@ERROR = 0 
 		PRINT '    Index [security].[IDX_UN_SQLMappings_DefaultDb] created.'

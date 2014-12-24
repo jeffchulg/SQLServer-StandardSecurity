@@ -117,8 +117,6 @@ BEGIN
 		@LineFeed 			= CHAR(13) + CHAR(10) ,
         @LoginDeclaration   = 'DECLARE @loginToPlayWith VARCHAR(64)' + @LineFeed +
                               'SET @loginToPlayWith = QUOTENAME(''' + @LoginName + ''')' + @LineFeed  
-
-    SET @tsql = @LoginDeclaration  
         
     SET @ErrorDbNotExists =  N'The given default database ('+QUOTENAME(@DefaultDatabase)+') does not exist'
 
@@ -190,7 +188,7 @@ BEGIN
                 '-- If necessary, give the login the permission to connect the database engine' + @LineFeed  +
                 'if not exists (select 1 from master.sys.server_permissions where QUOTENAME(SUSER_NAME(grantee_principal_id)) = @loginToPlayWith and permission_name = ''CONNECT SQL'' and state_desc = ''GRANT'')' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    EXEC (''USE [master] ; GRANT CONNECT SQL TO @loginToPlayWith'' );' + @LineFeed  +
+                '    EXEC (''USE [master] ; GRANT CONNECT SQL TO ' + QUOTENAME(@LoginName) + ''' );' + @LineFeed  +
                 'END' + @LineFeed 
     END 
 
@@ -198,7 +196,7 @@ BEGIN
 				'-- If necessary, set the default database for this login' + @LineFeed  + 
                 'if ISNULL(@loginDefaultDb,''<null>'') <> QUOTENAME(''' + @DefaultDatabase + ''')' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                'exec sp_defaultdb @loginame = @loginToPlayWith , @DefDb = ''' + @DefaultDatabase + '''' + @LineFeed +
+                '    exec sp_defaultdb @loginame = ''' + @LoginName + ''' , @DefDb = ''' + @DefaultDatabase + '''' + @LineFeed +
                 'END' + @LineFeed 
                 
 	/* Password policy setup - TODO SHOULD be different, but not needed at the moment */                

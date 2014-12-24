@@ -214,7 +214,7 @@ BEGIN
                 END 
                                 
                 
-                SET @StringToExecute = 'PRINT ''. Commands for Schema "' + @CurSchema + '" in database "' + @DbName + '"' + @LineFeed +
+                SET @StringToExecute = 'PRINT ''. Commands for Schema "' + @CurSchema + '" in database "' + @DbName + '"''' + @LineFeed +
                                        [security].[getSchemaCreationStatement](
                                             @DbName,
                                             @CurSchema,

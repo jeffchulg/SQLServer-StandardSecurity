@@ -19,15 +19,7 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-    IF @@ERROR_NUMBER = 0 
-    BEGIN 
-        PRINT '    Procedure [security].[getDbRolesAssignmentScript] created.'
-    END 
-    ELSE 
-    BEGIN 
-        PRINT '    Error while creating Procedure [security].[getDbRolesAssignmentScript].'
-        RETURN 
-    END 
+    PRINT '    Procedure [security].[getDbRolesAssignmentScript] created.'    
 END
 GO
 
@@ -258,7 +250,7 @@ BEGIN
                 END 
                                 
                 
-                SET @StringToExecute = 'PRINT ''. Commands for role assignment "' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + '" on ' + @DbName + '"' + @LineFeed +
+                SET @StringToExecute = 'PRINT ''. Commands for role assignment "' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + '" on ' + @DbName + '"''' + @LineFeed +
                                        [security].[getDbRoleAssignmentStatement](
                                             @DbName,
                                             @CurRole,

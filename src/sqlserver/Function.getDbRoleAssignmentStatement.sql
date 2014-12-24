@@ -147,10 +147,10 @@ BEGIN
                     '    select 1 ' + @LineFeed +
                     '    from sys.database_role_members ' + @LineFeed +
                     '    where QUOTENAME(USER_NAME(member_principal_id)) = @MemberName' + @LineFeed +
-                    '''    and QUOTENAME(USER_NAME(role_principal_id ))  = @RoleName' + @LineFeed +
+                    '    and QUOTENAME(USER_NAME(role_principal_id ))  = @RoleName' + @LineFeed +
                     ')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXECUTE sp_addrolemember @rolename = @RoleName, @MemberName = @MemberName' + @LineFeed +
+                    '    EXECUTE sp_addrolemember @rolename = ''' + @RoleName + ''', @MemberName = ''' + @MemberName + '''' + @LineFeed +
                     '    -- TODO : check return code to ensure role member is really added' + @LineFeed +
                     'END' + @LineFeed
     END 
@@ -164,7 +164,7 @@ BEGIN
                     '''    and QUOTENAME(USER_NAME(role_principal_id ))  = @RoleName' + @LineFeed +
                     ')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXECUTE sp_droprolemember @rolename = @RoleName, @MemberName = @MemberName' + @LineFeed +
+                    '    EXECUTE sp_droprolemember @rolename = ''' + @RoleName + ''', @MemberName = ''' + @MemberName + '''' + @LineFeed +
                     '    -- TODO : check return code to ensure role member is really dropped' + @LineFeed +
                     'END' + @LineFeed   
         

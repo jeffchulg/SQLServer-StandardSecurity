@@ -249,7 +249,7 @@ BEGIN
                     RAISERROR(@ErrMsg,16,0)
                 END 
                                 
-                SET @StringToExecute = 'PRINT ''. Commands to map login "' + QUOTENAME(@CurLogin) + ' to user ' + QUOTENAME(@DbUserName) + '" on ' + @DbName + '"' + @LineFeed +
+                SET @StringToExecute = 'PRINT ''. Commands to map login "' + QUOTENAME(@CurLogin) + ' to user ' + QUOTENAME(@DbUserName) + '" on ' + @DbName + '"''' + @LineFeed +
                                        [security].[getLogin2DbUserMappingStatement](
                                             @CurLogin,
                                             @CurDbName,

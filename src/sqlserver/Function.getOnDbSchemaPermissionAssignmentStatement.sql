@@ -145,7 +145,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    ' + @PermissionLevel + ' ' + @PermissionName + ' ON SCHEMA::' + QUOTENAME(@SchemaName) + ' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON SCHEMA::' + QUOTENAME(@SchemaName) + ' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
         BEGIN 
             SET @tsql = @tsql +
@@ -153,7 +153,7 @@ BEGIN
         END               
         
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
     END 
     ELSE if @PermissionLevel = 'DENY' 
@@ -161,9 +161,9 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel <> ''DENY'')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    ' + @PermissionLevel + ' ' + @PermissionName + ' ON SCHEMA::' + QUOTENAME(@SchemaName) + ' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON SCHEMA::' + QUOTENAME(@SchemaName) + ' to ' + QUOTENAME(@Grantee) + ' '
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed                    
         
     END 
@@ -172,7 +172,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    ' + @PermissionLevel + ' ' + @PermissionName + ' ON SCHEMA::' + QUOTENAME(@SchemaName) + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + @LineFeed +
+                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON SCHEMA::' + QUOTENAME(@SchemaName) + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE

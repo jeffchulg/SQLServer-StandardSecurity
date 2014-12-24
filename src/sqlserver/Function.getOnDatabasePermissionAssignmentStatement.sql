@@ -2,11 +2,11 @@
 /*requires Table.ApplicationParams.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'Function [security].[getOnUserObjectPermissionAssignmentStatement] Creation'
+PRINT 'Function [security].[getOnDatabasePermissionAssignmentStatement] Creation'
 
-IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getOnUserObjectPermissionAssignmentStatement]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getOnDatabasePermissionAssignmentStatement]') AND type in (N'FN', N'IF', N'TF', N'FS', N'FT'))
 BEGIN
-    EXECUTE ('CREATE FUNCTION [security].[getOnUserObjectPermissionAssignmentStatement] ( ' +
+    EXECUTE ('CREATE FUNCTION [security].[getOnDatabasePermissionAssignmentStatement] ( ' +
             ' @ServerName    varchar(512), ' +
             ' @DbName    varchar(50) ' +
             ') ' +
@@ -16,22 +16,17 @@ BEGIN
             '   RETURN ''Not implemented'' ' +
             'END')
 			
-	PRINT '    Function [security].[getOnUserObjectPermissionAssignmentStatement] created.'
+	PRINT '    Function [security].[getOnDatabasePermissionAssignmentStatement] created.'
 END
 GO
 
-ALTER Function [security].[getOnUserObjectPermissionAssignmentStatement] (
+ALTER Function [security].[getOnDatabasePermissionAssignmentStatement] (
     @DbName                         VARCHAR(64),
     @Grantee                        VARCHAR(256),
     @isUser                         BIT,
     @PermissionLevel                VARCHAR(10),
     @PermissionName                 VARCHAR(256),
     @isWithGrantOption              BIT,
-    @ObjectClass                    VARCHAR(64),
-    @ObjectType                     VARCHAR(64),
-    @SchemaName                     VARCHAR(64),
-    @ObjectName                     VARCHAR(64),
-    @SubObjectName                  VARCHAR(64),
     @isActive                       BIT = 1,
     @NoHeader                       BIT = 0,
     @NoDependencyCheckGen           BIT = 0,
@@ -44,7 +39,7 @@ AS
   DESCRIPTION:
     This function returns a string with the statements for a permission assignment 
     with syntax :
-        <@PermissionLevel = GRANT|REVOKE|DENY> <PermissionName> ON SCHEMA::<@SchemaName>
+        <@PermissionLevel = GRANT|REVOKE|DENY> <@PermissionName>  TO <@Grantee>
     
  
   ARGUMENTS :
@@ -53,23 +48,7 @@ AS
   REQUIREMENTS:
   
   EXAMPLE USAGE :
-    PRINT [security].[getOnUserObjectPermissionAssignmentStatement](
-                                                    'TESTING_ONLY_TESTING',
-                                                    'jel_test',
-                                                    1,
-                                                    'GRANT',
-                                                    'INSERT',
-                                                    0,
-                                                    'SCHEMA_OBJECT',
-                                                    'TABLE',
-                                                    'dbo',
-                                                    'SchemaChangeLog',
-                                                    null,
-                                                    1,                                            
-                                                    1, -- no header
-                                                    1, -- no dependency check 
-                                                    1
-                                                )   
+
  
   ==================================================================================
   BUGS:
@@ -90,7 +69,7 @@ AS
  
     Date        Name        Description
     ==========  =====       ==========================================================
-    23/12/2014  JEL         Version 0.1.0 
+    24/12/2014  JEL         Version 0.1.0 
  ===================================================================================
 */
 BEGIN
@@ -107,25 +86,10 @@ BEGIN
         @DynDeclare         = 'DECLARE @Grantee         VARCHAR(256)' + @LineFeed +
 							  'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
 							  'DECLARE @PermissionName  VARCHAR(256)' + @LineFeed +
-							  'DECLARE @SchemaName      VARCHAR(64)' + @LineFeed +
-							  'DECLARE @ObjectName      VARCHAR(64)' + @LineFeed +
-							  'DECLARE @SubObjectName   VARCHAR(64)' + @LineFeed +
                               'SET @Grantee         = ''' + QUOTENAME(@Grantee) + '''' + @LineFeed  +
                               'SET @PermissionLevel = ''' + @PermissionLevel + '''' + @LineFeed  +
-                              'SET @PermissionName  = ''' + @PermissionName + '''' + @LineFeed  +
-                              'SET @SchemaName      = ''' + QUOTENAME(@SchemaName) + '''' + @LineFeed + 
-                              'SET @ObjectName      = ''' + QUOTENAME(@ObjectName) + '''' + @LineFeed  
-    if @SubObjectName is not null 
-    BEGIN 
-        SET @DynDeclare = @DynDeclare +               
-                          'SET @SubObjectName   = ''' + QUOTENAME(@SubObjectName) + '''' + @LineFeed  
-    END
-    
-    if @ObjectClass not in ('SCHEMA_OBJECT')
-    BEGIN 
-        return cast('Unsupported Object Class ' + @ObjectClass as int);
-    END 
-                              
+                              'SET @PermissionName  = ''' + @PermissionName + '''' + @LineFeed  
+
     SET @tsql = @DynDeclare  +
                 'DECLARE @DbName      VARCHAR(64) = ''' + QUOTENAME(@DbName) + '''' + @LineFeed 
 
@@ -135,7 +99,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database permission on schema assignment version ' + @versionNb + '.' + @LineFeed +
+                    ' * Permission on database assignment version ' + @versionNb + '.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 
@@ -148,7 +112,7 @@ BEGIN
                     '    return' + @LineFeed +
                     'END' + @LineFeed  +
                     '' + @LineFeed 
-        -- TODO : add checks for Grantee and SchemaName and ObjectName and SubObjectName
+        -- TODO : add checks for Grantee 
     END
     
     SET @tsql = @tsql + 
@@ -159,10 +123,8 @@ BEGIN
                 'from' + @LineFeed +
                 'sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
-                '    class_desc                                 = ''OBJECT_OR_COLUMN''' + @LineFeed + 
+                '    class_desc                                 = ''DATABASE''' + @LineFeed + 
                 'and QUOTENAME(USER_NAME(grantee_principal_id)) = @Grantee' + @LineFeed +
-                'and QUOTENAME(OBJECT_SCHEMA_NAME(major_id))	= @SchemaName' + @LineFeed +
-                'and QUOTENAME(OBJECT_NAME(major_id))	        = @ObjectName' + @LineFeed +
                 'and QUOTENAME(permission_name)                 = QUOTENAME(@PermissionName)' + @LineFeed
 
     DECLARE @PermAuthorization VARCHAR(64)    
@@ -179,7 +141,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
         BEGIN 
             SET @tsql = @tsql +
@@ -195,7 +157,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel <> ''DENY'')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' to ' + QUOTENAME(@Grantee) + ' '
         SET @tsql = @tsql + 
                     ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed                    
@@ -206,7 +168,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE
@@ -216,11 +178,12 @@ BEGIN
 	
     SET @tsql = @tsql + @LineFeed  +
 				'GO' + @LineFeed 
+                
     RETURN @tsql
 END
 go	
 
-PRINT '    Function [security].[getOnUserObjectPermissionAssignmentStatement] altered.'
+PRINT '    Function [security].[getOnDatabasePermissionAssignmentStatement] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT '' 

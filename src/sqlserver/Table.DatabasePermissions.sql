@@ -102,7 +102,7 @@ BEGIN
 	PRINT '    Primary Key [UN_DatabasePermissions] created.'
 END
 GO
-
+/*
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_DatabasePermissions_SchemaName]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
@@ -120,6 +120,7 @@ BEGIN
 	END
 END
 GO
+*/
 
 IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_ObjectClass]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
 BEGIN
@@ -240,6 +241,8 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_I_DatabasePermissions]' + CHAR(13) +
 			'			DbName,' + CHAR(13) + 
 			'			SchemaName' + CHAR(13) +
 			'		from inserted' + CHAR(13) + 
+            '       where DbName is not null ' + CHAR(13) +
+            '       and   SchemaName is not null' + CHAR(13) +
             '' + CHAR(13) + 
 			'/**' + CHAR(13) + 
 			' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
@@ -339,7 +342,8 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_U_DatabasePermissions]' + CHAR(13) +
 			'			DbName,' + CHAR(13) + 
 			'			SchemaName' + CHAR(13) +
 			'		from inserted' + CHAR(13) + 
-            '       where SchemaName is not null' + CHAR(13) +
+            '       where DbName is not null ' + CHAR(13) +
+            '       and   SchemaName is not null' + CHAR(13) +
             '' + CHAR(13) + 
 			'/**' + CHAR(13) + 
 			' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +

@@ -229,7 +229,7 @@ BEGIN
                     PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Taking care of user ' + @CurUser 
                 END    
 
-                SET @StringToExecute = 'PRINT ''. Commands for Database User "' + @CurUser+ '" in database "' + @DbName + '"' + @LineFeed +
+                SET @StringToExecute = 'PRINT ''. Commands for Database User "' + @CurUser+ '" in database "' + @DbName + '"''' + @LineFeed +
                                         [security].[getDbUserCreationStatement](
                                             @DbName,
                                             @SQLLogin,

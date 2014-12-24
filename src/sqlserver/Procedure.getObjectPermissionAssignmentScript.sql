@@ -305,10 +305,26 @@ BEGIN
                 
                 while @@FETCH_STATUS = 0
                 BEGIN 
-                
-                    if @ObjectClass = 'DATABASE_SCHEMA'
+                    if @ObjectClass = 'DATABASE' 
                     BEGIN 
-                        SET @StringToExecute = 'PRINT ''. Commands for permission assignment on database schema ''' + @ObjectName + ''' for database principal ''' + @CurGrantee + ''' on database ''' + @DbName  + @LineFeed +
+                        SET @StringToExecute = 'PRINT ''. Commands for permission assignment on database schema ''''' + @ObjectName + ''''' for database principal ''''' + @CurGrantee + ''''' on database ''''' + @DbName  + '''''''' + @LineFeed +
+                                               [security].[getOnDatabasePermissionAssignmentStatement](
+                                                    @DbName,
+                                                    @CurGrantee,
+                                                    @CurGranteeIsUser,
+                                                    @PermissionLevel,
+                                                    @PermissionName,
+                                                    @isWithGrantOption,
+                                                    @isActive,                                            
+                                                    1, -- no header
+                                                    1, -- no dependency check 
+                                                    @Debug
+                                                )
+                        SET @FullObjectName = @PermissionLevel + ' ' + @PermissionName + ' to ' + QUOTENAME(@CurGrantee)
+                    END 
+                    ELSE IF @ObjectClass = 'DATABASE_SCHEMA'
+                    BEGIN 
+                        SET @StringToExecute = 'PRINT ''. Commands for permission assignment on database schema ''''' + @ObjectName + ''''' for database principal ''''' + @CurGrantee + ''''' on database ''''' + @DbName  + '''''''' + @LineFeed +
                                                [security].[getOnDbSchemaPermissionAssignmentStatement](
                                                     @DbName,
                                                     @CurGrantee,
@@ -322,11 +338,11 @@ BEGIN
                                                     1, -- no dependency check 
                                                     @Debug
                                                 )          
-                            SET @FullObjectName = @PermissionLevel + ' ' + @PermissionName + ' on SCHEMA::' + QUOTENAME(@ObjectName) + ' to ' + QUOTENAME(@CurGrantee)
+                        SET @FullObjectName = @PermissionLevel + ' ' + @PermissionName + ' on SCHEMA::' + QUOTENAME(@ObjectName) + ' to ' + QUOTENAME(@CurGrantee)
                     END 
                     ELSE IF @ObjectClass = 'SCHEMA_OBJECT'
                     BEGIN 
-                        SET @StringToExecute = 'PRINT ''. Commands for permission assignment on object "' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) + ' to ' + QUOTENAME(@CurGrantee) + '" on ' + @DbName + '"' + @LineFeed +
+                        SET @StringToExecute = 'PRINT ''. Commands for permission assignment on object "' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) + ' to ' + QUOTENAME(@CurGrantee) + '" on ' + @DbName + '"''' + @LineFeed +
                                                [security].[getOnUserObjectPermissionAssignmentStatement](
                                                     @DbName,
                                                     @CurGrantee,
@@ -355,24 +371,15 @@ BEGIN
                         RAISERROR('Unsupported %s object class for object permission assignment generation' , 16,0,@ObjectClass)
 
                     
-                        
-                    insert ##SecurityGenerationResults (
-                        ServerName,		
-                        DbName,		
-                        ObjectName,			
-                        OperationType, 	
-                        OperationOrder,
-                        QueryText 		
-                    )
-                    values (
-                        @ServerName,		
-                        @DbName,		
-                        @FullObjectName,
-                        @CurOpName,
-                        @CurOpOrder,
-                        @StringToExecute
-                    )
-
+                    EXEC [security].[SecurityGenHelper_AppendCheck] 
+                        @CheckName   = 'STATEMENT_APPEND', 
+                        @ServerName  = @ServerName, 
+                        @DbName      = @DbName,
+                        @ObjectName  = @FullObjectName,
+                        @CurOpName   = @CurOpName,
+                        @CurOpOrder  = @CurOpOrder,
+                        @Statements  = @StringToExecute                        
+                    
                     -- carry on ...
                     FETCH NEXT 
                     FROM GetGranteePermissions INTO @ObjectClass,@ObjectType,@PermissionLevel,@PermissionName,@SchemaName,@ObjectName,@SubObjectName,@isWithGrantOption,@isActive

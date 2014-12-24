@@ -127,7 +127,7 @@ BEGIN
                 'FROM' + @LineFeed +
                 '    sys.database_principals' + @LineFeed +
                 'WHERE' + @LineFeed +
-                '    QUOTENAME(ROLE_NAME) = @dynamicDeclaration' + @LineFeed + 
+                '    QUOTENAME(name) = @dynamicDeclaration' + @LineFeed + 
                 'AND type = ''R''' + @LineFeed +
                 'IF (@RoleOwner is null ) -- then the schema does not exist ' + @LineFeed  +
                 'BEGIN' + @LineFeed  +                

@@ -216,7 +216,7 @@ BEGIN
                 END 
                                 
                 
-                SET @StringToExecute = 'PRINT ''. Commands for role "' + @CurRole + '" in database "' + @DbName + '"' + @LineFeed +
+                SET @StringToExecute = 'PRINT ''. Commands for role "' + @CurRole + '" in database "' + @DbName + '"''' + @LineFeed +
                                        [security].[getDbRoleCreationStatement](
                                             @DbName,
                                             @CurRole,

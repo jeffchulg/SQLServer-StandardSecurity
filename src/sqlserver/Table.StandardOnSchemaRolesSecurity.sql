@@ -46,6 +46,8 @@
                                     CK_StandardOnSchemaRolesSecurity_PermissionLevel
                                     for it to be more precise : no DENY for group membership                                    
                                     I preferred one constraint instead of 2...
+    --------------------------------------------------------------------------------
+    24/12/2014  Jefferson Elias     Added column PermissionClass which can be 'SERVER','DATABASE' or 'DATABASE_SCHEMA'
   ==================================================================================
 */
 
@@ -59,8 +61,8 @@ BEGIN
         [RoleName] 				[varchar](64) NOT NULL,
         [PrivName] 				[varchar](128) NOT NULL,
         [isRoleMembership] 		[bit] NOT NULL,
+        [PermissionClass]       [varchar](16) DEFAULT 'DATABASE_SCHEMA' not null,
 		[PermissionLevel] 		[varchar](6) DEFAULT 'GRANT' not null,
-        [isDeny] 				[bit] NOT NULL,
         [isActive] 				[bit] NOT NULL,
         [CreationDate] 			[date] NOT NULL,
         [lastmodified] 			[date] NOT NULL
@@ -70,7 +72,7 @@ BEGIN
 END
 ELSE
 BEGIN
-
+    
 	IF EXISTS( 
 	    SELECT 1 
 		FROM  sys.columns 
@@ -122,8 +124,31 @@ BEGIN
 			WHERE Name = 'isDeny' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]')
 		)
 		BEGIN
-			execute sp_executesql 'update security.StandardOnSchemaRolesSecurity set PermissionLevel = ''DENY'' where isDeny = 1'
+			execute sp_executesql N'update security.StandardOnSchemaRolesSecurity set PermissionLevel = ''DENY'' where isDeny = 1'
 		END
+	END    
+    
+    IF EXISTS( 
+        SELECT 1 
+        FROM  sys.columns 
+        WHERE Name = 'isDeny' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]')
+    )
+    BEGIN
+        execute sp_executesql N'alter table security.StandardOnSchemaRolesSecurity DROP COLUMN [isDeny]'
+    END
+    
+    IF NOT EXISTS( 
+	    SELECT 1 
+		FROM  sys.columns 
+        WHERE Name = 'PermissionClass' and Object_ID = Object_ID(N'[security].[StandardOnSchemaRolesSecurity]')
+    )
+	BEGIN
+		PRINT '    Column PermissionClass added to [security].[StandardOnSchemaRolesSecurity].'
+		
+	    execute sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRolesSecurity] add [PermissionClass] [varchar](16) DEFAULT ''DATABASE_SCHEMA'' not null'
+		PRINT '    Column PermissionClass added to [security].[StandardOnSchemaRolesSecurity].'
+		
+		execute sp_executesql N'update security.StandardOnSchemaRolesSecurity set PermissionClass = ''DATABASE'' where PrivName in (''CREATE VIEW'',''CREATE FUNCTION'',''CREATE PROCEDURE'',''CREATE SYNONYM'',''CREATE TABLE'',''CREATE TYPE'')'		
 	END
 END
 GO
@@ -143,6 +168,15 @@ BEGIN
             PRINT '     Constraint [CK_StandardOnSchemaRolesSecurity_PermissionLevel] dropped.'
         END       
     END
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnSchemaRolesSecurity_PermissionClass]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]'))
+BEGIN
+    ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
+        WITH CHECK ADD CONSTRAINT [CK_StandardOnSchemaRolesSecurity_PermissionClass]
+            CHECK (PermissionClass in ('SERVER','DATABASE','DATABASE_SCHEMA'))
+	PRINT '     Constraint [CK_StandardOnSchemaRolesSecurity_PermissionClass] created.'
 END
 GO
 
@@ -293,39 +327,39 @@ PRINT '    Adding default data to [security].[StandardOnSchemaRolesSecurity].'
 
 set nocount on;
 ;with cte_data(
-[RoleName],[PrivName],[isRoleMembership],[isDeny],[isActive],[CreationDate],[lastmodified],[PermissionLevel])
+[RoleName],[PrivName],[isRoleMembership],[PermissionClass],[PermissionLevel],[isActive],[CreationDate],[lastmodified])
 as (
     select * 
     from (
         values
-        ('data_modifier','DELETE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('data_modifier','EXECUTE',0,0,1,'2014-04-23 00:00:00.000','2014-11-26 14:08:40.320','REVOKE'),
-        ('data_modifier','INSERT',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('data_modifier','UPDATE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('data_reader','EXECUTE',0,0,1,'2014-04-23 00:00:00.000','2014-11-26 14:08:48.553','REVOKE'),
-        ('data_reader','SELECT',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('endusers','data_modifier',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('endusers','data_reader',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('endusers','prog_executors',1,0,1,'2014-11-25 00:00:00.000','2014-11-25 00:00:00.000','GRANT'),
-        ('full_access','endusers',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('full_access','managers',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('managers','struct_modifier',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('managers','struct_viewer',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('prog_executors','EXECUTE',0,0,1,'2014-11-25 00:00:00.000','2014-11-25 00:00:00.000','GRANT'),
-        ('responsible','data_modifier',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('responsible','data_reader',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('responsible','managers',1,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','ALTER',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','CREATE FUNCTION',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','CREATE PROCEDURE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','CREATE SYNONYM',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','CREATE TABLE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','CREATE TYPE',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','CREATE VIEW',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_modifier','REFERENCES',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT'),
-        ('struct_viewer','VIEW DEFINITION',0,0,1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000','GRANT')
+        ('data_modifier','DELETE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('data_modifier','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('data_modifier','INSERT',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('data_modifier','UPDATE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('data_reader','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('data_reader','SELECT',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('endusers','data_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('endusers','data_reader',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('endusers','prog_executors',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('full_access','endusers',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('full_access','managers',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('managers','struct_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('managers','struct_viewer',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('prog_executors','EXECUTE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('responsible','data_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('responsible','data_reader',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('responsible','managers',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('struct_modifier','ALTER',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('struct_modifier','CREATE FUNCTION',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
+        ('struct_modifier','CREATE PROCEDURE',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
+        ('struct_modifier','CREATE SYNONYM',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
+        ('struct_modifier','CREATE TABLE',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
+        ('struct_modifier','CREATE TYPE',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
+        ('struct_modifier','CREATE VIEW',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
+        ('struct_modifier','REFERENCES',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('struct_viewer','VIEW DEFINITION',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623')
     ) c (
-        [RoleName],[PrivName],[isRoleMembership],[isDeny],[isActive],[CreationDate],[lastmodified],[PermissionLevel]
+        [RoleName],[PrivName],[isRoleMembership],[PermissionClass],[PermissionLevel],[isActive],[CreationDate],[lastmodified]
     )
 )
 merge [security].[StandardOnSchemaRolesSecurity] as t
@@ -333,10 +367,10 @@ using cte_data as s
 on		1=1 and t.[RoleName] = s.[RoleName] and t.[PrivName] = s.[PrivName]
 when matched then
 	update set
-	[isRoleMembership] = s.[isRoleMembership],[isDeny] = s.[isDeny],[isActive] = s.[isActive],[CreationDate] = s.[CreationDate],[lastmodified] = s.[lastmodified],[PermissionLevel] = s.[PermissionLevel]
+	[isRoleMembership] = s.[isRoleMembership],[PermissionClass] = s.[PermissionClass],[PermissionLevel] = s.[PermissionLevel],[isActive] = s.[isActive],[CreationDate] = s.[CreationDate],[lastmodified] = s.[lastmodified]
 when not matched by target then
-	insert([RoleName],[PrivName],[isRoleMembership],[isDeny],[isActive],[CreationDate],[lastmodified],[PermissionLevel])
-	values(s.[RoleName],s.[PrivName],s.[isRoleMembership],s.[isDeny],s.[isActive],s.[CreationDate],s.[lastmodified],s.[PermissionLevel])
+	insert([RoleName],[PrivName],[isRoleMembership],[PermissionClass],[PermissionLevel],[isActive],[CreationDate],[lastmodified])
+	values(s.[RoleName],s.[PrivName],s.[isRoleMembership],s.[PermissionClass],s.[PermissionLevel],s.[isActive],s.[CreationDate],s.[lastmodified])
 ;
 
 

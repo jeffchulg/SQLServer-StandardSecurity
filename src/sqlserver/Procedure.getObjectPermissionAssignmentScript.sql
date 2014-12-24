@@ -4,6 +4,7 @@
 /*requires Function.getOnUserObjectPermissionAssignmentStatement.sql*/
 /*requires Procedure.CreateTempTables4Generation.sql*/
 /*requires Procedure.SaveSecurityGenerationResult.sql*/
+/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

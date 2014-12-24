@@ -4,6 +4,7 @@
 /*requires Function.getDbUserCreationStatement.sql*/
 /*requires Procedure.CreateTempTables4Generation.sql*/
 /*requires Procedure.SaveSecurityGenerationResult.sql*/
+/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -142,74 +143,18 @@ BEGIN
         
 		BEGIN TRY
 		BEGIN TRANSACTION           
-            SET @CurOpName = 'CHECK_EXPECTED_SERVERNAME'
                 
-            if(@NoDependencyCheckGen = 0 and not exists (select 1 from ##SecurityGenerationResults where ServerName = @ServerName and OperationType = @CurOpName))
+            if(@NoDependencyCheckGen = 0)
             BEGIN     
-                
-                if @Debug = 1
-                BEGIN
-                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Adding Server name check'
-                END                    
-                
-                select @CurOpOrder = OperationOrder 
-                from ##SecurityScriptResultsCommandsOrder 
-                where OperationType = @CurOpName
-
-                insert ##SecurityGenerationResults (
-                    ServerName,		
-                    DbName,			
-                    OperationType, 	
-                    OperationOrder,
-                    QueryText 		
-                )
-                values (
-                    @ServerName,		
-                    null,
-                    @CurOpName,
-                    @CurOpOrder,
-                    'IF (@@SERVERNAME <> ''' + (@ServerName) + '''' +  @LineFeed +
-                    'BEGIN' + @LineFeed +
-                    '    RAISERROR(''Expected @@ServerName : "' + @ServerName + '"'', 16, 0)'  + @LineFeed +
-                    'END' 
-                )
-                SET @CurOpName  = null
-                SET @CurOpOrder = null
-            END
+                EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'SERVER_NAME', @ServerName = @ServerName
+            END     
             
-            SET @CurOpName = 'CHECK_DATABASE_EXISTS'
-            if(@NoDependencyCheckGen = 0 and not exists (select 1 from ##SecurityGenerationResults where ServerName = @ServerName and DbName = @DbName and OperationType = @CurOpName))
+            if(@NoDependencyCheckGen = 0)
             BEGIN     
-                if @Debug = 1
-                BEGIN
-                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Adding database existence check'
-                END                 
-                select @CurOpOrder = OperationOrder 
-                from ##SecurityScriptResultsCommandsOrder 
-                where OperationType = @CurOpName
-
-                insert ##SecurityGenerationResults (
-                    ServerName,		
-                    DbName,			
-                    OperationType, 	
-                    OperationOrder,
-                    QueryText 		
-                )
-                values (
-                    @ServerName,		
-                    @DbName,
-                    @CurOpName,
-                    @CurOpOrder,
-                    'IF NOT EXISTS( SELECT 1 FROM sys.databases where Name =  ''' + (@DbName) + ''')' +  @LineFeed +
-                    'BEGIN' + @LineFeed +
-                    '    RAISERROR(''The Database named : "' + @DbName + '" doesn''t exist on server !'', 16, 0)'  + @LineFeed +
-                    'END' 
-                )
-                SET @CurOpName  = null
-                SET @CurOpOrder = null                    
-            END
-            
-			if(@CurUser is null) 
+                EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'DATABASE_NAME', @ServerName = @ServerName, @DbName = @DbName
+            END     
+                 
+            if(@CurUser is null) 
 			BEGIN	
            		if @Debug = 1 
 				BEGIN
@@ -301,22 +246,15 @@ BEGIN
                 from ##SecurityScriptResultsCommandsOrder 
                 where OperationType = @CurOpName
 
-                insert ##SecurityGenerationResults (
-                    ServerName,	
-                    DbName,	
-                    ObjectName,			
-                    OperationType, 	
-                    OperationOrder,
-                    QueryText 		
-                )
-                values (
-                    @ServerName,		
-                    @DbName,
-                    @CurUser,
-                    @CurOpName,
-                    @CurOpOrder,
-                    @StringToExecute
-                )
+                EXEC [security].[SecurityGenHelper_AppendCheck] 
+                    @CheckName   = 'STATEMENT_APPEND', 
+                    @ServerName  = @ServerName, 
+                    @DbName      = @DbName,
+                    @ObjectName  = @CurUser,
+                    @CurOpName   = @CurOpName,
+                    @CurOpOrder  = @CurOpOrder,
+                    @Statements  = @StringToExecute
+                                
                 SET @CurOpName  = null
                 SET @CurOpOrder = null
             END 

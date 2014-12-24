@@ -13,6 +13,7 @@
 /*requires Procedure.getDbRolesCreationScript.sql*/
 /*requires Procedure.getDbRolesAssignmentScript.sql*/
 /*requires Procedure.getLogin2DbUserMappingsScript.sql*/
+/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -187,37 +188,9 @@ BEGIN
             
             SET @CurOpName = 'CHECK_EXPECTED_SERVERNAME'
             
-            if(@NoServerNameCheckGen = 0 and not exists (select 1 from ##SecurityGenerationResults where ServerName = @ServerName and OperationType = @CurOpName))
+            if(@NoServerNameCheckGen = 0)
             BEGIN     
-                
-                if @Debug = 1
-                BEGIN
-                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Adding Server name check'
-                END                    
-                
-                select @CurOpOrder = OperationOrder 
-                from ##SecurityScriptResultsCommandsOrder 
-                where OperationType = @CurOpName
-
-                insert ##SecurityGenerationResults (
-                    ServerName,		
-                    DbName,			
-                    OperationType, 	
-                    OperationOrder,
-                    QueryText 		
-                )
-                values (
-                    @ServerName,		
-                    null,
-                    @CurOpName,
-                    @CurOpOrder,
-                    'IF (@@SERVERNAME <> ''' + (@ServerName) + '''' +  @LineFeed +
-                    'BEGIN' + @LineFeed +
-                    '    RAISERROR(''Expected @@ServerName : "' + @ServerName + '"'', 16, 0)'  + @LineFeed +
-                    'END' 
-                )
-                SET @CurOpName  = null
-                SET @CurOpOrder = null
+                EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'SERVER_NAME', @ServerName = @ServerName
             END            
             
             if @NoLoginGen = 0 
@@ -286,39 +259,7 @@ BEGIN
                     PRINT ''
 				END	 
                                
-                SET @CurOpName = 'CHECK_DATABASE_EXISTS'
-                
-                if(not exists (select 1 from ##SecurityGenerationResults where ServerName = @ServerName and DbName = @CurDbName and OperationType = @CurOpName))
-                BEGIN   
-                    if @Debug = 1
-                    BEGIN
-                        PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG -     > Adding database existence check'
-                    END                 
-                    select @CurOpOrder = OperationOrder 
-                    from ##SecurityScriptResultsCommandsOrder 
-                    where OperationType = @CurOpName
-
-                    insert ##SecurityGenerationResults (
-                        ServerName,		
-                        DbName,			
-                        OperationType, 	
-                        OperationOrder,
-                        QueryText 		
-                    )
-                    values (
-                        @ServerName,		
-                        @CurDbName,
-                        @CurOpName,
-                        @CurOpOrder,
-                        'IF NOT EXISTS( SELECT 1 FROM sys.databases where Name =  ''' + (@CurDbName) + ''')' +  @LineFeed +
-                        'BEGIN' + @LineFeed +
-                        '    RAISERROR(''The Database named : "' + @CurDbName + '" doesn''t exist on server !'', 16, 0)'  + @LineFeed +
-                        'END' 
-                    )
-                    SET @CurOpName  = null
-                    SET @CurOpOrder = null                    
-                END                
-                                               
+                EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'DATABASE_NAME', @ServerName = @ServerName, @DbName = @CurDbName
                 
                 if @Debug = 1
 				BEGIN

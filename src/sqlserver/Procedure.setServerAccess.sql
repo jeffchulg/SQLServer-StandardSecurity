@@ -1,6 +1,5 @@
 /*requires Schema.Security.sql*/
 /*requires Table.Contacts.sql*/
-/*requires Table.SQLMappings.sql*/
 /*requires Table.SQLlogins.sql*/
 
 
@@ -26,9 +25,11 @@ ALTER PROCEDURE [security].[setServerAccess] (
     @ContactDepartment  VARCHAR(512) = NULL,
     @ContactsJob        VARCHAR(256) = NULL,
     @ContactName        VARCHAR(256) = NULL,    
+    @ContactLogin       VARCHAR(128) = NULL,    
     @exactMatch         BIT          = 1,
     @isAllow            BIT          = 1,
     @isActive           BIT          = 1,
+    @_noTmpTblDrop      BIT          = 0,
 	@Debug		 		BIT		  	 = 0
 )
 AS
@@ -44,11 +45,13 @@ AS
         @ContactDepartment  name of the department for lookup
         @ContactsJob        job title for which we need to give access 
         @ContactName        name of the contact 
+        @ContactLogin       login defined in the inventory for the contact 
         @exactMatch         If set to 1, use "=" for lookups
                             If set to 0, use "like" for lookups
         @isAllow            If set to 1, it adds the permission
                             TODO If set to 0, it marks the permission as to be revoked
         @isActive           If set to 1, the access is active
+        
         @Debug              If set to 1, we are in debug mode
 	 
   
@@ -79,22 +82,40 @@ AS
    COMPANY: CHU Liege
    ==================================================================================
    Revision History
-  
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     24/12/2014  JEL         Version 0.0.1
-     ----------------------------------------------------------------------------------
+   
+    Date        Name                Description
+    ==========  ================    ================================================
+    24/12/2014  Jefferson Elias     VERSION 0.1.0
+    --------------------------------------------------------------------------------     
+    26/12/2014  Jefferson Elias     Added parameter @ContactLogin for a lookup on 
+                                    sql login in table Contacts 
+                                    Added parameter for keeping #logins table
+                                    for reuse
+                                    Added parameter sanitization
+                                    VERSION 0.1.1
+    --------------------------------------------------------------------------------     
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.0.1';
+    DECLARE @versionNb        	varchar(16) = '0.1.1';
     DECLARE @tsql             	nvarchar(max);
     DECLARE @LineFeed 		    VARCHAR(10);
 	
+        
+    /* 
+     * Sanitize input
+     */
+    
     SELECT 
-		@LineFeed 			= CHAR(13) + CHAR(10)
+		@LineFeed 			= CHAR(13) + CHAR(10),
+        @exactMatch         = isnull(@exactMatch,1),
+        @ServerName         = case when len(@ServerName)        = 0 THEN NULL else @ServerName END ,
+        @ContactDepartment  = case when len(@ContactDepartment) = 0 THEN NULL else @ContactDepartment END ,
+        @ContactsJob        = case when len(@ContactsJob)       = 0 THEN NULL else @ContactsJob END ,
+        @ContactName        = case when len(@ContactName)       = 0 THEN NULL else @ContactName END ,
+        @ContactLogin       = case when len(@ContactLogin)      = 0 THEN NULL else @ContactLogin END 
     
 	/*
 		Checking parameters
@@ -104,7 +125,7 @@ BEGIN
 	BEGIN
 		RAISERROR('No value set for @ServerName !',10,1)
 	END		
-	if(@ContactDepartment is null and @ContactsJob is null and @ContactName is null)
+	if(@ContactLogin is null and @ContactDepartment is null and @ContactsJob is null and @ContactName is null)
 	BEGIN
 		RAISERROR('No way to process : no parameter isn''t null !',10,1)
 	END		
@@ -120,18 +141,24 @@ BEGIN
             DROP TABLE #logins ;
         
         CREATE table #logins ( ServerName varchar(512), name varchar(128), isActive BIT)
-        
-
-        
+               
         SET @tsql = 'insert into #logins' + @LineFeed + 
                     '    SELECT @ServerName, [SQLLogin], [isActive]' + @LineFeed +
                     '    from [security].[Contacts]' + @LineFeed +
                     '    where ' + @LineFeed +
-                    '        [Department] ' + @LookupOperator + ' isnull(@curDep,[Department])' + @LineFeed +
+                    '        [SQLLogin]   ' + @LookupOperator + ' isnull(@curLogin,[SQLLogin])' + @LineFeed +
+                    '    and [Department] ' + @LookupOperator + ' isnull(@curDep,[Department])' + @LineFeed +
                     '    and [Job]        ' + @LookupOperator + ' isnull(@curJob,[Job])' + @LineFeed +
                     '    and [Name]       ' + @LookupOperator + ' isnull(@curName,[Name])' + @LineFeed                 
         
-        exec sp_executesql @tsql ,N'@ServerName varchar(512),@curDep VARCHAR(512),@CurJob VARCHAR(256),@CurName VARCHAR(256)', @ServerName = @ServerName , @CurDep = @ContactDepartment, @CurJob = @ContactsJob , @CurName = @ContactName
+        exec sp_executesql 
+                @tsql ,
+                N'@ServerName varchar(512),@curLogin VARCHAR(128) = NULL,@curDep VARCHAR(512),@CurJob VARCHAR(256),@CurName VARCHAR(256)', 
+                @ServerName = @ServerName , 
+                @curLogin = @ContactLogin,
+                @CurDep = @ContactDepartment, 
+                @CurJob = @ContactsJob , 
+                @CurName = @ContactName
         
         if @isAllow = 1 
         BEGIN 
@@ -157,6 +184,10 @@ BEGIN
         END 
         ELSE 
             RAISERROR('Not yet implemented ! ',16,0)
+        
+        
+        if @_noTmpTblDrop = 0 and OBJECT_ID('#logins' ) is not null
+            DROP TABLE #logins ;
 	END TRY
 	
 	BEGIN CATCH
@@ -168,15 +199,9 @@ BEGIN
         ,ERROR_LINE() AS ErrorLine
         ,ERROR_MESSAGE() AS ErrorMessage;
 		
-        if OBJECT_ID('#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('#logins' ) is not null
             DROP TABLE #logins ;
-        
-		if CURSOR_STATUS('local','getServerDatabases') >= 0 
-		begin
-			close getServerDatabases
-			deallocate getServerDatabases 
-		end
-		
+       
 	END CATCH
 END
 GO

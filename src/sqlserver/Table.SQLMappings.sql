@@ -28,6 +28,8 @@
     Date        Name                Description
     ==========  ================    ================================================
     24/12/2014  Jefferson Elias     Version 0.1.0
+    ----------------------------------------------------------------------------------    
+    26/12/2014  Jefferson Elias     Added column "Reason" for documentation purpose
   ==================================================================================
 */
 
@@ -44,6 +46,7 @@ BEGIN
         [DefaultSchema]   [VARCHAR](64) 	NOT NULL,
 		[isDefaultDb]	  [BIT]				NOT NULL,
 		[isLocked]	  	  [BIT]				NOT NULL,
+        [Reason]          VARCHAR(MAX),
         [CreationDate]    datetime 			NOT NULL,
         [lastmodified]    datetime 			NOT NULL
     )
@@ -57,6 +60,26 @@ BEGIN
 		RETURN
 	END
 END
+ELSE 
+BEGIN 
+    DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('[Reason]')
+    DECLARE @ColumnDef      NVARCHAR(MAX)   = '[VARCHAR](MAX)'
+    DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[SQLMappings]'
+    DECLARE @tsql           NVARCHAR(max)
+
+    IF NOT EXISTS( 
+        SELECT 1 
+        FROM  sys.columns 
+        WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) and system_type_id = 40
+    )
+    BEGIN
+        SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
+        execute sp_executesql @tsql
+        
+        PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
+    END
+
+END 
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_SQLMappings_SQLLogins]') AND parent_object_id = OBJECT_ID(N'[security].[SQLMappings]'))

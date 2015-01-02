@@ -29,6 +29,10 @@
     ==========  ================    ================================================
     24/12/2014  Jefferson Elias     Version 0.1.0
 	--------------------------------------------------------------------------------
+	02/01/2015	Jefferson Elias		Added columns isGeneratedByCollection and LastCollectionDate
+									for automatic collection and contact creation.
+									Version 0.1.1
+    --------------------------------------------------------------------------------	
   ==================================================================================
 */
 
@@ -38,19 +42,59 @@ PRINT 'Table [security].[DatabaseSchemas] Creation'
 IF  NOT EXISTS (SELECT * FROM sys.tables WHERE object_id = OBJECT_ID(N'[security].[DatabaseSchemas]'))
 BEGIN
 	CREATE TABLE [security].[DatabaseSchemas](
-		[ServerName]    [varchar](256) NOT NULL,
-		[DbName]        [varchar](64) NOT NULL,
-		[SchemaName]    [varchar](64) NOT NULL,
-		[Description]   [varchar](2048),
-		[isActive]      [bit] NOT NULL,
-		[CreationDate]  [datetime] NOT NULL,
-		[lastmodified]  [datetime] NOT NULL
+		[ServerName]    			[varchar](256) NOT NULL,
+		[DbName]        			[varchar](64) NOT NULL,
+		[SchemaName]    			[varchar](64) NOT NULL,
+		[Description]   			[varchar](2048),
+		[isActive]      			[bit] NOT NULL,
+		[CreationDate]  			[datetime] NOT NULL,
+		[lastmodified]  			[datetime] NOT NULL,
+		[isGeneratedByCollection] 	[BIT] DEFAULT 0 NOT NULL,
+		[LastCollectionDate] 		[DATETIME]			
 	) ON [PRIMARY]
 	
 	PRINT '    Table [security].[DatabaseSchemas] created.'
 
 END
+ELSE
+BEGIN 
 
+	DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('isGeneratedByCollection')
+	DECLARE @ColumnDef      NVARCHAR(MAX)   = '[BIT] DEFAULT 0 NOT NULL'
+	DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[DatabaseSchemas]'
+	DECLARE @tsql           NVARCHAR(max)
+
+	IF NOT EXISTS( 
+		SELECT 1 
+		FROM  sys.columns 
+		WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) and system_type_id = 40
+	)
+	BEGIN
+		SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
+		execute sp_executesql @tsql
+		
+		PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
+	END
+	
+	SELECT 
+		@ColumnName = QUOTENAME('LastCollectionDate'),
+		@ColumnDef  = '[DATETIME]'
+	
+	IF NOT EXISTS( 
+		SELECT 1 
+		FROM  sys.columns 
+		WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) and system_type_id = 40
+	)
+	BEGIN
+		SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
+		execute sp_executesql @tsql
+		
+		PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
+	END
+
+
+END
+GO
 
 IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabaseSchemas_CreationDate]') AND type = 'D')
 BEGIN

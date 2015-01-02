@@ -38,6 +38,7 @@ use Fcntl;
 use File::Spec::Functions qw( canonpath );
 use Getopt::Long qw(:config no_ignore_case bundling);
 use File::Slurp;
+use Data::Dumper;
 
 #===============================================================================
 # User parameters
@@ -47,11 +48,20 @@ my $DEBUG = 0;
 my %params = (
 	sqltemplates => [
 		{
-			file => canonpath "./ETL-LoginsAndContacts.tpl.sql",
-			tables => (
+			file 	=> canonpath ("./ETL-LoginsAndContacts.tpl.sql"),
+			tables 	=> [
 				"Logins",
 				"Contacts"
-			)
+			],
+			ignore 	=> 'N'
+		}
+		,
+		{
+			file 	=> canonpath ("./ETL-DatabaseSchemas.tpl.sql"),
+			tables 	=> [
+				"DatabaseSchema"
+			],
+			ignore 	=> 'N'
 		}
 	],
 	dbParams => {
@@ -171,7 +181,7 @@ sub perform_action {
 			last;
 		}
 		else {
-			Info "Connection to database " . $dbDesc . "established.";
+			Info "Connection to database " . $dbDesc . " established.";
 		}
 	}
 	
@@ -201,24 +211,37 @@ sub perform_action {
 	my $dbhTgt 			= $params{dbParams}{targetDb}{dbh};
 	my $dbhInvntory 	= $params{dbParams}{inventoryDb}{dbh};
 	
+	Info "Starting security collection ..." ;
+	
 	foreach my $tpl (@sqltemplates) {
-		Debug "Taking care of template " . $tpl->{file} , 2 ;
+		if(defined($tpl->{ignore}) && ($tpl->{ignore} eq 'Y' ||$tpl->{ignore} eq 'y')) {
+			MyWarn "Skipping template " . $tpl->{file} , 2 ;
+			next;
+		}
+		Info "Taking care of template " . $tpl->{file} , 2 ;
 		my $fileContent = read_file($tpl->{file});
 		
 		my $inventoryServerName = $params{dbParams}{inventoryDb}{Host} ;
+		my $tgtDbName = $params{dbParams}{targetDb}{DbName};
 		my $debugStr = 0; 
 		
 		if(!$inventoryServerName) {
-			$inventoryServerName = "''";
+			$inventoryServerName = "";
+		}
+		
+		if(!$tgtDbName) {
+			$tgtDbName = "";
 		}
 	
 		if($DEBUG) {
 			$debugStr = 1;
 		}
 		
-		my %replacements = ("<INVENTORY_SERVERNAME>" => $inventoryServerName, "<DEBUG>" => $debugStr);
+		my %replacements = ("<INVENTORY_SERVERNAME>" => $inventoryServerName, "<ANALYSIS_DBNAME>" => $tgtDbName ,"<DEBUG>" => $debugStr);
 		$fileContent =~ s/(@{[join "|", keys %replacements]})/$replacements{$1}/g;
-		
+		# if ($DEBUG = 1) {
+			# Debug "----------------------------\n" . $fileContent . "\n-------------------------------\n";
+		# }
 		my $sth ;
 		eval {
 			$sth = $dbhTgt->prepare($fileContent);
@@ -335,7 +358,7 @@ sub executeMultipleStatements {
 	# characters the split seems to be adding
 	my @tokens     = split $delimiter, $sql;
 	#only keep statements that are not blank
-	my @statements = grep { /\S/ } @tokens;
+	@statements = grep { /\S/ } @tokens;
 
 	Debug "After extraction, there are " . $#statements . " statements to execute.\nThe query string have been cut using '$delimiter' delimiter.";
 	

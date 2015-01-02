@@ -36,7 +36,7 @@ SET NOCOUNT ON;
 
 -- global variables
 DECLARE @InventoryServerName VARCHAR(256) = '<INVENTORY_SERVERNAME>' 
-DECLARE @Debug		BIT				 	  = '<DEBUG>'
+DECLARE @Debug		BIT				 	  = <DEBUG>
 
 -- handling global variable NULL value
 if @Debug is null
@@ -78,9 +78,9 @@ DECLARE getlogins CURSOR LOCAL FOR
 	where type in ('S','U');
 
 -- will containt MERGE statement for [security].[Contacts] table provisionning 
-DECLARE @tsql_contacts  VARCHAR(MAX) ;
+DECLARE @tsql_contacts  NVARCHAR(MAX) ;
 -- will containt MERGE statement for [security].[SQLLogins] table provisionning 
-DECLARE @tsql_sqllogins VARCHAR(MAX) ;
+DECLARE @tsql_sqllogins NVARCHAR(MAX) ;
 DECLARE @LineFeed		VARCHAR(10);
 
 
@@ -174,8 +174,10 @@ SET @tsql_contacts +=   @LineFeed + @LineFeed +
 						'WHEN NOT MATCHED BY TARGET THEN' + @LineFeed + 
 						'    INSERT (SQLLogin,Name,Job,isActive,Department,AuthMode,isGeneratedByCollection,LastCollectionDate)' + @LineFeed +
 						'    VALUES (i.SQLLogin,i.Name,i.Job,1,i.Department, i.AuthMode,1,GETDATE())'  + @LineFeed +
+/*
 						'WHEN NOT MATCHED BY SOURCE THEN ' + @LineFeed + 
 						'    UPDATE SET LastCollectionDate = NULL' + @LineFeed +
+*/
 						';'    
 
 SET @tsql_sqllogins +=  @LineFeed + @LineFeed +
@@ -189,30 +191,40 @@ SET @tsql_sqllogins +=  @LineFeed + @LineFeed +
 						'WHEN NOT MATCHED BY TARGET THEN' + @LineFeed + 
 						'    INSERT (ServerName,SQLLogin,isActive,isGeneratedByCollection,LastCollectionDate)' + @LineFeed +
 						'    VALUES (i.ServerName,i.SQLLogin,i.isActive,1,GETDATE())'  + @LineFeed +
+/*
 						'WHEN NOT MATCHED BY SOURCE THEN ' + @LineFeed + 
 						'    UPDATE SET LastCollectionDate = NULL' + @LineFeed +
+*/
 						';'    
 						
-if @InventoryServerName = @@SERVERNAME and exists (SELECT OBJECT_ID('[security].[Contacts]')) and exists (SELECT OBJECT_ID('[security].[SQLLogins]'))
-BEGIN 
-	--PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Running commands as local server it is the security inventory '
-	exec sp_executesql @tsql_contacts 
-	exec sp_executesql @tsql_sqllogins 
-END 
-ELSE
-BEGIN 
-	SET @tsql_contacts = 	/*'-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Those commands are expected to be run on server : ' + @InventoryServerName + @LineFeed +
-							'-- ------ Contact MERGE Statement -------' + @LineFeed +
-							'-- --------------------------------------' + @LineFeed +*/
-							@tsql_contacts + @LineFeed + 
-							'GO' + @LineFeed;
-	
-	SET @tsql_sqllogins = 	/*'-- ------ SQLLogins MERGE Statement -----' + @LineFeed + 
-							'-- --------------------------------------' + @LineFeed +*/
-							@tsql_sqllogins + @LineFeed + 
-							'GO' + @LineFeed;
-	
-	SELECT 'CONTACTS' , @tsql_contacts 
-	union all
-	SELECT 'SQLLOGINS', @tsql_sqllogins
-END 
+SET @tsql_contacts = 	/*'-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Those commands are expected to be run on server : ' + @InventoryServerName + @LineFeed +
+						'-- ------ Contact MERGE Statement -------' + @LineFeed +
+						'-- --------------------------------------' + @LineFeed +*/
+						@tsql_contacts + @LineFeed + 
+						'GO' + @LineFeed;
+
+SET @tsql_sqllogins = 	/*'-- ------ SQLLogins MERGE Statement -----' + @LineFeed + 
+						'-- --------------------------------------' + @LineFeed +*/
+						@tsql_sqllogins + @LineFeed + 
+						'GO' + @LineFeed;
+
+DECLARE @tsql_RemoveOldData NVARCHAR(MAX) 
+
+SET @tsql_RemoveOldData = 'update [security].[SQLLogins]' + @LineFeed +
+						  'set LastCollectionDate = NULL' + @LineFeed +
+						  'where ServerName = ''' + @@SERVERNAME  + ''''
+
+						
+SELECT 'SQLLOGINS',@tsql_RemoveOldData
+UNION ALL 						
+SELECT 'CONTACTS' , @tsql_contacts 
+union all
+SELECT 'SQLLOGINS', @tsql_sqllogins
+union all
+SELECT null, 	'if (OBJECT_ID(''tempdb..#tmplogins'') is not null)' + @LineFeed +
+				'BEGIN' + @LineFeed +
+				'    DROP TABLE #tmplogins'  + @LineFeed +
+				'END;' + @LineFeed +
+				'GO' + @LineFeed 	
+
+				

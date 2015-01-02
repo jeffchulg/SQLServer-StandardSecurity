@@ -47,17 +47,17 @@ END
 if @InventoryServerName is null
 BEGIN
 	SET @InventoryServerName = @@SERVERNAME
-	IF @Debug = 1
+/*	IF @Debug = 1
 	BEGIN
 		PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Server name set to ' + @InventoryServerName  
-	END
+	END*/
 END
-
+/*
 if @Debug = 1
 BEGIN
 	PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Preparing the extraction'
 END
-
+*/
 -- now, let's get logins defined on @InventoryServerName
 
 DECLARE getlogins CURSOR LOCAL FOR
@@ -97,8 +97,30 @@ DECLARE @Department VARCHAR(512)
 DECLARE @isActive   BIT 
 DECLARE @AuthMode   VARCHAR(8)
 
-SET @tsql_contacts  = 'WITH cte_logins AS (' + @LineFeed 
-SET @tsql_sqllogins = @tsql_contacts
+SET @tsql_contacts  = 	'if (OBJECT_ID(''tempdb..#tmplogins'') is not null)' + @LineFeed +
+						'BEGIN' + @LineFeed +
+						'    DROP TABLE #tmplogins'  + @LineFeed +
+						'END;' + @LineFeed +
+						'GO' + @LineFeed +
+						'CREATE TABLE #tmplogins (' + @LineFeed +
+						'    SQLLogin    VARCHAR(64) NOT NULL,' + @LineFeed ;
+						
+SET @tsql_sqllogins = 	@tsql_contacts + 
+						'    ServerName  VARCHAR(256) DEFAULT @@ServerName,' + @LineFeed +
+						'    isActive    BIT' + @LineFeed +
+						');' + @LineFeed +
+						'GO' + @LineFeed +
+						'INSERT #tmplogins' + @LineFeed +
+						'VALUES' + @LineFeed 
+						
+SET @tsql_contacts  +=  '    Name        VARCHAR(256),' + @LineFeed +
+						'    Department  VARCHAR(256),' + @LineFeed +
+						'    Job         VARCHAR(256),' + @LineFeed + 
+						'    AuthMode    VARCHAR(16)'  + @LineFeed + 
+						');' + @LineFeed +
+						'GO' + @LineFeed +
+						'INSERT #tmplogins' + @LineFeed +
+						'VALUES' + @LineFeed 						
 
 
 DECLARE @iterNb BIGINT = 0
@@ -112,21 +134,23 @@ BEGIN
 	SET @iterNb = @iterNb + 1
 	if @iterNb > 1 
 	BEGIN 
-		SET @tsql_contacts  += 'UNION ALL ' 
-		SET @tsql_sqllogins += 'UNION ALL ' 
+		SET @tsql_contacts  += ',' + @LineFeed  
+		SET @tsql_sqllogins += ',' + @LineFeed  
 	END 
 	
-	SET @tsql_contacts += 'SELECT' + @LineFeed + 
-						  '    ''' + @LoginName + ''' as SQLLogin,' + @LineFeed + 
-						  '    ''' + @Name + ''' as [Name],' + @LineFeed +
-						  '    ''' + @Department + ''' as [Department],' + @LineFeed +
-						  '    ''' + @Job + ''' as [Job],' + @LineFeed +					
-						  '    ''' + @AuthMode + ''' as [AuthMode]' + @LineFeed 
+	SET @tsql_contacts += '    (' + @LineFeed + 
+						  '        ''' + @LoginName + ''' /*as SQLLogin*/,' + @LineFeed + 
+						  '        ''' + @Name + ''' /*as [Name]*/,' + @LineFeed +
+						  '        ''' + @Department + ''' /*as [Department]*/,' + @LineFeed +
+						  '        ''' + @Job + ''' /*as [Job]*/,' + @LineFeed +					
+						  '        ''' + @AuthMode + ''' /*as [AuthMode]*/' + @LineFeed  +
+						  '    )'
 						  
-	SET @tsql_sqllogins +=  'SELECT' + @LineFeed +
-							'    ''' + @LoginName + ''' as SQLLogin,' + @LineFeed +
-							'    @@SERVERNAME as ServerName,' + @LineFeed + 
-							CAST(@isActive AS VARCHAR) + ' as [isActive],' + @LineFeed
+	SET @tsql_sqllogins +=  '    (' + @LineFeed +
+							'        ''' + @LoginName + ''' /*as SQLLogin*/,' + @LineFeed +
+							'        ''' + @@SERVERNAME + ''' /*as ServerName*/,' + @LineFeed + 
+							'        ' + CAST(@isActive AS VARCHAR) + ' /*as [isActive]*/' + @LineFeed + 
+							'    )'
 	-- carry on
 	fetch getlogins
 	into @LoginName, @Name,@Job,@isActive,@Department,@AuthMode
@@ -140,9 +164,9 @@ BEGIN
 	return;
 END
 
-SET @tsql_contacts +=   ')' + @LineFeed +
+SET @tsql_contacts +=   @LineFeed + @LineFeed +
                         'MERGE [security].[contacts] d' + @LineFeed +
-						'USING cte_logins i' + @LineFeed +
+						'USING (select * from #tmplogins) i' + @LineFeed +
 						'ON' + @LineFeed +
 						'    d.SqlLogin = i.SQLLogin' + @LineFeed +
 						'WHEN MATCHED THEN' + @LineFeed + 
@@ -150,23 +174,45 @@ SET @tsql_contacts +=   ')' + @LineFeed +
 						'WHEN NOT MATCHED BY TARGET THEN' + @LineFeed + 
 						'    INSERT (SQLLogin,Name,Job,isActive,Department,AuthMode,isGeneratedByCollection,LastCollectionDate)' + @LineFeed +
 						'    VALUES (i.SQLLogin,i.Name,i.Job,1,i.Department, i.AuthMode,1,GETDATE())'  + @LineFeed +
+						'WHEN NOT MATCHED BY SOURCE THEN ' + @LineFeed + 
+						'    UPDATE SET LastCollectionDate = NULL' + @LineFeed +
 						';'    
 
+SET @tsql_sqllogins +=  @LineFeed + @LineFeed +
+                        'MERGE [security].[SqlLogins] d' + @LineFeed +
+						'USING (select * from #tmplogins) i' + @LineFeed +
+						'ON' + @LineFeed +
+						'    d.ServerName = i.ServerName' + @LineFeed +
+						'AND d.SqlLogin = i.SQLLogin' + @LineFeed +
+						'WHEN MATCHED THEN' + @LineFeed + 
+						'    UPDATE SET LastCollectionDate = GETDATE()' + @LineFeed +
+						'WHEN NOT MATCHED BY TARGET THEN' + @LineFeed + 
+						'    INSERT (ServerName,SQLLogin,isActive,isGeneratedByCollection,LastCollectionDate)' + @LineFeed +
+						'    VALUES (i.ServerName,i.SQLLogin,i.isActive,1,GETDATE())'  + @LineFeed +
+						'WHEN NOT MATCHED BY SOURCE THEN ' + @LineFeed + 
+						'    UPDATE SET LastCollectionDate = NULL' + @LineFeed +
+						';'    
+						
 if @InventoryServerName = @@SERVERNAME and exists (SELECT OBJECT_ID('[security].[Contacts]')) and exists (SELECT OBJECT_ID('[security].[SQLLogins]'))
 BEGIN 
-	PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Running commands as local server it is the security inventory '
-	
+	--PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Running commands as local server it is the security inventory '
 	exec sp_executesql @tsql_contacts 
+	exec sp_executesql @tsql_sqllogins 
 END 
 ELSE
 BEGIN 
-	PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Those commands are expected to be run on server : ' + @InventoryServerName
-	PRINT ''
-	PRINT '-- ------ Contact MERGE Statement -------'
-	PRINT '-- --------------------------------------'
-	SELECT @tsql_contacts
+	SET @tsql_contacts = 	/*'-- ' + CONVERT(VARCHAR,GETDATE()) + ' - INFO - Those commands are expected to be run on server : ' + @InventoryServerName + @LineFeed +
+							'-- ------ Contact MERGE Statement -------' + @LineFeed +
+							'-- --------------------------------------' + @LineFeed +*/
+							@tsql_contacts + @LineFeed + 
+							'GO' + @LineFeed;
 	
-	PRINT '-- ------ SQLLogins MERGE Statement -----'
-	PRINT '-- --------------------------------------'
-	SELECT @tsql_sqllogins
+	SET @tsql_sqllogins = 	/*'-- ------ SQLLogins MERGE Statement -----' + @LineFeed + 
+							'-- --------------------------------------' + @LineFeed +*/
+							@tsql_sqllogins + @LineFeed + 
+							'GO' + @LineFeed;
+	
+	SELECT 'CONTACTS' , @tsql_contacts 
+	union all
+	SELECT 'SQLLOGINS', @tsql_sqllogins
 END 

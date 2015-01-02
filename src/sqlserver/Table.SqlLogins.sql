@@ -37,15 +37,52 @@ PRINT 'Table [security].[SQLlogins] Creation'
 IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[SQLlogins]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [security].[SQLlogins] (
-        [ServerName]      [VARCHAR](256) NOT NULL,
-        [SqlLogin]        [VARCHAR](256) NOT NULL,
-		[isActive]	      BIT		NOT NULL,
-        [CreationDate]    datetime NOT NULL,
-        [lastmodified]    datetime NOT NULL
+        [ServerName]      			[VARCHAR](256) NOT NULL,
+        [SqlLogin]        			[VARCHAR](256) NOT NULL,
+		[isActive]	      			BIT		NOT NULL,
+        [CreationDate]    			datetime NOT NULL,
+        [lastmodified]    			datetime NOT NULL,
+		[isGeneratedByCollection] 	[BIT] DEFAULT 0 NOT NULL,
+		[LastCollectionDate] 		[DATETIME]		
     )
     ON [PRIMARY]
 	PRINT '   Table [SQLlogins] created.'
 END
+ELSE
+
+	DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('isGeneratedByCollection')
+	DECLARE @ColumnDef      NVARCHAR(MAX)   = '[BIT] DEFAULT 0 NOT NULL'
+	DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[SQLlogins]'
+	DECLARE @tsql           NVARCHAR(max)
+
+	IF NOT EXISTS( 
+		SELECT 1 
+		FROM  sys.columns 
+		WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) and system_type_id = 40
+	)
+	BEGIN
+		SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
+		execute sp_executesql @tsql
+		
+		PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
+	END
+	
+	SELECT 
+		@ColumnName = QUOTENAME('LastCollectionDate'),
+		@ColumnDef  = '[DATETIME]'
+	
+	IF NOT EXISTS( 
+		SELECT 1 
+		FROM  sys.columns 
+		WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) and system_type_id = 40
+	)
+	BEGIN
+		SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
+		execute sp_executesql @tsql
+		
+		PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
+	END
+
 GO
 
 IF (OBJECTPROPERTY( OBJECT_ID( '[security].[SQLlogins]' ), 'TableHasPrimaryKey' ) <> 1)

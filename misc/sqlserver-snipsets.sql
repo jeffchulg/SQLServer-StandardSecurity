@@ -23,7 +23,7 @@ DECLARE @ColumnDef      NVARCHAR(MAX)   = 'datetime not null'
 DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[ApplicationLog]'
 DECLARE @tsql           NVARCHAR(max)
 
-IF EXISTS( 
+IF NOT EXISTS( 
     SELECT 1 
     FROM  sys.columns 
     WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) and system_type_id = 40

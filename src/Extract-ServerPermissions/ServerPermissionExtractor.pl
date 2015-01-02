@@ -242,7 +242,7 @@ sub perform_action {
 		# if ($DEBUG = 1) {
 			# Debug "----------------------------\n" . $fileContent . "\n-------------------------------\n";
 		# }
-		my $sth ;
+		my $sth ; 
 		eval {
 			$sth = $dbhTgt->prepare($fileContent);
 			$sth->execute();

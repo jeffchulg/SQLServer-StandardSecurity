@@ -9971,8 +9971,12 @@ BEGIN
 				@OutputTableName 	    = @OutputTableName ,
 				@VersionNumber		 	= @versionNb,
 				@Debug		 		    = @Debug
-             
-            if @DisplayResult = 1 and @OutputType = 'TABLE'
+            
+			if @DisplayResult = 0 
+			BEGIN 
+				set @DisplayResult = @DisplayResult
+			END 
+            ELSE if @DisplayResult = 1 and @OutputType = 'TABLE'
             BEGIN 
                 SELECT * 
                 from ##SecurityGenerationResults

@@ -48,7 +48,7 @@ BEGIN
 	ActualOwner		VARCHAR(128) NULL,
 	Collation		VARCHAR(128) NULL,
 	RecoveryModel	VARCHAR(16) NULL,
-	CompatLevel		TINYINT NULL,
+	CompatLevel		TINYINT NULL
 */
 	
 	IF @@ERROR = 0

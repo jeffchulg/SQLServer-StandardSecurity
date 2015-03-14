@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.StandardOnDatabaseRoles.sql*/
+/*requires Table.security.StandardOnDatabaseRoles.sql*/
 
 /**
   ==================================================================================

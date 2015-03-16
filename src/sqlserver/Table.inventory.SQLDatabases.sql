@@ -1,4 +1,6 @@
+
 /*requires Schema.inventory.sql*/
+/*requires Table.inventory.SQLInstances.sql*/
 
 /**
   ==================================================================================
@@ -99,9 +101,9 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_SQLDatabases_RecoveryModel]') AND parent_object_id = OBJECT_ID(N'[security].[SQLDatabases]'))
+IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[inventory].[CK_SQLDatabases_RecoveryModel]') AND parent_object_id = OBJECT_ID(N'[inventory].[SQLDatabases]'))
 BEGIN
-    ALTER TABLE [security].[SQLDatabases]
+    ALTER TABLE [inventory].[SQLDatabases]
         WITH CHECK ADD CONSTRAINT [CK_SQLDatabases_RecoveryModel]
             CHECK (([RecoveryModel] in ('SIMPLE','BULK_LOGGED','FULL')))
     PRINT '     Constraint [CK_SQLDatabases_RecoveryModel] created.'
@@ -140,6 +142,29 @@ SET @SQL =  'ALTER TRIGGER [inventory].[TRG_I_SQLDatabases]' + CHAR(13) +
             '        INNER JOIN inserted i' +CHAR(13) +
             '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
             '           and o.DbName        = i.DbName' +CHAR(13) +
+            '' + CHAR(13) + 
+            '   DECLARE forEachRowCursor' + CHAR(13) + 
+            '   CURSOR LOCAL FOR' + CHAR(13) + 
+            '       select distinct ' + CHAR(13) + 
+            '           ServerName' + CHAR(13) + 
+            '       from inserted' + CHAR(13) + 
+            '' + CHAR(13) + 
+            '/**' + CHAR(13) + 
+            ' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
+            ' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
+            ' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
+            ' */' + CHAR(13) + 
+            '   DECLARE @currentServer  [VARCHAR](256)' + CHAR(13) + 
+            '   OPEN forEachRowCursor;' + CHAR(13) + 
+            '   FETCH next from forEachRowCursor ' + CHAR(13) + 
+            '       into @currentServer' + CHAR(13) + 
+                '' + CHAR(13) + 
+            '   WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
+            '   BEGIN' + CHAR(13) + 
+            '        exec [inventory].[ManageSQLInstance] @ServerName = @currentServer ;' + CHAR(13) + 
+            '   END;' + CHAR(13) + 
+            '   CLOSE forEachRowCursor;' + CHAR(13) + 
+            '   DEALLOCATE forEachRowCursor;' + CHAR(13) +                  
             'END' ;
 EXEC (@SQL);
 PRINT '    Trigger [inventory].[TRG_I_SQLDatabases] altered.'
@@ -170,6 +195,29 @@ SET @SQL =  'ALTER TRIGGER [inventory].[TRG_U_SQLDatabases]' + CHAR(13) +
             '        INNER JOIN inserted i' +CHAR(13) +
             '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
             '           and o.DbName        = i.DbName' +CHAR(13) +
+            '' + CHAR(13) + 
+            '   DECLARE forEachRowCursor' + CHAR(13) + 
+            '   CURSOR LOCAL FOR' + CHAR(13) + 
+            '       select distinct ' + CHAR(13) + 
+            '           ServerName' + CHAR(13) + 
+            '       from inserted' + CHAR(13) + 
+            '' + CHAR(13) + 
+            '/**' + CHAR(13) + 
+            ' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
+            ' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
+            ' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
+            ' */' + CHAR(13) + 
+            '   DECLARE @currentServer  [VARCHAR](256)' + CHAR(13) + 
+            '   OPEN forEachRowCursor;' + CHAR(13) + 
+            '   FETCH next from forEachRowCursor ' + CHAR(13) + 
+            '       into @currentServer' + CHAR(13) + 
+                '' + CHAR(13) + 
+            '   WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
+            '   BEGIN' + CHAR(13) + 
+            '        exec [inventory].[ManageSQLInstance] @ServerName = @currentServer ;' + CHAR(13) + 
+            '   END;' + CHAR(13) + 
+            '   CLOSE forEachRowCursor;' + CHAR(13) + 
+            '   DEALLOCATE forEachRowCursor;' + CHAR(13) +                  
             'END' ;
 EXEC (@SQL);
 PRINT '    Trigger [inventory].[TRG_U_SQLDatabases] altered.'

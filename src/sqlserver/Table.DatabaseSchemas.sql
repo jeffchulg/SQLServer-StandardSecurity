@@ -152,7 +152,7 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_I_DatabaseSchemas]' + CHAR(13) +
             '           and o.[SchemaName]  = i.[SchemaName]' +CHAR(13) +
             '' + CHAR(13) + 
             '   DECLARE forEachRowCursor' + CHAR(13) + 
-            '   CURSOR FOR' + CHAR(13) + 
+            '   CURSOR LOCAL FOR' + CHAR(13) + 
             '       select distinct ' + CHAR(13) + 
             '           ServerName,' + CHAR(13) + 
             '           DbName' + CHAR(13) + 
@@ -245,7 +245,7 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_U_DatabaseSchemas]' + CHAR(13) +
             '           and o.[SchemaName]  = i.[SchemaName]' +CHAR(13) + CHAR(13) +            
             '' + CHAR(13) + 
             '   DECLARE forEachRowCursor' + CHAR(13) + 
-            '   CURSOR FOR' + CHAR(13) + 
+            '   CURSOR LOCAL FOR' + CHAR(13) + 
             '       select distinct ' + CHAR(13) + 
             '           ServerName,' + CHAR(13) + 
             '           DbName' + CHAR(13) + 

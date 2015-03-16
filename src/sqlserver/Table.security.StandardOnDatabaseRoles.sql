@@ -21,7 +21,7 @@ BEGIN
 		PRINT '   Error while trying to create table.'
 		RETURN
 	END
-END;
+END
 /*
 ELSE
 BEGIN 

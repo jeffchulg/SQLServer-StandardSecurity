@@ -1,4 +1,4 @@
-/*require main.sql*/
+/*requires main.sql*/
 
 /**
     Creation of the [inventory] schema

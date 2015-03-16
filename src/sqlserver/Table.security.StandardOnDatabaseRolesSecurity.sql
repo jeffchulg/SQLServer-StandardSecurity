@@ -197,11 +197,11 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_I_StandardOnDatabaseRolesSecurity]' +
             '        ,   CreationDate = GETDATE() ' + CHAR(13) +
             '    FROM [security].StandardOnDatabaseRolesSecurity o ' + CHAR(13) +
             '        INNER JOIN inserted i' +CHAR(13) +
-            '           and o.DbRoleName = i.DbRoleName' +CHAR(13) +
-            '           and o.[grantee] = i.[grantee]' +CHAR(13) +
+            '           ON o.DbRoleName = i.DbRoleName' +CHAR(13) +            
             '           and o.[ObjectClass] = i.[ObjectClass]' +CHAR(13) +
             '           and ISNULL(o.[ObjectType],''null'') = ISNULL(i.[ObjectType],''null'')' +CHAR(13) +
             '           and o.[PermissionName] = i.[PermissionName]' +CHAR(13) +
+            '           and ISNULL(o.[DbName],''null'') = ISNULL(i.[DbName],''null'')' +CHAR(13) +
             '           and ISNULL(o.[SchemaName],''null'') = ISNULL(i.[SchemaName],''null'')' +CHAR(13) +
             '           and o.[objectname] = i.[objectname]' +CHAR(13) +        
             '           and ISNULL(o.[SubObjectName],''null'') = ISNULL(i.[SubObjectName],''null'')' +CHAR(13) +        
@@ -235,11 +235,11 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_U_StandardOnDatabaseRolesSecurity]' +
             '        SET LastModified = GETDATE()'+CHAR(13) +
             '    FROM [security].StandardOnDatabaseRolesSecurity o ' + CHAR(13) +
             '        INNER JOIN inserted i' +CHAR(13) +
-            '           and o.DbRoleName = i.DbRoleName' +CHAR(13) +
-            '           and o.[grantee] = i.[grantee]' +CHAR(13) +
+            '           ON  o.DbRoleName = i.DbRoleName' +CHAR(13) +
             '           and o.[ObjectClass] = i.[ObjectClass]' +CHAR(13) +
             '           and ISNULL(o.[ObjectType],''null'') = ISNULL(i.[ObjectType],''null'')' +CHAR(13) +
             '           and o.[PermissionName] = i.[PermissionName]' +CHAR(13) +
+            '           and ISNULL(o.[DbName],''null'') = ISNULL(i.[DbName],''null'')' +CHAR(13) +
             '           and ISNULL(o.[SchemaName],''null'') = ISNULL(i.[SchemaName],''null'')' +CHAR(13) +
             '           and o.[objectname] = i.[objectname]' +CHAR(13) +        
             '           and ISNULL(o.[SubObjectName],''null'') = ISNULL(i.[SubObjectName],''null'')' +CHAR(13) +     

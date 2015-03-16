@@ -1,5 +1,4 @@
-
-/*requires Schema.inventory.sql*/
+/*requires Schema.Inventory.sql*/
 /*requires Table.inventory.SQLInstances.sql*/
 
 /**

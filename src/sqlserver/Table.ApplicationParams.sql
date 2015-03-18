@@ -168,7 +168,11 @@ using (
 	union all 	
     select 'RoleAuthorization4Creation','dbo','dbo',0,'Value in the TSQL Command CREATE ROLE ... AUTHORIZATION [<RoleAuthorization4Creation>]'
 	union all 
-	select 'Version','0.1.0','0.1.0',0,'Version number for the solution'
+	select 'Version','0.1.0','0.1.0',0,'Version number for the solution'	
+    union all 
+	select 'SQLServerAuthModeStr','SQLSRVR','SQLSRVR',0,'String to use to qualify SQL Server authentication for SQL logins'
+    union all 
+	select 'WindowsAuthModeStr','WINDOWS','WINDOWS',0,'String to use to qualify Windows authentication for SQL logins'
 ) i
 on p.ParamName = i.ParamName
 WHEN MATCHED THEN

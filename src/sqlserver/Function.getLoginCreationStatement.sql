@@ -74,6 +74,8 @@ AS
     24/12/2014  JEL         Version 0.1.0
  							TODO : manage GUIDs
     ----------------------------------------------------------------------------------
+    30/03/2015  JEL         An error can occur when the login doesn't exist.
+    ----------------------------------------------------------------------------------
  ===================================================================================
 */
 BEGIN
@@ -150,7 +152,7 @@ BEGIN
                 '-- ENABLE|DISABLE login' + @LineFeed + 
                 'if @loginIsDisabled = ' + CAST(@isActive as CHAR(1)) + @LineFeed +
                 'BEGIN' + @LineFeed +               
-                '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' ' + CASE WHEN @isActive = 1 THEN 'ENABLE' ELSE 'DISABLE' END + @LineFeed +               
+                '    EXEC (''USE [master] ; ALTER LOGIN ' + QUOTENAME(@LoginName) + ' ' + CASE WHEN @isActive = 1 THEN 'ENABLE' ELSE 'DISABLE' END + ''');' + @LineFeed +               
                 'END' + @LineFeed 
 
     -- TODO : make it go to DatabasePermissions                
@@ -189,11 +191,11 @@ BEGIN
                 '-- by default : no password policy is defined' + @LineFeed +
                 'if @loginHasPwdPolicyChecked <> 0' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_EXPIRATION=OFF' + @LineFeed +
+                '    EXEC (''use [master]; ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_EXPIRATION=OFF'');' + @LineFeed +
                 'END' + @LineFeed +                
                 'if @loginHasPwdExpireChecked <> 0' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_POLICY=OFF' + @LineFeed +
+                '    EXEC (''ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_POLICY=OFF'');' + @LineFeed +
                 'END' + @LineFeed                				
 	END
 	

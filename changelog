@@ -1,3 +1,11 @@
+* Helper :: ASPNET Server Registration     
+    Added Database Role permission support :
+        - a new object class in DatabasePermissions table : DATABASE_ROLE
+        - Modified procedure getObjectPermissionAssignmentScripts to allow this kind of permissions 
+        - added function getOnDbRolePermissionAssignementStatement
+
+    Added helper [PrepareASPNETServerRegistrationToolInstallation] to generate permissions when 
+    using ASPNET Server Registration tool available with .NET Framework 4 for Web applications
 ---------------------------------
 SecurityApplier 1.0.3, XXXX
 ---------------------------------

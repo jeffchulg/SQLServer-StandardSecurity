@@ -123,6 +123,8 @@ BEGIN
                 '    -- create it !' + @LineFeed  +
                 '    EXEC (''USE [master]; CREATE LOGIN ' + QUOTENAME(@LoginName) + ' ' 
 
+    DECLARE @withTagUsed BIT = 0
+                
     IF ( @AuthMode = 'WINDOWS' )
     BEGIN
         SET @tsql = @tsql + 'FROM WINDOWS '
@@ -130,9 +132,19 @@ BEGIN
     ELSE
     BEGIN
         SET @tsql = @tsql + 'WITH PASSWORD=N''''' + @Passwd + ''''''
+        SET @withTagUsed = 1
     END
 
-    SET @tsql = @tsql + ' , DEFAULT_DATABASE=' + QUOTENAME(@DefaultDatabase) + ''')' + @LineFeed  +
+    if(@withTagUsed = 0)  
+    BEGIN 
+        SET @tsql = @tsql + ' ,'
+    END 
+    ELSE 
+    BEGIN 
+        SET @tsql = @tsql + ' WITH'
+    END 
+    
+    SET @tsql = @tsql + ' DEFAULT_DATABASE=' + QUOTENAME(@DefaultDatabase) + ''')' + @LineFeed  +
                 'END' + @LineFeed  +
 				'GO' + @LineFeed  +
                 @LineFeed +

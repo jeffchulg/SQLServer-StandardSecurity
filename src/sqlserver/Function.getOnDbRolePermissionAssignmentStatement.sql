@@ -15,8 +15,8 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-			
-	PRINT '    Function [security].[getOnDbRolePermissionAssignmentStatement] created.'
+            
+    PRINT '    Function [security].[getOnDbRolePermissionAssignmentStatement] created.'
 END
 GO
 
@@ -82,6 +82,8 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     30/03/2015  JEL         Version 0.1.0 
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.    
  ===================================================================================
 */
 BEGIN
@@ -90,15 +92,15 @@ BEGIN
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
-    DECLARE @LineFeed 			VARCHAR(10)
+    DECLARE @LineFeed           VARCHAR(10)
     
     /* Sanitize our inputs */
-	SELECT  
-		@LineFeed 			= CHAR(13) + CHAR(10) ,
+    SELECT  
+        @LineFeed           = CHAR(13) + CHAR(10) ,
         @DynDeclare         = 'DECLARE @Grantee         VARCHAR(256)' + @LineFeed +
-							  'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
-							  'DECLARE @PermissionName  VARCHAR(256)' + @LineFeed +
-							  'DECLARE @RoleName        VARCHAR(64)' + @LineFeed +
+                              'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
+                              'DECLARE @PermissionName  VARCHAR(256)' + @LineFeed +
+                              'DECLARE @RoleName        VARCHAR(64)' + @LineFeed +
                               'SET @Grantee         = ''' + QUOTENAME(@Grantee) + '''' + @LineFeed  +
                               'SET @PermissionLevel = ''' + @PermissionLevel + '''' + @LineFeed  +
                               'SET @PermissionName  = ''' + @PermissionName + '''' + @LineFeed  +
@@ -129,24 +131,24 @@ BEGIN
         -- TODO : add checks for Grantee and RoleName
     END
     
-    SET @tsql = @tsql + 
+    SET @tsql = @tsql + /*
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
-                + @LineFeed + 
+                + @LineFeed + */
                 'DECLARE @RoleID INT' + @LineFeed +
-                'SELECT @RoleID = principal_id ' + @LineFeed + 
+                'SELECT @RoleID = principal_id COLLATE French_CI_AS' + @LineFeed + 
                 'FROM ' + @LineFeed + 
-                '    sys.database_principals' + @LineFeed + 
-                'WHERE type_desc = ''DATABASE_ROLE''' + @LineFeed + 
-                'AND [name] = @RoleName' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.sys.database_principals' + @LineFeed + 
+                'WHERE type_desc COLLATE French_CI_AS = ''DATABASE_ROLE'' COLLATE French_CI_AS' + @LineFeed + 
+                'AND [name] COLLATE French_CI_AS = @RoleName COLLATE French_CI_AS' + @LineFeed  + @LineFeed +
                 'DECLARE @CurPermLevel VARCHAR(10)' + @LineFeed +
-                'select @CurPermLevel = state_desc' + @LineFeed +
+                'select @CurPermLevel = state_desc COLLATE French_CI_AS' + @LineFeed +
                 'from' + @LineFeed +
-                'sys.database_permissions' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
-                '    class_desc                                 = ''DATABASE_PRINCIPAL''' + @LineFeed + 
-                'and QUOTENAME(USER_NAME(grantee_principal_id)) = @Grantee' + @LineFeed +
-                'and major_id			                        = @RoleID' + @LineFeed +
-                'and QUOTENAME(permission_name)                 = QUOTENAME(@PermissionName)' + @LineFeed
+                '    class_desc  COLLATE French_CI_AS                                = ''DATABASE_PRINCIPAL'' COLLATE French_CI_AS' + @LineFeed + 
+                'and QUOTENAME(USER_NAME(grantee_principal_id)) COLLATE French_CI_AS = @Grantee COLLATE French_CI_AS' + @LineFeed +
+                'and major_id COLLATE French_CI_AS                                   = @RoleID COLLATE French_CI_AS' + @LineFeed +
+                'and QUOTENAME(permission_name) COLLATE French_CI_AS                 = QUOTENAME(@PermissionName) COLLATE French_CI_AS' + @LineFeed
 
     DECLARE @PermAuthorization VARCHAR(64)    
     
@@ -160,9 +162,9 @@ BEGIN
     if @PermissionLevel = 'GRANT'
     BEGIN 
         SET @tsql = @tsql +  
-                    'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'')' + @LineFeed +
+                    'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT''  COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
         BEGIN 
             SET @tsql = @tsql +
@@ -176,9 +178,9 @@ BEGIN
     ELSE if @PermissionLevel = 'DENY' 
     BEGIN 
         SET @tsql = @tsql +  
-                    'if (@CurPermLevel <> ''DENY'')' + @LineFeed +
+                    'if (@CurPermLevel <> ''DENY''  COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
         SET @tsql = @tsql + 
                     ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed                    
@@ -189,20 +191,20 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE
     BEGIN 
         return cast('Unknown PermissionLevel ' + @PermissionLevel as int);
     END     
-	
+    
     SET @tsql = @tsql + @LineFeed  +
-				'GO' + @LineFeed 
+                'GO' + @LineFeed 
                 
     RETURN @tsql
 END
-go	
+go  
 
 PRINT '    Function [security].[getOnDbRolePermissionAssignmentStatement] altered.'
 

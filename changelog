@@ -1,3 +1,7 @@
+* Bugs :
+- Login creation statement, when using Windows Authentication, no "WITH" generated for DEFAULT_DATABASE tag, a "," instead.
+- Role and Schema creation statement + permission assignment issue when database collation isn't the same as server collation 
+
 * Helper :: ASPNET Server Registration     
     Added Database Role permission support :
         - a new object class in DatabasePermissions table : DATABASE_ROLE

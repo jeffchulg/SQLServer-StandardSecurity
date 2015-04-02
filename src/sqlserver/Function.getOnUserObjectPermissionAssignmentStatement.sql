@@ -15,8 +15,8 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-			
-	PRINT '    Function [security].[getOnUserObjectPermissionAssignmentStatement] created.'
+            
+    PRINT '    Function [security].[getOnUserObjectPermissionAssignmentStatement] created.'
 END
 GO
 
@@ -106,6 +106,8 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.      
  ===================================================================================
 */
 BEGIN
@@ -114,17 +116,17 @@ BEGIN
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
-    DECLARE @LineFeed 			VARCHAR(10)
+    DECLARE @LineFeed           VARCHAR(10)
     
     /* Sanitize our inputs */
-	SELECT  
-		@LineFeed 			= CHAR(13) + CHAR(10) ,
+    SELECT  
+        @LineFeed           = CHAR(13) + CHAR(10) ,
         @DynDeclare         = 'DECLARE @Grantee         VARCHAR(256)' + @LineFeed +
-							  'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
-							  'DECLARE @PermissionName  VARCHAR(256)' + @LineFeed +
-							  'DECLARE @SchemaName      VARCHAR(64)' + @LineFeed +
-							  'DECLARE @ObjectName      VARCHAR(64)' + @LineFeed +
-							  'DECLARE @SubObjectName   VARCHAR(64)' + @LineFeed +
+                              'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
+                              'DECLARE @PermissionName  VARCHAR(256)' + @LineFeed +
+                              'DECLARE @SchemaName      VARCHAR(64)' + @LineFeed +
+                              'DECLARE @ObjectName      VARCHAR(64)' + @LineFeed +
+                              'DECLARE @SubObjectName   VARCHAR(64)' + @LineFeed +
                               'SET @Grantee         = ''' + QUOTENAME(@Grantee) + '''' + @LineFeed  +
                               'SET @PermissionLevel = ''' + @PermissionLevel + '''' + @LineFeed  +
                               'SET @PermissionName  = ''' + @PermissionName + '''' + @LineFeed  +
@@ -166,19 +168,19 @@ BEGIN
         -- TODO : add checks for Grantee and SchemaName and ObjectName and SubObjectName
     END
     
-    SET @tsql = @tsql + 
+    SET @tsql = @tsql + /*
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
-                + @LineFeed + 
+                + @LineFeed + */
                 'DECLARE @CurPermLevel VARCHAR(10)' + @LineFeed +
-                'select @CurPermLevel = state_desc' + @LineFeed +
+                'select @CurPermLevel = state_desc COLLATE French_CI_AS' + @LineFeed +
                 'from' + @LineFeed +
-                'sys.database_permissions' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
-                '    class_desc                                 = ''OBJECT_OR_COLUMN''' + @LineFeed + 
-                'and QUOTENAME(USER_NAME(grantee_principal_id)) = @Grantee' + @LineFeed +
-                'and QUOTENAME(OBJECT_SCHEMA_NAME(major_id))	= @SchemaName' + @LineFeed +
-                'and QUOTENAME(OBJECT_NAME(major_id))	        = @ObjectName' + @LineFeed +
-                'and QUOTENAME(permission_name)                 = QUOTENAME(@PermissionName)' + @LineFeed
+                '    class_desc  COLLATE French_CI_AS                                = ''OBJECT_OR_COLUMN'' COLLATE French_CI_AS' + @LineFeed + 
+                'and QUOTENAME(USER_NAME(grantee_principal_id)) COLLATE French_CI_AS = @Grantee COLLATE French_CI_AS' + @LineFeed +
+                'and QUOTENAME(OBJECT_SCHEMA_NAME(major_id)) COLLATE French_CI_AS    = @SchemaName COLLATE French_CI_AS' + @LineFeed +
+                'and QUOTENAME(OBJECT_NAME(major_id))    COLLATE French_CI_AS        = @ObjectName COLLATE French_CI_AS' + @LineFeed +
+                'and QUOTENAME(permission_name) COLLATE French_CI_AS                 = QUOTENAME(@PermissionName) COLLATE French_CI_AS' + @LineFeed
 
     DECLARE @PermAuthorization VARCHAR(64)    
     
@@ -192,9 +194,9 @@ BEGIN
     if @PermissionLevel = 'GRANT'
     BEGIN 
         SET @tsql = @tsql +  
-                    'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'')' + @LineFeed +
+                    'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
         BEGIN 
             SET @tsql = @tsql +
@@ -208,9 +210,9 @@ BEGIN
     ELSE if @PermissionLevel = 'DENY' 
     BEGIN 
         SET @tsql = @tsql +  
-                    'if (@CurPermLevel <> ''DENY'')' + @LineFeed +
+                    'if (@CurPermLevel <> ''DENY'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
         SET @tsql = @tsql + 
                     ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed                    
@@ -221,19 +223,19 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE
     BEGIN 
         return cast('Unknown PermissionLevel ' + @PermissionLevel as int);
     END     
-	
+    
     SET @tsql = @tsql + @LineFeed  +
-				'GO' + @LineFeed 
+                'GO' + @LineFeed 
     RETURN @tsql
 END
-go	
+go  
 
 PRINT '    Function [security].[getOnUserObjectPermissionAssignmentStatement] altered.'
 

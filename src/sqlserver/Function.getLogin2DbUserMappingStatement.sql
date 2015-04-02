@@ -77,7 +77,8 @@ AS
     Date        Nom         Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0
-    ----------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.    
  ===================================================================================
 */
 BEGIN
@@ -129,7 +130,7 @@ BEGIN
                 '    return' + @LineFeed+
                 'END' + @LineFeed +
                 '' + @LineFeed +
-                'Use '+ QUOTENAME(@DbName) + @LineFeed+
+              --  'Use '+ QUOTENAME(@DbName) + @LineFeed+
                 '-- 1.2 Check that the login actually exists' + @LineFeed + 
                 'if (NOT exists (select * from sys.syslogins where QUOTENAME(loginname) = @CurLoginName))' + @LineFeed +
                 'BEGIN' + @LineFeed +
@@ -137,13 +138,13 @@ BEGIN
                 '    return' + @LineFeed+
                 'END' + @LineFeed +
                 '-- 1.3 Check that the schema actually exists in the database' + @LineFeed +
-                'if not exists (select 1 from sys.schemas where QUOTENAME(name) = @CurSchemaName)' + @LineFeed +
-				'BEGIN' + @LineFeed + 
+                'if not exists (select 1 from ' + QUOTENAME(@DbName) + '.sys.schemas where QUOTENAME(name) COLLATE French_CI_AS   = @CurSchemaName COLLATE French_CI_AS  )' + @LineFeed +
+				'BEGIN' + @LineFeed +  
                 '    RAISERROR ( ''The given schema ('+@DefaultSchemaName + ') does not exist'',0,1 ) WITH NOWAIT' + @LineFeed +
                 '    return' + @LineFeed+	
 				'END' + @LineFeed +
                 '' + @LineFeed +
-                'if not exists(select 1 from sys.database_principals WHERE QUOTENAME(NAME) = @CurDbUser and Type in (''S'',''U'')' + @LineFeed +
+                'if not exists(select 1 from ' + QUOTENAME(@DbName) + '.sys.database_principals WHERE QUOTENAME(NAME) COLLATE French_CI_AS = @CurDbUser COLLATE French_CI_AS   and Type COLLATE French_CI_AS   in (''S'' COLLATE French_CI_AS  ,''U'' COLLATE French_CI_AS  )' + @LineFeed +
                 'BEGIN' + @LineFeed
                 
         if (@forceUserCreation = 0) 
@@ -165,10 +166,10 @@ BEGIN
     
     
     SET @tsql = @tsql +
-                'Use '+ QUOTENAME(@DbName) + @LineFeed +
-                'if NOT EXISTS (SELECT  1 FROM  sys.database_principals princ  LEFT JOIN sys.login_token ulogin on princ.[sid] = ulogin.[sid] where QUOTENAME(ulogin.name) = @CurLoginName and QUOTENAME(princ.name)  = @CurDbUser )' + @LineFeed +
+               -- 'Use '+ QUOTENAME(@DbName) + @LineFeed +
+                'if NOT EXISTS (SELECT  1 FROM  ' + QUOTENAME(@DbName) + '.sys.database_principals princ  LEFT JOIN master.sys.login_token ulogin on princ.[sid] = ulogin.[sid]  where QUOTENAME(ulogin.name) COLLATE French_CI_AS = @CurLoginName COLLATE French_CI_AS and QUOTENAME(princ.name)  COLLATE French_CI_AS = @CurDbUser COLLATE French_CI_AS )' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    EXEC(''ALTER USER ''+''' + QUOTENAME(@UserName) + '''+ ''WITH LOGIN = '' + ''' + QUOTENAME(@LoginName) + ''' )' + @LineFeed +
+                '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''ALTER USER  '+ QUOTENAME(@UserName) + ' WITH LOGIN = ' + QUOTENAME(@LoginName) + ''''''' )' + @LineFeed +
                 'END' + @LineFeed 
                 
     
@@ -177,7 +178,7 @@ BEGIN
     BEGIN 
             SET @tsql = @tsql + @LineFeed +                 
                 '-- If necessary, give the database user the permission to connect the database ' + @LineFeed  +
-                'if not exists (select 1 from sys.database_permissions where QUOTENAME(SUSER_NAME(grantee_principal_id)) = @CurDbUser and permission_name = ''CONNECT'' and state_desc = ''GRANT'')' + @LineFeed +
+                'if not exists (select 1 from ' + QUOTENAME(@DbName) + '.sys.database_permissions where QUOTENAME(SUSER_NAME(grantee_principal_id)) COLLATE French_CI_AS = @CurDbUser COLLATE French_CI_AS and permission_name COLLATE French_CI_AS = ''CONNECT'' COLLATE French_CI_AS and state_desc COLLATE French_CI_AS = ''GRANT'' COLLATE French_CI_AS)' + @LineFeed +
                 'BEGIN' + @LineFeed +
                 '    EXEC (''USE ' + QUOTENAME(@DbName) + ' ; GRANT CONNECT TO ' + QUOTENAME(@UserName) + ''' );' + @LineFeed  +
                 'END' + @LineFeed 

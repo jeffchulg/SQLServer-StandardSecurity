@@ -135,7 +135,7 @@ BEGIN
         SET @withTagUsed = 1
     END
 
-    if(@withTagUsed = 0)  
+    if(@withTagUsed = 1)  
     BEGIN 
         SET @tsql = @tsql + ' ,'
     END 

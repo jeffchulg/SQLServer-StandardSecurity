@@ -75,6 +75,8 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.      
  ===================================================================================
 */
 BEGIN
@@ -114,11 +116,11 @@ BEGIN
                     'END' + @LineFeed  +
                     '' + @LineFeed           
     END
-    
+    /*
     SET @tsql = @tsql + 
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
                 + @LineFeed 
-    
+    */
     DECLARE @RoleAuthorization VARCHAR(64)    
     
     select 
@@ -131,20 +133,20 @@ BEGIN
     SET @tsql = @tsql + 
                 'DECLARE @RoleOwner VARCHAR(64)' + @LineFeed +
                 + @LineFeed +                
-                'SELECT @RoleOwner = QUOTENAME(USER_NAME(owning_principal_id))' + @LineFeed +
+                'SELECT @RoleOwner = QUOTENAME(USER_NAME(owning_principal_id)) COLLATE French_CI_AS' + @LineFeed +
                 'FROM' + @LineFeed +
-                '    sys.database_principals' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.sys.database_principals' + @LineFeed +
                 'WHERE' + @LineFeed +
-                '    QUOTENAME(name) = @dynamicDeclaration' + @LineFeed + 
+                '    QUOTENAME(name) COLLATE French_CI_AS = @dynamicDeclaration COLLATE French_CI_AS' + @LineFeed + 
                 'AND type = ''R''' + @LineFeed +
                 'IF (@RoleOwner is null ) -- then the schema does not exist ' + @LineFeed  +
                 'BEGIN' + @LineFeed  +                
                 '    -- create it !' + @LineFeed  +
-                '    EXEC (''CREATE ROLE ' + QUOTENAME(@RoleName) + ' AUTHORIZATION ' + QUOTENAME(@RoleAuthorization) + ''')' + @LineFeed +
+                '    EXEC (''USE ' + QUOTENAME(@DbName) + '; execute sp_executesql N''''CREATE ROLE ' + QUOTENAME(@RoleName) + ' AUTHORIZATION ' + QUOTENAME(@RoleAuthorization) + ''''''')' + @LineFeed +
                 'END' + @LineFeed +
                 'ELSE IF @RoleOwner <> ''' + QUOTENAME(@RoleAuthorization) + '''' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    EXEC (''ALTER AUTHORIZATION on ROLE::' + QUOTENAME(@RoleName) + ' TO ' + QUOTENAME(@RoleAuthorization) + ''')' + @LineFeed +
+                '    EXEC (''USE ' + QUOTENAME(@DbName) + '; EXEC ''''ALTER AUTHORIZATION on ROLE::' + QUOTENAME(@RoleName) + ' TO ' + QUOTENAME(@RoleAuthorization) + ''''''')' + @LineFeed +
                 'END' + @LineFeed 
 	
     SET @tsql = @tsql + @LineFeed  +

@@ -17,8 +17,8 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-			
-	PRINT '    Function [security].[getDbRoleAssignmentStatement] created.'
+            
+    PRINT '    Function [security].[getDbRoleAssignmentStatement] created.'
 END
 GO
 
@@ -82,6 +82,8 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.      
  ===================================================================================
 */
 BEGIN
@@ -90,13 +92,13 @@ BEGIN
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
-    DECLARE @LineFeed 			VARCHAR(10)
+    DECLARE @LineFeed           VARCHAR(10)
     
     /* Sanitize our inputs */
-	SELECT 
-		@LineFeed 			= CHAR(13) + CHAR(10) ,
+    SELECT 
+        @LineFeed           = CHAR(13) + CHAR(10) ,
         @DynDeclare         = 'DECLARE @RoleName   VARCHAR(64)' + @LineFeed +
-							  'DECLARE @MemberName VARCHAR(64)' + @LineFeed +
+                              'DECLARE @MemberName VARCHAR(64)' + @LineFeed +
                               'SET @RoleName   = QUOTENAME(''' + @RoleName + ''')' + @LineFeed  +
                               'SET @MemberName = QUOTENAME(''' + @MemberName + ''')' + @LineFeed  
 
@@ -146,21 +148,21 @@ BEGIN
 */      
     END
     
-    SET @tsql = @tsql + 
+    SET @tsql = @tsql /*+ 
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
-                + @LineFeed        
+                + @LineFeed        */
     
     if @PermissionLevel = 'GRANT'
     BEGIN 
         SET @tsql = @tsql +  
                     'if not exists ( '+ @LineFeed +
                     '    select 1 ' + @LineFeed +
-                    '    from sys.database_role_members ' + @LineFeed +
-                    '    where QUOTENAME(USER_NAME(member_principal_id)) = @MemberName' + @LineFeed +
-                    '    and QUOTENAME(USER_NAME(role_principal_id ))  = @RoleName' + @LineFeed +
+                    '    from ' + QUOTENAME(@DbName) + '.sys.database_role_members ' + @LineFeed +
+                    '    where QUOTENAME(USER_NAME(member_principal_id)) COLLATE French_CI_AS = @MemberName COLLATE French_CI_AS' + @LineFeed +
+                    '    and QUOTENAME(USER_NAME(role_principal_id ))  COLLATE French_CI_AS = @RoleName COLLATE French_CI_AS' + @LineFeed +
                     ')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXECUTE sp_addrolemember @rolename = ''' + @RoleName + ''', @MemberName = ''' + @MemberName + '''' + @LineFeed +
+                    '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_addrolemember @rolename = ''''' + @RoleName + ''''', @MemberName = ''''' + @MemberName + ''''''')' + @LineFeed +
                     '    -- TODO : check return code to ensure role member is really added' + @LineFeed +
                     'END' + @LineFeed
     END 
@@ -169,12 +171,12 @@ BEGIN
         SET @tsql = @tsql +  
                     'if exists ( '+ @LineFeed +
                     '    select 1 ' + @LineFeed +
-                    '    from sys.database_role_members ' + @LineFeed +
-                    '    where QUOTENAME(USER_NAME(member_principal_id)) = @MemberName' + @LineFeed +
-                    '''    and QUOTENAME(USER_NAME(role_principal_id ))  = @RoleName' + @LineFeed +
+                    '    from ' + QUOTENAME(@DbName) + '.sys.database_role_members ' + @LineFeed +
+                    '    where QUOTENAME(USER_NAME(member_principal_id)) COLLATE French_CI_AS = @MemberName COLLATE French_CI_AS' + @LineFeed +
+                    '''    and QUOTENAME(USER_NAME(role_principal_id )) COLLATE French_CI_AS  = @RoleName COLLATE French_CI_AS' + @LineFeed +
                     ')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXECUTE sp_droprolemember @rolename = ''' + @RoleName + ''', @MemberName = ''' + @MemberName + '''' + @LineFeed +
+                    '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_droprolemember @rolename = '''''' + @RoleName + '''''', @MemberName = '''''' + @MemberName + '''''''')' + @LineFeed +
                     '    -- TODO : check return code to ensure role member is really dropped' + @LineFeed +
                     'END' + @LineFeed   
         
@@ -183,12 +185,12 @@ BEGIN
     BEGIN 
         return cast('Unknown PermissionLevel ' + @PermissionLevel as int);
     END     
-	
+    
     SET @tsql = @tsql + @LineFeed  +
-				'GO' + @LineFeed 
+                'GO' + @LineFeed 
     RETURN @tsql
 END
-go	
+go  
 
 PRINT '    Function [security].[getDbRoleAssignmentStatement] altered.'
 

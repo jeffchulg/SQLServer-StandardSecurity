@@ -71,6 +71,8 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.
  ===================================================================================
 */
 BEGIN
@@ -110,11 +112,11 @@ BEGIN
                     'END' + @LineFeed  +
                     '' + @LineFeed           
     END
-    
+   /* 
     SET @tsql = @tsql + 
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
                 + @LineFeed 
-    
+    */
     DECLARE @SchemaAuthorization VARCHAR(64)    
     
     select 
@@ -127,16 +129,16 @@ BEGIN
     SET @tsql = @tsql + 
                 'DECLARE @SchemaOwner VARCHAR(64)' + @LineFeed +
                 + @LineFeed +                
-                'SELECT @SchemaOwner = QUOTENAME(SCHEMA_OWNER)' + @LineFeed +
+                'SELECT @SchemaOwner = QUOTENAME(SCHEMA_OWNER) COLLATE French_CI_AS' + @LineFeed +
                 'FROM' + @LineFeed +
-                '    INFORMATION_SCHEMA.SCHEMATA' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.INFORMATION_SCHEMA.SCHEMATA' + @LineFeed +
                 'WHERE' + @LineFeed +
-                '    QUOTENAME(CATALOG_NAME) = @DbName' + @LineFeed + 
-                'AND QUOTENAME(SCHEMA_NAME)  = @dynamicDeclaration' + @LineFeed +
+                '    QUOTENAME(CATALOG_NAME) COLLATE French_CI_AS = @DbName COLLATE French_CI_AS' + @LineFeed + 
+                'AND QUOTENAME(SCHEMA_NAME)  COLLATE French_CI_AS = @dynamicDeclaration COLLATE French_CI_AS' + @LineFeed +
                 'IF (@SchemaOwner is null ) -- then the schema does not exist ' + @LineFeed  +
                 'BEGIN' + @LineFeed  +                
                 '    -- create it !' + @LineFeed  +
-                '    EXEC (''CREATE SCHEMA ' + QUOTENAME(@SchemaName) + ' AUTHORIZATION ' + QUOTENAME(@SchemaAuthorization) + ''')' + @LineFeed +
+                '    EXEC (''USE ' + QUOTENAME(@DbName) + ' ; EXEC sp_executesql N''''CREATE SCHEMA [tdoc] AUTHORIZATION [dbo]'''''')' + @LineFeed +
                 'END' + @LineFeed +
                 'ELSE IF @SchemaOwner <> ''' + QUOTENAME(@SchemaAuthorization) + '''' + @LineFeed +
                 'BEGIN' + @LineFeed +

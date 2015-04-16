@@ -40,6 +40,7 @@ BEGIN
         [ServerName]      [VARCHAR](256) NOT NULL,
         [SqlLogin]        [VARCHAR](256) NOT NULL,
 		[isActive]	      BIT		NOT NULL,
+        [PermissionLevel] [varchar](6) DEFAULT 'GRANT' not null,
         [CreationDate]    datetime NOT NULL,
         [lastmodified]    datetime NOT NULL
     )
@@ -47,6 +48,27 @@ BEGIN
 	PRINT '   Table [SQLlogins] created.'
 END
 GO
+
+/**
+    Adding a column to a given table 
+ */
+DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('PermissionLevel')
+DECLARE @ColumnDef      NVARCHAR(MAX)   = '[varchar](6) DEFAULT ''GRANT'' not null'
+DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[SQLlogins]'
+DECLARE @tsql           NVARCHAR(max)
+
+IF NOT EXISTS( 
+    SELECT 1 
+    FROM  sys.columns 
+    WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName)
+)
+BEGIN
+    SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
+    execute sp_executesql @tsql
+    
+    PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
+END
+
 
 IF (OBJECTPROPERTY( OBJECT_ID( '[security].[SQLlogins]' ), 'TableHasPrimaryKey' ) <> 1)
 BEGIN
@@ -95,6 +117,15 @@ BEGIN
 	PRINT '   Constraint [DF_SQLLogins_LastModified] created.'
 END
 
+GO
+
+IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_SQLLogins_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[SQLLogins]'))
+BEGIN
+    ALTER TABLE [security].[SQLLogins]
+        WITH CHECK ADD CONSTRAINT [CK_SQLLogins_PermissionLevel]
+            CHECK (([PermissionLevel] in ('GRANT','REVOKE','DENY')))
+	PRINT '     Constraint [CK_SQLLogins_PermissionLevel] created.'
+END
 GO
 
 DECLARE @SQL VARCHAR(MAX)

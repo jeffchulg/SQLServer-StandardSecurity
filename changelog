@@ -1,4 +1,5 @@
 corrected error raised when login does not exist : added exec in getLoginCreationStatement
+Added setSchemaAccess procedure
 
 ---------------------------------
 SecurityApplier 1.0.2, XXXX

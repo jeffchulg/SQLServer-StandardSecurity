@@ -27,6 +27,7 @@ ALTER Function [security].[getLoginCreationStatement] (
     @NoHeader                       BIT = 0,
     @NoDependencyCheckGen           BIT = 0,
     @NoGrantConnectSQL              BIT = 0,
+    @ConnectSQLPermLevel            VARCHAR(6) = 'GRANT',
     @Debug                          BIT = 0
 )
 RETURNS VARCHAR(max)
@@ -160,9 +161,9 @@ BEGIN
     BEGIN
         SET @tsql = @tsql + @LineFeed +                 
                 '-- If necessary, give the login the permission to connect the database engine' + @LineFeed  +
-                'if not exists (select 1 from master.sys.server_permissions where QUOTENAME(SUSER_NAME(grantee_principal_id)) = @loginToPlayWith and permission_name = ''CONNECT SQL'' and state_desc = ''GRANT'')' + @LineFeed +
+                'if not exists (select 1 from master.sys.server_permissions where QUOTENAME(SUSER_NAME(grantee_principal_id)) = @loginToPlayWith and permission_name = ''CONNECT SQL'' and state_desc = '''+ @ConnectSQLPermLevel +''')' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    EXEC (''USE [master] ; GRANT CONNECT SQL TO ' + QUOTENAME(@LoginName) + ''' );' + @LineFeed  +
+                '    EXEC (''USE [master] ; '+ @ConnectSQLPermLevel +' CONNECT SQL TO ' + QUOTENAME(@LoginName) + ''' );' + @LineFeed  +
                 'END' + @LineFeed 
     END 
 

@@ -160,31 +160,36 @@ BEGIN
                 @CurJob = @ContactsJob , 
                 @CurName = @ContactName
         
-        if @isAllow = 1 
+        DECLARE @PermissionLevel VARCHAR(6) = 'GRANT' ;
+        if @isAllow <> 1
         BEGIN 
-            MERGE 
-                [security].[SQLLogins] l
-            using   
-                #logins i
-            on 
-                l.[ServerName] = i.[ServerName]
-            and l.[SQLLogin] = i.Name 
-            WHEN NOT MATCHED THEN 
-                insert (
-                    ServerName,
-                    SqlLogin,
-                    isActive
-                )
-                values (
-                    i.ServerName,
-                    i.Name,
-                    i.isActive
-                )
-            ;
+            SET @PermissionLevel = 'DENY';
         END 
-        ELSE 
-            RAISERROR('Not yet implemented ! ',16,0)
         
+        
+        MERGE 
+            [security].[SQLLogins] l
+        using   
+            #logins i
+        on 
+            l.[ServerName] = i.[ServerName]
+        and l.[SQLLogin] = i.Name 
+        WHEN NOT MATCHED THEN 
+            insert (
+                ServerName,
+                SqlLogin,
+                isActive,
+                PermissionLevel
+            )
+            values (
+                i.ServerName,
+                i.Name,
+                i.isActive,
+                @PermissionLevel
+            )
+        WHEN MATCHED and PermissionLevel <> @PermissionLevel THEN   
+            update set PermissionLevel = @PermissionLevel
+        ;
         
         if @_noTmpTblDrop = 0 and OBJECT_ID('#logins' ) is not null
             DROP TABLE #logins ;

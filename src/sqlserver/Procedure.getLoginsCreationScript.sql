@@ -200,6 +200,7 @@ BEGIN
                 DECLARE @AuthMode           VARCHAR(64)    
                 DECLARE @DefaultDb          VARCHAR(64)
                 DECLARE @isActive           BIT
+                DECLARE @PermissionLevel    VARCHAR(6)
 
                 DECLARE @DefaultPassword VARCHAR(128) 
 
@@ -209,11 +210,12 @@ BEGIN
                 where ParamName = 'MSSQL_LoginSecurity_DefaultPassword'
                 
                 select 
-                    @Department = Department,
-                    @Name       = Name,
-                    @AuthMode   = AuthMode,
-                    @DefaultDb  = DbName,
-                    @isActive   = isActive
+                    @Department      = Department,
+                    @Name            = Name,
+                    @AuthMode        = AuthMode,
+                    @DefaultDb       = DbName,
+                    @isActive        = isActive,
+                    @PermissionLevel = PermissionLevel
                 from 
                     [security].[logins]        
                 where 
@@ -240,7 +242,8 @@ BEGIN
                                             @isActive,                                            
                                             1, -- no header
                                             1, -- no db check 
-                                            0,  -- GRANT CONNECT SQL YES ! TODO change it !!
+                                            0,  -- GRANT/REVOKE/DENY CONNECT SQL YES ! TODO change it !!
+                                            @PermissionLevel,
                                             @Debug
                                         ) 
                 SET @CurOpName = 'CHECK_AND_CREATE_SQL_LOGINS'

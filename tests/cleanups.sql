@@ -3,6 +3,7 @@
 /*requires TempTable.TestContacts.sql */
 /*requires Tests.ContactCreation.sql */
 /*requires Tests.LoginCreation.sql */
+/*requires Tests.SQLMappingsCreation.sql */
 
 -- =========================================================================================================
 

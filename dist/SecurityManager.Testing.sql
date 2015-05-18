@@ -1,16 +1,12 @@
-set :SolutionName "Security Manager" 
-set :DomainName   "CHULg"
-set :DomainUser1  "SAI_Db"
-set :DomainUser2  "c168350"
 
 /*
 
 Find and replace : 
 
-${SolutionName} "Security Manager" 
-${DomainName}   "CHULg"
-${DomainUser1}  "SAI_Db"
-${DomainUser2}  "c168350"
+Security Manager 
+CHULg   "CHULg"
+SAI_Db  "SAI_Db"
+c168350  "c168350"
 
 */
 
@@ -24,11 +20,12 @@ DECLARE @ErrorMessage       NVARCHAR(MAX);
 DECLARE @tsql               NVARCHAR(MAX);
 DECLARE @LineFeed           VARCHAR(10) ;
 DECLARE @ErrorCount         BIGINT ;
+DECLARE @ProcedureName      VARCHAR(128) ;
 
 SET @LineFeed = CHAR(13) + CHAR(10);
 SET @ErrorCount = 0;
 
-PRINT 'Starting testing for solution ${SolutionName}';
+PRINT 'Starting testing for solution Security Manager';
 PRINT '' ;
 
 PRINT 'Creating temporary table in which tests results will be stored';
@@ -70,7 +67,7 @@ set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
 
 BEGIN TRANSACTION             
 BEGIN TRY
-	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) ;
+	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql ;    
 END TRY 
 BEGIN CATCH
@@ -96,8 +93,8 @@ SET @ErrorMessage = NULL;
 set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
             '    (SqlLogin,Name,job,isActive,Department,authmode)' + @LineFeed +
             'values (' + @LineFeed +
-            '    ''${DomainName}\${DomainUser1}'',' + @LineFeed +
-            '    ''${DomainUser1}'',' + @LineFeed +
+            '    ''CHULg\SAI_Db'',' + @LineFeed +
+            '    ''SAI_Db'',' + @LineFeed +
             '    ''Test Manager'',' + @LineFeed +
             '    1,' + @LineFeed + 
             '    ''MyCorp/IT Service/Validation Team'',' + @LineFeed +
@@ -106,7 +103,7 @@ set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
 
 BEGIN TRANSACTION             
 BEGIN TRY
-	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) ;
+	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql ;    
 END TRY 
 BEGIN CATCH
@@ -118,7 +115,7 @@ END CATCH
 COMMIT TRANSACTION;
 
 INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-INSERT INTO #testContacts values ('${DomainName}\${DomainUser1}');
+INSERT INTO #testContacts values ('CHULg\SAI_Db');
 
 -- ---------------------------------------------------------------------------------------------------------
 
@@ -133,7 +130,7 @@ set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
             '    (SqlLogin,Name,job,isActive,Department,authmode)' + @LineFeed +
             'values (' + @LineFeed +
             '    ''ApplicationSQLUser2'',' + @LineFeed +
-            '    ''${DomainUser1}'',' + @LineFeed +
+            '    ''SAI_Db'',' + @LineFeed +
             '    ''Test Manager'',' + @LineFeed +
             '    0,' + @LineFeed + 
             '    ''External/DevCorp/DevProduct'',' + @LineFeed +
@@ -142,7 +139,7 @@ set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
 
 BEGIN TRANSACTION             
 BEGIN TRY
-	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) ;
+	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql ;    
 END TRY 
 BEGIN CATCH
@@ -174,12 +171,44 @@ set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
             '    ''ApplicationSQLUser1'',' + @LineFeed +
-            '    1,' + @LineFeed 
+            '    1' + @LineFeed +
             ')' ;
 
 BEGIN TRANSACTION             
 BEGIN TRY
-	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) ;
+	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
+    execute sp_executesql @tsql ;    
+END TRY 
+BEGIN CATCH
+    SET @ErrorCount = @ErrorCount + 1
+    SET @TestResult = 'FAILURE';
+    SET @ErrorMessage = ERROR_MESSAGE() ;
+    PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
+END CATCH 
+COMMIT TRANSACTION;
+
+INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+
+-- ---------------------------------------------------------------------------------------------------------
+
+SET @TestID = @TestID + 1 ;
+SET @TestName = 'Creation by INSERT statement into [security].[SQLLogins] table (active = 0)';
+SET @TestDescription = 'inserts a record into the [security].[SQLLogins] table';
+SET @TestResult = 'SUCCESS';
+SET @ErrorMessage = NULL;
+
+
+set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
+            '    (ServerName,SqlLogin,isActive)' + @LineFeed +
+            'values (' + @LineFeed +
+            '    @@SERVERNAME,' + @LineFeed +
+            '    ''ApplicationSQLUser2'',' + @LineFeed +
+            '    0' + @LineFeed +
+            ')' ;
+
+BEGIN TRANSACTION             
+BEGIN TRY
+	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql ;    
 END TRY 
 BEGIN CATCH
@@ -219,15 +248,15 @@ BEGIN
     
     BEGIN TRANSACTION             
     BEGIN TRY
-        PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) ;
+        PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
         
-        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 1 ;' ;
+        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''CHULg\SAI_Db'' , @isActive = 1 ;' ;
         execute sp_executesql @tsql ;
         
         SET @CreationWasOK = 1 ;
         
         -- call it twice to check the edition mode is OK
-        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 0;' ;
+        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''CHULg\SAI_Db'' , @isActive = 0;' ;
         execute sp_executesql @tsql ;
     END TRY 
     BEGIN CATCH
@@ -242,6 +271,133 @@ END
 INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
 
 -- ---------------------------------------------------------------------------------------------------------
+
+
+
+
+PRINT '    > Now testing SQL Mappings definition for server'
+
+
+SET @TestID = @TestID + 1 ;
+SET @TestName = 'Creation by INSERT statement into [security].[SQLMappings] table (DbUserName = SQLLogin)';
+SET @TestDescription = 'inserts a record into the [security].[SQLMappings] table';
+SET @TestResult = 'SUCCESS';
+SET @ErrorMessage = NULL;
+
+
+set @tsql = 'insert into [security].[SQLMappings]'  + @LineFeed +
+            '    (ServerName,SqlLogin,DbName,DbUserName,DefaultSchema,isDefaultDb)' + @LineFeed +
+            'values (' + @LineFeed +
+            '    @@SERVERNAME,' + @LineFeed +
+            '    DB_NAME(),' + @LineFeed +
+            '    ''ApplicationSQLUser1'',' + @LineFeed +
+            '    ''ApplicationSQLUser1'',' + @LineFeed +
+            '    ''ApplicationSchema1'',' + @LineFeed +
+            '    1' + @LineFeed +
+            ')' ;
+
+BEGIN TRANSACTION             
+BEGIN TRY
+	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
+    execute sp_executesql @tsql ;    
+END TRY 
+BEGIN CATCH
+    SET @ErrorCount = @ErrorCount + 1
+    SET @TestResult = 'FAILURE';
+    SET @ErrorMessage = ERROR_MESSAGE() ;
+    PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
+END CATCH 
+COMMIT TRANSACTION;
+
+INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+
+-- ---------------------------------------------------------------------------------------------------------
+
+SET @TestID = @TestID + 1 ;
+SET @TestName = 'Creation by INSERT statement into [security].[SQLMappings] table (DbUserName <> SQLLogin)';
+SET @TestDescription = 'inserts a record into the [security].[SQLMappings] table';
+SET @TestResult = 'SUCCESS';
+SET @ErrorMessage = NULL;
+
+
+set @tsql = 'insert into [security].[SQLMappings]'  + @LineFeed +
+            '    (ServerName,SqlLogin,DbName,DbUserName,DefaultSchema,isDefaultDb)' + @LineFeed +
+            'values (' + @LineFeed +
+            '    @@SERVERNAME,' + @LineFeed +
+            '    DB_NAME(),' + @LineFeed +
+            '    ''ApplicationSQLUser2'',' + @LineFeed +
+            '    ''DbUser2'',' + @LineFeed +
+            '    ''ApplicationSchema2'',' + @LineFeed +
+            '    1' + @LineFeed +
+            ')' ;
+
+BEGIN TRANSACTION             
+BEGIN TRY
+	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
+    execute sp_executesql @tsql ;    
+END TRY 
+BEGIN CATCH
+    SET @ErrorCount = @ErrorCount + 1
+    SET @TestResult = 'FAILURE';
+    SET @ErrorMessage = ERROR_MESSAGE() ;
+    PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
+END CATCH 
+COMMIT TRANSACTION;
+
+INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+
+-- ---------------------------------------------------------------------------------------------------------
+
+SET @TestID = @TestID + 1 ;
+SET @ProcedureName = 'setDatabaseAccess';
+SET @TestName = 'Creation through ' + @ProcedureName + ' procedure';
+SET @TestDescription = 'checks that ' + @ProcedureName + ' procedure exists and call it';
+SET @TestResult = 'SUCCESS';
+SET @ErrorMessage = NULL;
+
+IF( NOT EXISTS (
+        select 1
+        from sys.all_objects 
+        where 
+            SCHEMA_NAME(Schema_ID) COLLATE French_CI_AI = 'security' COLLATE French_CI_AI 
+        and name COLLATE French_CI_AI = @ProcedureName COLLATE French_CI_AI 
+    )
+)
+BEGIN 
+    SET @TestResult = 'FAILURE';
+    SET @ErrorMessage = 'No procedure with name [security].[' + @ProcedureName + '] exists in ' + DB_NAME() ;
+END 
+ELSE 
+BEGIN 
+    DECLARE @CreationWasOK BIT
+    SET @CreationWasOK = 0 ;   
+    
+    BEGIN TRANSACTION             
+    BEGIN TRY
+        PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
+        
+        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''CHULg\SAI_Db'' , @DefaultSchema=''dbo'',@isDefaultDb = 1 ;' ;
+        execute sp_executesql @tsql ;
+        
+        SET @CreationWasOK = 1 ;
+        
+        -- call it twice to check the edition mode is OK
+        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''CHULg\SAI_Db'' , @isActive = 0;' ;
+        execute sp_executesql @tsql ;
+    END TRY 
+    BEGIN CATCH
+        SET @ErrorCount = @ErrorCount + 1;
+        SET @TestResult = 'FAILURE';
+        SET @ErrorMessage = ERROR_MESSAGE() ;
+        PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ') + ' | @CreationWasOK = ' + CONVERT(VARCHAR,@CreationWasOK);
+    END CATCH 
+    COMMIT TRANSACTION;
+END 
+
+INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+
+-- ---------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -268,7 +424,56 @@ FETCH Next From getTestContacts into @SQLLogin ;
 
 WHILE @@FETCH_STATUS = 0
 BEGIN 
-    PRINT '    . Removing SQL Login ' + QUOTENAME(@SQLLogin) ;
+    PRINT '    . Removing SQL Login ' + QUOTENAME(@SQLLogin) + ' from list for ' + @@SERVERNAME + ' SQL instance';
+    
+    SET @TestID = @TestID + 1 ;
+    SET @TestName = 'Deletion of unused SQL Login ' + QUOTENAME(@SQLLogin) ;
+    SET @TestDescription = 'deletes a record from the [security].[SQLMappings] table';
+    SET @TestResult = 'SUCCESS';
+    SET @ErrorMessage = NULL ;
+
+    BEGIN TRY 
+        if( not exists (
+                select 1 
+                from [security].[SQLMappings] 
+                where ServerName = @@SERVERNAME 
+                and SQLLogin = @SQLLogin
+            )
+        )
+        BEGIN 
+            DELETE FROM [security].[SQLMappings] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            
+        END ;
+    END TRY 
+    BEGIN CATCH         
+        SET @ErrorCount = @ErrorCount + 1
+        SET @TestResult = 'FAILURE';
+        SET @ErrorMessage = ERROR_MESSAGE() ;
+        PRINT '        > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
+    END CATCH 
+    
+    INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+    
+    
+    FETCH Next From getTestContacts into @SQLLogin ;
+END ;
+
+CLOSE getTestContacts ;
+DEALLOCATE getTestContacts;
+
+
+
+
+DECLARE getTestContacts CURSOR LOCAL FOR 
+    SELECT SQLLogin
+    FROM #testContacts ;
+    
+OPEN getTestContacts ;
+
+FETCH Next From getTestContacts into @SQLLogin ;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN 
+    PRINT '    . Removing SQL Login ' + QUOTENAME(@SQLLogin) + ' from list for ' + @@SERVERNAME + ' SQL instance';
     
     SET @TestID = @TestID + 1 ;
     SET @TestName = 'Deletion of unused SQL Login ' + QUOTENAME(@SQLLogin) ;
@@ -285,7 +490,7 @@ BEGIN
             )
         )
         BEGIN 
-            DELETE FROM [security].[SQLLogin] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            
+            DELETE FROM [security].[SQLLogins] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            
         END ;
     END TRY 
     BEGIN CATCH         
@@ -366,6 +571,7 @@ END
 
 
 
+
 -- =========================================================================================================
 
 PRINT ''
@@ -379,11 +585,11 @@ from #TestResults
 
 if @ErrorCount = 0
 BEGIN 
-    PRINT 'All tests (' + @TestCount + ' / ' + @TestCount + ') ended successfully';
+    PRINT 'All tests (' + CONVERT(VARCHAR,@TestCount) + ' / ' + CONVERT(VARCHAR,@TestCount) + ') ended successfully';
 END 
 ELSE 
 BEGIN 
-    PRINT CONVERT(VARCHAR,@ErrorCount) + ' / ' + @TestCount + ' tests were unsuccessful';
+    PRINT CONVERT(VARCHAR,@ErrorCount) + ' / ' + CONVERT(VARCHAR,@TestCount) + ' tests were unsuccessful';
     PRINT 'Please, review code to ensure everything is OK and maybe check the tests...';
 END 
 

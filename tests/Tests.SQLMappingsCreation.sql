@@ -1,21 +1,25 @@
 /*requires main.sql*/
-/*requires Tests.LoginCreation.sql*/
 /*requires Tests.ContactCreation.sql*/
+/*requires Tests.LoginCreation.sql*/
 
-PRINT '    > Now testing SQL Login definition for server'
+PRINT '    > Now testing SQL Mappings definition for server'
+
 
 SET @TestID = @TestID + 1 ;
-SET @TestName = 'Creation by INSERT statement into [security].[SQLLogins] table (active = 1)';
-SET @TestDescription = 'inserts a record into the [security].[SQLLogins] table';
+SET @TestName = 'Creation by INSERT statement into [security].[SQLMappings] table (DbUserName = SQLLogin)';
+SET @TestDescription = 'inserts a record into the [security].[SQLMappings] table';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = NULL;
 
 
-set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
-            '    (ServerName,SqlLogin,isActive)' + @LineFeed +
+set @tsql = 'insert into [security].[SQLMappings]'  + @LineFeed +
+            '    (ServerName,SqlLogin,DbName,DbUserName,DefaultSchema,isDefaultDb)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
+            '    DB_NAME(),' + @LineFeed +
             '    ''ApplicationSQLUser1'',' + @LineFeed +
+            '    ''ApplicationSQLUser1'',' + @LineFeed +
+            '    ''ApplicationSchema1'',' + @LineFeed +
             '    1' + @LineFeed +
             ')' ;
 
@@ -37,18 +41,21 @@ INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestRe
 -- ---------------------------------------------------------------------------------------------------------
 
 SET @TestID = @TestID + 1 ;
-SET @TestName = 'Creation by INSERT statement into [security].[SQLLogins] table (active = 0)';
-SET @TestDescription = 'inserts a record into the [security].[SQLLogins] table';
+SET @TestName = 'Creation by INSERT statement into [security].[SQLMappings] table (DbUserName <> SQLLogin)';
+SET @TestDescription = 'inserts a record into the [security].[SQLMappings] table';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = NULL;
 
 
-set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
-            '    (ServerName,SqlLogin,isActive)' + @LineFeed +
+set @tsql = 'insert into [security].[SQLMappings]'  + @LineFeed +
+            '    (ServerName,SqlLogin,DbName,DbUserName,DefaultSchema,isDefaultDb)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
+            '    DB_NAME(),' + @LineFeed +
             '    ''ApplicationSQLUser2'',' + @LineFeed +
-            '    0' + @LineFeed +
+            '    ''DbUser2'',' + @LineFeed +
+            '    ''ApplicationSchema2'',' + @LineFeed +
+            '    1' + @LineFeed +
             ')' ;
 
 BEGIN TRANSACTION             
@@ -69,8 +76,9 @@ INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestRe
 -- ---------------------------------------------------------------------------------------------------------
 
 SET @TestID = @TestID + 1 ;
-SET @TestName = 'Creation through setServerAccess procedure of an inactive SQL Login';
-SET @TestDescription = 'checks that setServerAccess procedure exists and call it';
+SET @ProcedureName = 'setDatabaseAccess';
+SET @TestName = 'Creation through ' + @ProcedureName + ' procedure';
+SET @TestDescription = 'checks that ' + @ProcedureName + ' procedure exists and call it';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = NULL;
 
@@ -79,25 +87,28 @@ IF( NOT EXISTS (
         from sys.all_objects 
         where 
             SCHEMA_NAME(Schema_ID) COLLATE French_CI_AI = 'security' COLLATE French_CI_AI 
-        and name COLLATE French_CI_AI = 'setServerAccess' COLLATE French_CI_AI 
+        and name COLLATE French_CI_AI = @ProcedureName COLLATE French_CI_AI 
     )
 )
 BEGIN 
     SET @TestResult = 'FAILURE';
-    SET @ErrorMessage = 'No procedure with name [security].[setServerAccess] exists in ' + DB_NAME() ;
+    SET @ErrorMessage = 'No procedure with name [security].[' + @ProcedureName + '] exists in ' + DB_NAME() ;
 END 
 ELSE 
-BEGIN     
+BEGIN 
     SET @CreationWasOK = 0 ;   
     
     BEGIN TRANSACTION             
     BEGIN TRY
         PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
         
-        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 1 ;' ;
+        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''${DomainName}\${DomainUser1}'' , @DefaultSchema=''dbo'',@isDefaultDb = 1 ;' ;
         execute sp_executesql @tsql ;
         
         SET @CreationWasOK = 1 ;
+        
+        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''${DomainName}\${DomainUser2}'' , @DefaultSchema=''dbo'',@isDefaultDb = 1 ;' ;
+        execute sp_executesql @tsql ;
         
         -- call it twice to check the edition mode is OK
         SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 0;' ;

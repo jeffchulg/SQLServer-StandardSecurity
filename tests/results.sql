@@ -1,6 +1,7 @@
 /*requires cleanups.sql */
 /*requires Cleanup.LoginCreation.sql */
 /*requires Cleanup.ContactCreation.sql */
+/*requires Cleanup.SQLMappingsCreation.sql */
 
 
 -- =========================================================================================================

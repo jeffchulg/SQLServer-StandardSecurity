@@ -1,7 +1,6 @@
 /*requires main.sql*/
-/*requires Tests.LoginCreation.sql*/
+/*requires Tests.SQLMappingsCreation.sql*/
 /*requires cleanups.sql */
-/*requires Cleanup.SQLMappingsCreation.sql*/
 
 DECLARE getTestContacts CURSOR LOCAL FOR 
     SELECT SQLLogin
@@ -13,11 +12,11 @@ FETCH Next From getTestContacts into @SQLLogin ;
 
 WHILE @@FETCH_STATUS = 0
 BEGIN 
-    PRINT '    . Removing SQL Login ' + QUOTENAME(@SQLLogin) + ' from list for ' + @@SERVERNAME + ' SQL instance';
+    PRINT '    . Removing SQL Mappings for SQL Login ' + QUOTENAME(@SQLLogin) + ' from list for ' + @@SERVERNAME + ' SQL instance';
     
     SET @TestID = @TestID + 1 ;
-    SET @TestName = 'Deletion of unused SQL Login ' + QUOTENAME(@SQLLogin) ;
-    SET @TestDescription = 'deletes a record from the [security].[SQLLogins] table';
+    SET @TestName = 'Deletion of unused SQL Mappings ' + QUOTENAME(@SQLLogin) ;
+    SET @TestDescription = 'deletes a record from the [security].[SQLMappings] table';
     SET @TestResult = 'SUCCESS';
     SET @ErrorMessage = NULL ;
 
@@ -30,7 +29,7 @@ BEGIN
             )
         )
         BEGIN 
-            DELETE FROM [security].[SQLLogins] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            
+            DELETE FROM [security].[SQLMappings] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            
         END ;
     END TRY 
     BEGIN CATCH         

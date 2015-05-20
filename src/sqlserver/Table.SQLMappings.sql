@@ -62,7 +62,7 @@ BEGIN
 END
 ELSE 
 BEGIN 
-    DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('[Reason]')
+    DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('Reason')
     DECLARE @ColumnDef      NVARCHAR(MAX)   = '[VARCHAR](MAX)'
     DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[SQLMappings]'
     DECLARE @tsql           NVARCHAR(max)

@@ -1,6 +1,9 @@
-/*requires main.sql */
+/*requires main.sql*/
 
 PRINT 'Creating temporary table in which tests results will be stored';
+
+IF(OBJECT_ID('tempdb..#testResults') is not null)
+	DROP TABLE #testResults
 
 CREATE TABLE #testResults (
     TestID          BIGINT          NOT NULL ,

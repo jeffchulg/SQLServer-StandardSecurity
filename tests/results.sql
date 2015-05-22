@@ -1,7 +1,12 @@
-/*requires cleanups.sql */
-/*requires Cleanup.LoginCreation.sql */
-/*requires Cleanup.ContactCreation.sql */
-/*requires Cleanup.SQLMappingsCreation.sql */
+/*requires main.sql */
+/*requires Tests.Start.sql*/
+/*requires Tests.End.sql*/
+/*requires cleanups.sql*/
+/*requires Cleanup.SQLMappingsCreation.sql*/
+/*requires Cleanup.DatabaseSchemas.sql*/
+/*requires Cleanup.LoginCreation.sql*/
+/*requires Cleanup.ContactCreation.sql*/
+
 
 
 -- =========================================================================================================
@@ -11,17 +16,27 @@ PRINT ''
 PRINT '-------------------------------------------------------'
 
 DECLARE @TestCount BIGINT ;
-
+DECLARE @SkippedTestCount BIGINT ;
 SELECT @TestCount = count(*) 
 from #TestResults 
 
-if @ErrorCount = 0
+SELECT @SkippedTestCount = count(*)
+FROM #TestResults
+WHERE TestResult Collate French_CI_AI = 'SKIPPED' Collate French_CI_AI
+
+if(@SkippedTestCount > 0)
 BEGIN 
-    PRINT 'All tests (' + CONVERT(VARCHAR,@TestCount) + ' / ' + CONVERT(VARCHAR,@TestCount) + ') ended successfully';
+    PRINT CONVERT(VARCHAR,@SkippedTestCount)  + ' tests were skipped.';
+END 
+    
+if @ErrorCount = 0 
+BEGIN 
+    PRINT CONVERT(VARCHAR,@TestCount - @SkippedTestCount) + ' / ' + CONVERT(VARCHAR,@TestCount) + ' tests ended successfully.';    
 END 
 ELSE 
 BEGIN 
-    PRINT CONVERT(VARCHAR,@ErrorCount) + ' / ' + CONVERT(VARCHAR,@TestCount) + ' tests were unsuccessful';
+    PRINT CONVERT(VARCHAR,@TestCount - @SkippedTestCount - @ErrorCount) + ' / ' + CONVERT(VARCHAR,@TestCount) + ' tests ended successfully.';
+    PRINT CONVERT(VARCHAR,@ErrorCount) + ' / ' + CONVERT(VARCHAR,@TestCount) + ' tests failed.';
     PRINT 'Please, review code to ensure everything is OK and maybe check the tests...';
 END 
 

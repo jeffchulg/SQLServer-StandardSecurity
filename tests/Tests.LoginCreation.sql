@@ -1,8 +1,9 @@
-/*requires main.sql*/
-/*requires Tests.LoginCreation.sql*/
+/*requires Tests.Start.sql*/
 /*requires Tests.ContactCreation.sql*/
 
-PRINT '    > Now testing SQL Login definition for server'
+PRINT ''
+PRINT 'Now testing SQL Login definition for server'
+PRINT ''
 
 SET @TestID = @TestID + 1 ;
 SET @TestName = 'Creation by INSERT statement into [security].[SQLLogins] table (active = 1)';
@@ -15,24 +16,30 @@ set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
             '    (ServerName,SqlLogin,isActive)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
-            '    ''ApplicationSQLUser1'',' + @LineFeed +
+            '    ''${LocalSQLLogin1}'',' + @LineFeed +
             '    1' + @LineFeed +
             ')' ;
 
-BEGIN TRANSACTION             
 BEGIN TRY
+    BEGIN TRANSACTION
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
-    execute sp_executesql @tsql ;    
-END TRY 
-BEGIN CATCH
+    execute sp_executesql @tsql ;
+    COMMIT TRANSACTION 
+END TRY
+BEGIN CATCH    
     SET @ErrorCount = @ErrorCount + 1
     SET @TestResult = 'FAILURE';
-    SET @ErrorMessage = ERROR_MESSAGE() ;
+    SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
-END CATCH 
-COMMIT TRANSACTION;
+    IF @@TRANCOUNT > 0
+    BEGIN 
+        ROLLBACK ;
+    END 
+END CATCH
 
+BEGIN TRAN
 INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
 
@@ -47,25 +54,31 @@ set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
             '    (ServerName,SqlLogin,isActive)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
-            '    ''ApplicationSQLUser2'',' + @LineFeed +
+            '    ''${LocalSQLLogin2}'',' + @LineFeed +
             '    0' + @LineFeed +
             ')' ;
 
-BEGIN TRANSACTION             
+
 BEGIN TRY
+    BEGIN TRANSACTION
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
-    execute sp_executesql @tsql ;    
-END TRY 
+    execute sp_executesql @tsql ;
+    COMMIT TRANSACTION;
+END TRY
 BEGIN CATCH
     SET @ErrorCount = @ErrorCount + 1
     SET @TestResult = 'FAILURE';
-    SET @ErrorMessage = ERROR_MESSAGE() ;
+    SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
-END CATCH 
-COMMIT TRANSACTION;
+    IF @@TRANCOUNT > 0
+    BEGIN 
+        ROLLBACK ;
+    END 
+END CATCH
 
+BEGIN TRAN
 INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-
+COMMIT;
 -- ---------------------------------------------------------------------------------------------------------
 
 SET @TestID = @TestID + 1 ;
@@ -76,42 +89,48 @@ SET @ErrorMessage = NULL;
 
 IF( NOT EXISTS (
         select 1
-        from sys.all_objects 
-        where 
-            SCHEMA_NAME(Schema_ID) COLLATE French_CI_AI = 'security' COLLATE French_CI_AI 
-        and name COLLATE French_CI_AI = 'setServerAccess' COLLATE French_CI_AI 
+        from sys.all_objects
+        where
+            SCHEMA_NAME(Schema_ID) COLLATE French_CI_AI = 'security' COLLATE French_CI_AI
+        and name COLLATE French_CI_AI = 'setServerAccess' COLLATE French_CI_AI
     )
 )
-BEGIN 
+BEGIN
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = 'No procedure with name [security].[setServerAccess] exists in ' + DB_NAME() ;
-END 
-ELSE 
-BEGIN     
-    SET @CreationWasOK = 0 ;   
+END
+ELSE
+BEGIN
+    SET @CreationWasOK = 0 ;
     
-    BEGIN TRANSACTION             
     BEGIN TRY
+        BEGIN TRANSACTION
         PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
-        
+
         SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 1 ;' ;
         execute sp_executesql @tsql ;
-        
+
         SET @CreationWasOK = 1 ;
-        
+
         -- call it twice to check the edition mode is OK
         SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 0;' ;
         execute sp_executesql @tsql ;
-    END TRY 
+        COMMIT TRANSACTION;
+    END TRY
     BEGIN CATCH
-        SET @ErrorCount = @ErrorCount + 1;
+        SET @ErrorCount = @ErrorCount + 1
         SET @TestResult = 'FAILURE';
-        SET @ErrorMessage = ERROR_MESSAGE() ;
-        PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ') + ' | @CreationWasOK = ' + CONVERT(VARCHAR,@CreationWasOK);
-    END CATCH 
-    COMMIT TRANSACTION;
-END 
+        SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
+        PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ') + ' | @CreationWasOK = ' + CONVERT(VARCHAR,@CreationWasOK) ;
+        IF @@TRANCOUNT > 0
+        BEGIN 
+            ROLLBACK ;
+        END 
+    END CATCH
 
+END
+
+BEGIN TRAN
 INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-
+COMMIT;
 -- ---------------------------------------------------------------------------------------------------------

@@ -1,0 +1,21 @@
+<configs>
+    <config>
+        <filename>Generate-SQLSecurity.ps1</filename>
+        <debug>1</debug>   
+		<logging>
+			<logpath>.\logs</logpath>
+			<logname>Document-SQLSecurity.log</logname>
+			<append>1</append>
+			<!-- <notification>
+				<email>jefferson.elias@chu.ulg.ac.be<email>
+			</notification>-->
+		</logging>
+        <repository hostname="" database="" OutputDatabase="DbaDoc" OutputSchema="dbo" OutputTable="GeneratedSecurityScripts"/>
+        <libraries>
+            <library>
+                <location>.\ps-libs</location>
+                <type>Powershell</type>
+            </library>
+        </libraries>
+    </config>
+</configs>

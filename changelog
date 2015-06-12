@@ -92,6 +92,7 @@ SecurityApplier 1.0.2, 2015-01-07
 *   Bug Fix    *
 ================
 	- Correction for Bug #00016
+    - Correction of bug about CHECK_POLICY in login creation
 
 ---------------------------------
 SecurityApplier 1.0.1, 2014-11-17

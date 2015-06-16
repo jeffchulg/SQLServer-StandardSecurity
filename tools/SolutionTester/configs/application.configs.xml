@@ -1,0 +1,48 @@
+<configs>
+    <config>
+        <filename>SolutionTester.ps1</filename>
+        <debug>1</debug>   
+		<logging>
+			<logpath>.\logs</logpath>
+			<logname>SolutionTester_{SOLUTIONNAME}_{DATE}.log</logname>
+			<append>0</append>
+			<!-- <notification>
+				<email>jefferson.elias@chu.ulg.ac.be<email>
+			</notification>-->
+		</logging>
+        <libraries>
+            <library>
+                <location>.\ps-libs</location>
+                <type>Powershell</type>
+            </library>
+        </libraries>
+        <target HostName="SI-S-SERV236" InstanceName="MSSQLSERVER" DatabaseName="TEST_SecurityInventory"> <!-- AuthMode="Credential"-->
+            <!--<credential type="usernamePassword" alias="MyAccount">
+                <username>                
+                    MyUser
+                </username>                
+                <password type="clear" value="MyPas\$dsio23"/>
+                <password type="Encrypted" algorithm=""/>                    
+            </credential>-->            
+            <credential type="CurrentADUser" alias="CurrentUser"/>
+            <!--<credential type="System.Management.Automation.PSCredential" alias="" FileLocation=""/> 
+                $MyCredentials=GET-CREDENTIAL –Credential “CONTOSO\Username” | EXPORT-CLIXML C:\Scriptfolder\SecureCredentials.xml 
+                $MyCredentials=IMPORT-CLIXML C:\Scriptfolder\SecureCredentials.xml
+                -->
+        </target>
+        <Tests>                
+                <Test name="Deploy"                 order="100" type="SQLScript" FileLocation="..\..\dist\securityApplier_SQLServer.sql"/>
+                <Test name="DefineSecurity"         order="200" type="SQLScript" FileLocation="..\..\dist\SecurityManager.Testing.sql"/>
+                <Test name="GenerateSecurityScript" order="300" type="PSScript"  FileLocation="..\..\dist\Documenter\Generate-SQLSecurity.ps1">
+                    <params>
+                        <param Name="RepositoryServer"      value="{TARGET_INSTANCE}"/>
+                        <param Name="RepositoryDatabase"    value="{TARGET_DBNAME}"/>
+                        <param Name="TargetSQLInstance"     value="{TARGET_INSTANCE}"/>
+                        <param Name="OutputFile"            value="{LOG_PATH}\{SCRIPT_BASENAME}_{TARGET_INSTANCE}_{DATESTAMP}.sql"/>
+                    </params>
+                </Test>
+                <Test name="ApplySecurityScript"    order="400" type="SQLScript" FileLocation="{GenerateSecurityScript:OutputFile}"/>
+                <Test name="ValidateSecurity"       order="500" type="SQLScript" FileLocation="..\..\dist\SecurityManager.Testing-Validation.sql"/>
+        </Tests>
+    </config>
+</configs>

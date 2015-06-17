@@ -1,15 +1,5 @@
-/*requires main.sql*/
-/*requires TempTable.TestResults.sql*/
-/*requires TempTable.TestContacts.sql*/
-/*requires Tests.Start.sql*/
-/*requires Tests.ContactCreation.sql*/
-/*requires Tests.LoginCreation.sql*/
-/*requires Tests.SQLMappingsCreation.sql*/
-/*requires Tests.GenerateStandardRoles.sql*/
-/*requires Tests.PermissionAssignments.sql*/
-/*requires Tests.SecurityScriptGeneration.sql*/
-/*requires Tests.End.sql*/
 /*requires cleanups.sql */
+/*requires Cleanup.DatabaseSchemas.sql*/
 /*requires Cleanup.SQLMappingsCreation.sql*/
 
 
@@ -19,7 +9,7 @@ SET @TestDescription = 'Removes Data from [security].[SQLLogins] table';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = '';
 
-if(${NoCleanups} = 1)
+if($(NoCleanups) = 1)
 BEGIN
     SET @TestResult = 'SKIPPED'
 END
@@ -27,7 +17,7 @@ END
 
 DECLARE getTestContacts CURSOR LOCAL FOR 
     SELECT SQLLogin
-    FROM #testContacts ;
+    FROM $(TestingSchema).testContacts ;
     
 OPEN getTestContacts ;
 
@@ -35,7 +25,7 @@ FETCH Next From getTestContacts into @SQLLogin ;
 
 SET @TmpIntVal = 0
 
-WHILE @@FETCH_STATUS = 0 and ${NoCleanups} = 0
+WHILE @@FETCH_STATUS = 0 and $(NoCleanups) = 0
 BEGIN 
     PRINT '    . Removing SQL Login ' + QUOTENAME(@SQLLogin) + ' from list for ' + @@SERVERNAME + ' SQL instance';
     /*
@@ -56,8 +46,8 @@ BEGIN
         BEGIN 
             BEGIN TRAN 
             DELETE FROM [security].[SQLLogins] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            
-            COMMIT;
-            SET @TmpIntVal = @TmpIntVal + 1;
+			SET @TmpIntVal = @TmpIntVal + @@ROWCOUNT;
+            COMMIT;            
         END ;
     END TRY 
     BEGIN CATCH         
@@ -81,7 +71,7 @@ END ;
 CLOSE getTestContacts ;
 DEALLOCATE getTestContacts;
 
-if( ${NoCleanups} = 0 and @TmpIntVal <> ${expectedSQLLoginsTotalCount})
+if( $(NoCleanups) = 0 and @TmpIntVal <> $(expectedSQLLoginsTotalCount))
 BEGIN 
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = @ErrorMessage + 'Unable to delete all expected SQL Logins' ;
@@ -96,5 +86,5 @@ if(@TestResult = 'FAILURE')
     SET @ErrorCount = @ErrorCount + 1
 
 BEGIN TRAN    
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID , '$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;

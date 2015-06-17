@@ -1,3 +1,5 @@
+/*requires Table.TestResults.sql*/
+/*requires Table.TestContacts.sql*/
 /*requires Tests.Start.sql*/
 /*requires Tests.ContactCreation.sql*/
 /*requires Tests.LoginCreation.sql*/
@@ -20,7 +22,7 @@ set @tsql = 'insert into [security].[DatabaseRoles]'  + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +
-            '    ''${CustomRoleName1}'',' + @LineFeed +
+            '    ''$(CustomRoleName1)'',' + @LineFeed +
             '    0,' + @LineFeed +            
             '    1,' + @LineFeed +
             '    ''For validation test called "' + @TestName + '"''' + @LineFeed +
@@ -44,7 +46,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -60,7 +62,7 @@ set @tsql = 'insert into [security].[DatabaseRoles]'  + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +
-            '    ''${CustomRoleName2}'',' + @LineFeed +
+            '    ''$(CustomRoleName2)'',' + @LineFeed +
             '    0,' + @LineFeed +            
             '    0,' + @LineFeed +
             '    ''For validation test called "' + @TestName + '"''' + @LineFeed +
@@ -84,7 +86,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -101,8 +103,8 @@ set @tsql = 'insert into [security].[DatabaseRoleMembers]'  + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +
-            '    ''${CustomRoleName1}'',' + @LineFeed +
-            '    ''${LocalSQLLogin1}'',' + @LineFeed +            
+            '    ''$(CustomRoleName1)'',' + @LineFeed +
+            '    ''$(LocalSQLLogin1)'',' + @LineFeed +            
             '    0,' + @LineFeed +
             '    ''GRANT'',' + @LineFeed +
             '    1,' + @LineFeed +
@@ -127,7 +129,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -143,8 +145,8 @@ set @tsql = 'insert into [security].[DatabaseRoleMembers]'  + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +
-            '    ''${CustomRoleName1}'',' + @LineFeed +
-            '    ''${LocalSQLLogin2}'',' + @LineFeed +            
+            '    ''$(CustomRoleName1)'',' + @LineFeed +
+            '    ''$(LocalSQLLogin4)'',' + @LineFeed +            
             '    0,' + @LineFeed +
             '    ''REVOKE'',' + @LineFeed +
             '    1,' + @LineFeed +
@@ -159,7 +161,7 @@ BEGIN TRY
     
     SET @ErrorCount = @ErrorCount + 1
     SET @TestResult = 'FAILURE';
-    SET @ErrorMessage = 'Trial to add [${LocalSQLLogin2}] (a SQL Login mapped to database user [${DbUserForSQLLogin2}]) as member of a DATABASE Role succeeded. It should never work !'  ;
+    SET @ErrorMessage = 'Trial to add [$(LocalSQLLogin2)] (a SQL Login mapped to database user [$(LocalSQLLogin4)]) as member of a DATABASE Role ($(CustomRoleName1)) succeeded. It should never work as Login should have not been created!'  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
     
 END TRY
@@ -171,7 +173,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- TODO use of a procedure to set appropriate database user in [security].[DatabaseRoleMembers] 
@@ -188,8 +190,8 @@ set @tsql = 'insert into [security].[DatabaseRoleMembers]'  + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +
-            '    ''${CustomRoleName1}'',' + @LineFeed +
-            '    ''${LocalSQLLogin3}'',' + @LineFeed +            
+            '    ''$(CustomRoleName1)'',' + @LineFeed +
+            '    ''$(LocalSQLLogin3)'',' + @LineFeed +            
             '    0,' + @LineFeed +
             '    ''GRANT'',' + @LineFeed +
             '    0,' + @LineFeed +
@@ -214,7 +216,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -234,8 +236,8 @@ set @tsql = 'insert into [security].[DatabaseRoleMembers]'  + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +
-            '    ''${CurrentDB_Schema1}' + @TmpStringVal + 'endusers'',' + @LineFeed +
-            '    ''${CustomRoleName1}'',' + @LineFeed +            
+            '    ''$(CurrentDB_Schema1)' + @TmpStringVal + 'endusers'',' + @LineFeed +
+            '    ''$(CustomRoleName1)'',' + @LineFeed +            
             '    0,' + @LineFeed +
             '    ''GRANT'',' + @LineFeed +
             '    0,' + @LineFeed +
@@ -260,7 +262,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -333,7 +335,7 @@ BEGIN
 END
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------

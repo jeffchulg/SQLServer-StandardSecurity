@@ -1,9 +1,7 @@
-/*requires Tests.Start.sql*/
-/*requires Tests.ContactCreation.sql*/
-/*requires Tests.LoginCreation.sql*/
-/*requires Tests.SQLMappingsCreation.sql*/
-/*requires Tests.GenerateStandardRoles.sql*/
-/*requires Tests.PermissionAssignments.sql*/
+/*requires ..\main.sql*/
+
+
+:setvar Feature "SecurityScriptGeneration"
 
 SET @TestID = @TestID + 1 ;
 SET @ProcedureName = 'getSecurityScript';
@@ -30,12 +28,12 @@ BEGIN
         BEGIN TRANSACTION
         PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
         
-        if (OBJECT_ID('[security].[${GeneratedScriptBackupTable}]') IS NOT NULL)
+        if (OBJECT_ID('[security].[$(GeneratedScriptBackupTable)]') IS NOT NULL)
         BEGIN 
-            execute sp_executesql N'TRUNCATE TABLE [security].[${GeneratedScriptBackupTable}]';
+            execute sp_executesql N'TRUNCATE TABLE [security].[$(GeneratedScriptBackupTable)]';
         END 
         
-        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName   = NULL , @OutputType = ''SCRIPT'', @OutputSchemaName = ''security'' , @OutputTableName = ''${GeneratedScriptBackupTable}'', @Debug = 1;' ;
+        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName   = NULL , @OutputType = ''SCRIPT'', @OutputSchemaName = ''security'' , @OutputTableName = ''$(GeneratedScriptBackupTable)'', @Debug = 1;' ;
         execute sp_executesql @tsql ;
 
         COMMIT TRANSACTION;
@@ -54,7 +52,7 @@ BEGIN
 END
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into ${TestingSchema}.testResults values (@TestID , '$(Feature)',@TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------

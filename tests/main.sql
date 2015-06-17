@@ -1,48 +1,53 @@
-set :SolutionName "Security Manager" 
-set :DomainName   "CHULg"
-set :DomainUser1  "SAI_Db"
-set :DomainUser2  "c168350"
-set :LocalSQLLogin1 "ApplicationSQLUser1"
-set :LocalSQLLogin2 "ApplicationSQLUser2"
-set :LocalSQLLogin3 "ApplicationSQLUser3"
-set :DbUserForSQLLogin2 "DbUser2"
-set :CurrentDB_Schema1 "ApplicationSchema1"
-set :CurrentDB_Schema2 "ApplicationSchema2"
-set :OtherDBs_Schema "dbo"
-set :expectedContactsTotalCount 5
-set :expectedSQLLoginsCountAfterSQLMappingsCreation 4
-set :expectedSQLMappingsTotalCount 6
-set :expectedDatabaseSchemasCountAfterSQLMappingsCreation 3
-set :CustomRoleName1 "CustomRole"
-set :CustomRoleName2 "InactiveCustomRole"
+:setvar SolutionName "Security Manager" 
+:setvar TestingSchema "dbo"
+:setvar DomainName   "CHULg"
+:setvar DomainUser1  "SAI_Db"
+:setvar DomainUser2  "c168350"
+:setvar LocalSQLLogin1 "ApplicationSQLUser1"
+:setvar LocalSQLLogin2 "ApplicationSQLUser2"
+:setvar LocalSQLLogin3 "ApplicationSQLUser3"
+:setvar LocalSQLLogin4 "ApplicationSQLUser4" -- every time disabled / nothing good happens with him
+:setvar DbUserForSQLLogin2 "DbUser2"
+:setvar DbUserForSQLLogin4 "DbUser4"
+:setvar CurrentDB_Schema1 "ApplicationSchema1"
+:setvar CurrentDB_Schema2 "ApplicationSchema2"
+:setvar OtherDBs_Schema "dbo"
+:setvar expectedContactsTotalCount 6
+:setvar expectedSQLLoginsCountAfterSQLMappingsCreation 6
+:setvar expectedSQLMappingsTotalCount 7
+:setvar expectedDatabaseSchemasCountAfterSQLMappingsCreation 4
+:setvar CustomRoleName1 "CustomRole"
+:setvar CustomRoleName2 "InactiveCustomRole"
 -- NoCleanups : 0 or 1
-set :NoCleanups 1
-set :expectedSQLLoginsTotalCount 5
-set :GeneratedScriptBackupTable "GeneratedSecurityScripts"
+:setvar NoCleanups 0
+:setvar expectedSQLLoginsTotalCount 6
+:setvar GeneratedScriptBackupTable "GeneratedSecurityScripts"
 /*
 
 Find and replace : 
 
-${SolutionName} "Security Manager" 
-${DomainName}   "CHULg"
-${DomainUser1}  "SAI_Db"
-${DomainUser2}  "c168350"
-${LocalSQLLogin1}    ApplicationSQLUser1
-${LocalSQLLogin2}    ApplicationSQLUser2
-${LocalSQLLogin3}    ApplicationSQLUser3
-${DbUserForSQLLogin2} "DbUser2"
-${CurrentDB_Schema1} "ApplicationSchema1"
-${CurrentDB_Schema2} "ApplicationSchema2"
-${OtherDBs_Schema} "dbo"
-${expectedContactsTotalCount} 5
-${expectedSQLLoginsCountAfterSQLMappingsCreation} 5
-${expectedSQLLoginsTotalCount} 5
-${expectedSQLMappingsTotalCount} 6
-${expectedDatabaseSchemasCountAfterSQLMappingsCreation} 4
-${CustomRoleName1} "CustomRole"
-${CustomRoleName2} "InactiveCustomRole"
-${NoCleanups} 1
-${GeneratedScriptBackupTable} GeneratedSecurityScripts
+$(SolutionName)
+$(DomainName)  
+$(DomainUser1) 
+$(DomainUser2) 
+$(LocalSQLLogin1)    
+$(LocalSQLLogin2)    
+$(LocalSQLLogin3)   
+$(LocalSQLLogin4)   
+$(DbUserForSQLLogin2)
+$(DbUserForSQLLogin4)
+$(CurrentDB_Schema1)
+$(CurrentDB_Schema2)
+$(OtherDBs_Schema)
+$(expectedContactsTotalCount) 
+$(expectedSQLLoginsCountAfterSQLMappingsCreation) 
+$(expectedSQLLoginsTotalCount) 
+$(expectedSQLMappingsTotalCount) 
+$(expectedDatabaseSchemasCountAfterSQLMappingsCreation) 
+$(CustomRoleName1)
+$(CustomRoleName2)
+$(NoCleanups) 
+$(GeneratedScriptBackupTable) 
 
 */
 
@@ -67,5 +72,5 @@ DECLARE @TmpStringVal       VARCHAR(MAX);
 SET @LineFeed = CHAR(13) + CHAR(10);
 SET @ErrorCount = 0;
 
-PRINT 'Starting testing for solution ${SolutionName}';
+PRINT 'Starting testing for solution $(SolutionName)';
 PRINT '' ;

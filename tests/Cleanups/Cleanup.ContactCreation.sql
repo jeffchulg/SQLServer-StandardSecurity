@@ -1,15 +1,5 @@
-/*requires main.sql*/
-/*requires TempTable.TestResults.sql*/
-/*requires TempTable.TestContacts.sql*/
-/*requires Tests.Start.sql*/
-/*requires Tests.ContactCreation.sql*/
-/*requires Tests.LoginCreation.sql*/
-/*requires Tests.SQLMappingsCreation.sql*/
-/*requires Tests.GenerateStandardRoles.sql*/
-/*requires Tests.PermissionAssignments.sql*/
-/*requires Tests.SecurityScriptGeneration.sql*/
-/*requires Tests.End.sql*/
 /*requires cleanups.sql */
+/*requires Cleanup.DatabaseSchemas.sql*/
 /*requires Cleanup.SQLMappingsCreation.sql */
 /*requires Cleanup.LoginCreation.sql */
 /*requires Cleanup.DatabaseSchemas.sql */
@@ -21,7 +11,7 @@ SET @TestDescription = 'Removes Data from [security].[Contacts] table';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = '';
 
-if(${NoCleanups} = 1)
+if($(NoCleanups) = 1)
 BEGIN
     SET @TestResult = 'SKIPPED'
 END
@@ -34,13 +24,14 @@ END
 
 DECLARE getTestContacts CURSOR LOCAL FOR 
     SELECT SQLLogin
-    FROM #testContacts ;
+    FROM $(TestingSchema).testContacts ;
     
 OPEN getTestContacts ;
 
 FETCH Next From getTestContacts into @SQLLogin ;
+SET @TmpIntVal = 0
 
-WHILE @@FETCH_STATUS = 0 and ${NoCleanups} = 0
+WHILE @@FETCH_STATUS = 0 and $(NoCleanups) = 0
 BEGIN 
     PRINT '    . Removing contact ' + QUOTENAME(@SQLLogin) ;
     /*
@@ -60,6 +51,7 @@ BEGIN
         BEGIN 
             BEGIN TRAN;
             DELETE FROM [security].[Contacts] WHERE SqlLogin = @SQLLogin ;            
+			SET @TmpIntVal = @TmpIntVal + @@ROWCOUNT;
             COMMIT;
         END ;
     END TRY 
@@ -86,28 +78,28 @@ CLOSE getTestContacts ;
 DEALLOCATE getTestContacts;
 
 
-if( ${NoCleanups} = 0 and @TmpIntVal <> ${expectedSQLLoginsTotalCount})
+if( $(NoCleanups) = 0 and @TmpIntVal <> $(expectedContactsTotalCount))
 BEGIN 
     SET @TestResult = 'FAILURE';
-    SET @ErrorMessage = @ErrorMessage + 'Unable to delete all expected SQL Logins' ;
+    SET @ErrorMessage = @ErrorMessage + 'Unable to delete all expected Contacts' ;
     
     if(LEN(@ErrorMessage) > 0)
         SET @ErrorMessage = @ErrorMessage + @LineFeed
     
-    PRINT '        > ERROR Unable to delete all SQL Logins';        
+    PRINT '        > ERROR Unable to delete all SQL Contacts';        
 END 
 
 if(@TestResult = 'FAILURE')
     SET @ErrorCount = @ErrorCount + 1
 
 BEGIN TRAN    
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID , '$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 
-if(${NoCleanups} = 0 and OBJECT_ID('tempdb..#testContacts') is not null)
+if($(NoCleanups) = 0 and OBJECT_ID('tempdb..$(TestingSchema).testContacts') is not null)
 BEGIN
-    execute sp_executesql N'DROP TABLE #testContacts';
+    execute sp_executesql N'DROP TABLE $(TestingSchema).testContacts';
 END 
 
 -- ---------------------------------------------------------------------------------------------------------

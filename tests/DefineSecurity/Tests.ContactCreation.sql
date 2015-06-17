@@ -1,5 +1,6 @@
 /*requires Tests.Start.sql*/
-
+/*requires Table.TestResults.sql*/
+/*requires Table.TestContacts.sql*/
 SET @TestID = 1 ;
 SET @TestName = 'Creation by INSERT statement into [security].[Contacts] table (authmode SQL Server - active)';
 SET @TestDescription = 'inserts a record into the [security].[Contacts] table';
@@ -9,7 +10,7 @@ SET @ErrorMessage = NULL;
 set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
             '    (SqlLogin,Name,job,isActive,Department,authmode)' + @LineFeed +
             'values (' + @LineFeed +
-            '    ''${LocalSQLLogin1}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin1)'',' + @LineFeed +
             '    ''John Doe'',' + @LineFeed +
             '    ''Application Manager'',' + @LineFeed +
             '    1,' + @LineFeed + 
@@ -36,8 +37,8 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-INSERT INTO #testContacts(SQLLogin) values ('${LocalSQLLogin1}');
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT INTO $(TestingSchema).testContacts(SQLLogin) values ('$(LocalSQLLogin1)');
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -52,8 +53,8 @@ SET @ErrorMessage = NULL;
 set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
             '    (SqlLogin,Name,job,isActive,Department,authmode)' + @LineFeed +
             'values (' + @LineFeed +
-            '    ''${DomainName}\${DomainUser1}'',' + @LineFeed +
-            '    ''${DomainUser1}'',' + @LineFeed +
+            '    ''$(DomainName)\$(DomainUser1)'',' + @LineFeed +
+            '    ''$(DomainUser1)'',' + @LineFeed +
             '    ''Test Manager'',' + @LineFeed +
             '    1,' + @LineFeed + 
             '    ''MyCorp/IT Service/Validation Team'',' + @LineFeed +
@@ -79,8 +80,8 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-INSERT INTO #testContacts(SQLLogin) values ('${DomainName}\${DomainUser1}');
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT INTO $(TestingSchema).testContacts(SQLLogin) values ('$(DomainName)\$(DomainUser1)');
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------
 
@@ -94,8 +95,8 @@ SET @ErrorMessage = NULL;
 set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
             '    (SqlLogin,Name,job,isActive,Department,authmode)' + @LineFeed +
             'values (' + @LineFeed +
-            '    ''${DomainName}\${DomainUser2}'',' + @LineFeed +
-            '    ''${DomainUser2}'',' + @LineFeed +
+            '    ''$(DomainName)\$(DomainUser2)'',' + @LineFeed +
+            '    ''$(DomainUser2)'',' + @LineFeed +
             '    ''DBA'',' + @LineFeed +
             '    1,' + @LineFeed + 
             '    ''MyCorp/IT Service/DBA'',' + @LineFeed +
@@ -121,8 +122,8 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-INSERT INTO #testContacts(SQLLogin) values ('${DomainName}\${DomainUser2}');
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT INTO $(TestingSchema).testContacts(SQLLogin) values ('$(DomainName)\$(DomainUser2)');
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -137,9 +138,16 @@ SET @ErrorMessage = NULL;
 set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
             '    (SqlLogin,Name,job,isActive,Department,authmode)' + @LineFeed +
             'values (' + @LineFeed +
-            '    ''${LocalSQLLogin2}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin2)'',' + @LineFeed +
             '    ''Jane Doe'',' + @LineFeed +
             '    ''Application EndUser'',' + @LineFeed +
+            '    0,' + @LineFeed + 
+            '    ''External/DevCorp/DevProduct'',' + @LineFeed +
+            '    ''SQLSRVR''' + @LineFeed + 
+            '),(' + @LineFeed +
+            '    ''$(LocalSQLLogin4)'',' + @LineFeed +
+            '    ''Lazy Worker'',' + @LineFeed +
+            '    ''The good for nothing login of the application'',' + @LineFeed +
             '    0,' + @LineFeed + 
             '    ''External/DevCorp/DevProduct'',' + @LineFeed +
             '    ''SQLSRVR''' + @LineFeed + 
@@ -163,8 +171,8 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-INSERT INTO #testContacts(SQLLogin) values ('${LocalSQLLogin2}');
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT INTO $(TestingSchema).testContacts(SQLLogin) values ('$(LocalSQLLogin2)'),('$(LocalSQLLogin4)');
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -180,7 +188,7 @@ SET @ErrorMessage = NULL;
 set @tsql = 'insert into [security].[Contacts]'  + @LineFeed +
             '    (SqlLogin,Name,job,isActive,Department,authmode)' + @LineFeed +
             'values (' + @LineFeed +
-            '    ''${LocalSQLLogin3}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin3)'',' + @LineFeed +
             '    ''John Smith'',' + @LineFeed +
             '    ''Application EndUser'',' + @LineFeed +
             '    0,' + @LineFeed + 
@@ -206,20 +214,20 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
-INSERT INTO #testContacts(SQLLogin) values ('${LocalSQLLogin3}');
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT INTO $(TestingSchema).testContacts(SQLLogin) values ('$(LocalSQLLogin3)');
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------
 
 SET @TestID = @TestID + 1 ;
 SET @TestName = 'Check the number of contacts is OK';
-SET @TestDescription = 'Joins #testContacts and [security].[Contacts] and checks the number of contacts defined in both tables';
+SET @TestDescription = 'Joins $(TestingSchema).testContacts and [security].[Contacts] and checks the number of contacts defined in both tables';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = NULL;
 
 set @tsql = 'SELECT @cnt = COUNT(*)'  + @LineFeed +            
             'FROM (' + @LineFeed +
-            '    SELECT SQLLogin FROM #testContacts t' + @LineFeed +
+            '    SELECT SQLLogin FROM $(TestingSchema).testContacts t' + @LineFeed +
             'INTERSECT' + @LineFeed +
             '    SELECT SQLLogin FROM [security].[Contacts] c' + @LineFeed +
             ') A' + @LineFeed             
@@ -231,9 +239,9 @@ BEGIN TRY
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql, N'@cnt BIGINT OUTPUT', @cnt = @TestReturnValInt OUTPUT ;    
     
-    if(@TestReturnValInt <> ${expectedContactsTotalCount}) 
+    if(@TestReturnValInt <> $(expectedContactsTotalCount)) 
     BEGIN 
-        SET @ErrorMessage = 'Unexpected number of contacts : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : ${expectedContactsTotalCount}';
+        SET @ErrorMessage = 'Unexpected number of contacts : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : $(expectedContactsTotalCount)';
         RAISERROR(@ErrorMessage,12,1);        
     END 
     COMMIT TRANSACTION;
@@ -250,6 +258,6 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------

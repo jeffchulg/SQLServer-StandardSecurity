@@ -18,10 +18,10 @@ PRINT '-------------------------------------------------------'
 DECLARE @TestCount BIGINT ;
 DECLARE @SkippedTestCount BIGINT ;
 SELECT @TestCount = count(*) 
-from #TestResults 
+from $(TestingSchema).testResults 
 
 SELECT @SkippedTestCount = count(*)
-FROM #TestResults
+FROM $(TestingSchema).testResults
 WHERE TestResult Collate French_CI_AI = 'SKIPPED' Collate French_CI_AI
 
 if(@SkippedTestCount > 0)
@@ -45,7 +45,7 @@ PRINT '-------------------------------------------------------'
 PRINT ''
 PRINT ''
 
-if(OBJECT_ID('tempdb..#testResults') is not null)
+if(OBJECT_ID('$(TestingSchema).testResults') is not null)
 BEGIN
-    execute sp_executesql N'DROP TABLE #testResults';
+    execute sp_executesql N'DROP TABLE $(TestingSchema).testResults';
 END 

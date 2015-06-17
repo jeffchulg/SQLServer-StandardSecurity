@@ -1,3 +1,5 @@
+/*requires Table.TestResults.sql*/
+/*requires Table.TestContacts.sql*/
 /*requires Tests.Start.sql*/
 /*requires Tests.ContactCreation.sql*/
 
@@ -16,7 +18,7 @@ set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
             '    (ServerName,SqlLogin,isActive)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
-            '    ''${LocalSQLLogin1}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin1)'',' + @LineFeed +
             '    1' + @LineFeed +
             ')' ;
 
@@ -38,7 +40,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -54,7 +56,11 @@ set @tsql = 'insert into [security].[SQLLogins]'  + @LineFeed +
             '    (ServerName,SqlLogin,isActive)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
-            '    ''${LocalSQLLogin2}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin2)'',' + @LineFeed +
+            '    0' + @LineFeed +
+            '),(' + @LineFeed +
+            '    @@SERVERNAME,' + @LineFeed +
+            '    ''$(LocalSQLLogin4)'',' + @LineFeed +
             '    0' + @LineFeed +
             ')' ;
 
@@ -77,7 +83,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------
 
@@ -107,13 +113,13 @@ BEGIN
         BEGIN TRANSACTION
         PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
 
-        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 1 ;' ;
+        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''$(DomainName)\$(DomainUser1)'' , @isActive = 1 ;' ;
         execute sp_executesql @tsql ;
 
         SET @CreationWasOK = 1 ;
 
         -- call it twice to check the edition mode is OK
-        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''${DomainName}\${DomainUser1}'' , @isActive = 0;' ;
+        SET @tsql = 'execute [security].[setServerAccess] @ServerName = @@SERVERNAME , @ContactLogin = ''$(DomainName)\$(DomainUser1)'' , @isActive = 0;' ;
         execute sp_executesql @tsql ;
         COMMIT TRANSACTION;
     END TRY
@@ -131,6 +137,6 @@ BEGIN
 END
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------

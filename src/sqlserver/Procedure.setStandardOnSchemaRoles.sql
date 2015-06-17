@@ -107,6 +107,7 @@ BEGIN
     DECLARE @CurRoleName        varchar(64) 
     DECLARE @CurDescription     varchar(2048)
     DECLARE @curIsActive        BIT
+    DECLARE @TransactionOpened  BIT
     DECLARE @SchemaRoleSep      VARCHAR(64)
     
     select @SchemaRoleSep = ParamValue
@@ -117,7 +118,11 @@ BEGIN
     SET @CurDbName     = @DbName
     
     BEGIN TRY
-    BEGIN TRANSACTION
+		if(@@TRANCOUNT = 0)
+		BEGIN 
+			BEGIN TRANSACTION;
+			SET @TransactionOpened = 1;
+		END 
         if(@CurServerName is null) 
         BEGIN
             -- needs to loop on all servers defined in SQLMappings
@@ -301,7 +306,10 @@ BEGIN
                 PRINT '--------------------------------------------------------------------------------------------------------------'
             END
         end
-    COMMIT
+		if(@TransactionOpened = 1)
+		BEGIN 
+			COMMIT
+		END 
     END TRY
     BEGIN CATCH
         SELECT
@@ -327,7 +335,10 @@ BEGIN
             close getSchemasRoles
             deallocate getSchemasRoles 
         end
-        ROLLBACK
+		IF @@TRANCOUNT > 0 and @TransactionOpened = 1
+        BEGIN 
+            ROLLBACK ;
+        END 
     END CATCH
 END
 GO

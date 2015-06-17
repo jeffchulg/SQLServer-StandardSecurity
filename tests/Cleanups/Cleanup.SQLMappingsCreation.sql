@@ -1,15 +1,5 @@
-/*requires main.sql*/
-/*requires TempTable.TestResults.sql*/
-/*requires TempTable.TestContacts.sql*/
-/*requires Tests.Start.sql*/
-/*requires Tests.ContactCreation.sql*/
-/*requires Tests.LoginCreation.sql*/
-/*requires Tests.SQLMappingsCreation.sql*/
-/*requires Tests.GenerateStandardRoles.sql*/
-/*requires Tests.PermissionAssignments.sql*/
-/*requires Tests.SecurityScriptGeneration.sql*/
-/*requires Tests.End.sql*/
 /*requires cleanups.sql*/
+/*requires Cleanup.DatabaseSchemas.sql*/
 
 SET @TestID = @TestID + 1 ;
 SET @TestName = 'SQLMappings Cleanup by T-SQL "DELETE" statement ';
@@ -17,14 +7,14 @@ SET @TestDescription = 'Removes Data from [security].[SQLMappings] table';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = '';
 
-if(${NoCleanups} = 1)
+if($(NoCleanups) = 1)
 BEGIN
     SET @TestResult = 'SKIPPED'
 END
 
 DECLARE getTestContacts CURSOR LOCAL FOR 
     SELECT SQLLogin
-    FROM #testContacts ;
+    FROM $(TestingSchema).testContacts ;
     
 OPEN getTestContacts ;
 
@@ -32,7 +22,7 @@ FETCH Next From getTestContacts into @SQLLogin ;
 
 SET @TmpIntVal = 0
 
-WHILE @@FETCH_STATUS = 0 and ${NoCleanups} = 0
+WHILE @@FETCH_STATUS = 0 and $(NoCleanups) = 0
 BEGIN 
     PRINT '    . Removing SQL Mappings for SQL Login ' + QUOTENAME(@SQLLogin) + ' from list for ' + @@SERVERNAME + ' SQL instance';
 
@@ -43,20 +33,11 @@ BEGIN
     SET @TestResult = 'SUCCESS';
     SET @ErrorMessage = NULL ;
 */
-    BEGIN TRY 
-        if( not exists (
-                select 1 
-                from [security].[SQLMappings] 
-                where ServerName = @@SERVERNAME 
-                and SQLLogin = @SQLLogin
-            )
-        )
-        BEGIN            
-            BEGIN TRAN ;
-            DELETE FROM [security].[SQLMappings] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            
-            COMMIT;
-            SET @TmpIntVal = @TmpIntVal + 1;
-        END ;
+    BEGIN TRY    
+		BEGIN TRAN ;
+		DELETE FROM [security].[SQLMappings] WHERE ServerName = @@SERVERNAME and SqlLogin = @SQLLogin ;            		
+		SET @TmpIntVal = @TmpIntVal + @@ROWCOUNT;
+		COMMIT;
     END TRY 
     BEGIN CATCH         
         IF @@TRANCOUNT > 0
@@ -79,7 +60,7 @@ END ;
 CLOSE getTestContacts ;
 DEALLOCATE getTestContacts;
 
-if( ${NoCleanups} = 0 and @TmpIntVal <> ${expectedSQLMappingsTotalCount})
+if( $(NoCleanups) = 0 and @TmpIntVal <> $(expectedSQLMappingsTotalCount))
 BEGIN 
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = @ErrorMessage + 'Unable to delete all expected SQL Mappings' ;
@@ -94,5 +75,5 @@ if(@TestResult = 'FAILURE')
     SET @ErrorCount = @ErrorCount + 1
 
 BEGIN TRAN ;
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID , '$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;

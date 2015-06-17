@@ -1,3 +1,5 @@
+/*requires Table.TestResults.sql*/
+/*requires Table.TestContacts.sql*/
 /*requires Tests.Start.sql*/
 /*requires Tests.ContactCreation.sql*/
 /*requires Tests.LoginCreation.sql*/
@@ -53,7 +55,7 @@ BEGIN
 END
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -113,6 +115,6 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------

@@ -1,3 +1,5 @@
+/*requires Table.TestResults.sql*/
+/*requires Table.TestContacts.sql*/
 /*requires Tests.Start.sql*/
 /*requires Tests.ContactCreation.sql*/
 /*requires Tests.LoginCreation.sql*/
@@ -18,10 +20,10 @@ set @tsql = 'insert into [security].[SQLMappings]'  + @LineFeed +
             '    (ServerName,SqlLogin,DbName,DbUserName,DefaultSchema,isDefaultDb)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
-            '    ''${LocalSQLLogin1}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin1)'',' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +            
-            '    ''${LocalSQLLogin1}'',' + @LineFeed +
-            '    ''${CurrentDB_Schema1}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin1)'',' + @LineFeed +
+            '    ''$(CurrentDB_Schema1)'',' + @LineFeed +
             '    1' + @LineFeed +
             ')' ;
 
@@ -31,8 +33,8 @@ BEGIN TRY
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql ;
     
-    SET @tsql = 'update #testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
-    execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '${LocalSQLLogin1}', @ServerName = @@SERVERNAME, @SQLLogin = '${LocalSQLLogin1}';    
+    SET @tsql = 'update $(TestingSchema).testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
+    execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '$(LocalSQLLogin1)', @ServerName = @@SERVERNAME, @SQLLogin = '$(LocalSQLLogin1)';    
     COMMIT TRANSACTION;
 END TRY
 BEGIN CATCH
@@ -47,7 +49,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -63,10 +65,17 @@ set @tsql = 'insert into [security].[SQLMappings]'  + @LineFeed +
             '    (ServerName,SqlLogin,DbName,DbUserName,DefaultSchema,isDefaultDb)' + @LineFeed +
             'values (' + @LineFeed +
             '    @@SERVERNAME,' + @LineFeed +
-            '    ''${LocalSQLLogin2}'',' + @LineFeed +
+            '    ''$(LocalSQLLogin2)'',' + @LineFeed +
             '    DB_NAME(),' + @LineFeed +            
-            '    ''${DbUserForSQLLogin2}'',' + @LineFeed +
-            '    ''${CurrentDB_Schema2}'',' + @LineFeed +
+            '    ''$(DbUserForSQLLogin2)'',' + @LineFeed +
+            '    ''$(CurrentDB_Schema2)'',' + @LineFeed +
+            '    1' + @LineFeed +
+            '),(' + @LineFeed +
+            '    @@SERVERNAME,' + @LineFeed +
+            '    ''$(LocalSQLLogin4)'',' + @LineFeed +
+            '    DB_NAME(),' + @LineFeed +            
+            '    ''$(DbUserForSQLLogin4)'',' + @LineFeed +
+            '    ''$(CurrentDB_Schema2)'',' + @LineFeed +
             '    1' + @LineFeed +
             ')' ;
 
@@ -76,8 +85,9 @@ BEGIN TRY
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql ;
     
-    SET @tsql = 'update #testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
-    execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '${DbUserForSQLLogin2}', @ServerName = @@SERVERNAME, @SQLLogin = '${LocalSQLLogin2}';    
+    SET @tsql = 'update $(TestingSchema).testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
+    execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '$(DbUserForSQLLogin2)', @ServerName = @@SERVERNAME, @SQLLogin = '$(LocalSQLLogin2)';    
+    execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '$(DbUserForSQLLogin4)', @ServerName = @@SERVERNAME, @SQLLogin = '$(LocalSQLLogin4)';    
     
     COMMIT TRANSACTION;
 END TRY
@@ -93,7 +103,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -126,38 +136,38 @@ BEGIN
         BEGIN TRANSACTION
         PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
 
-        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''${DomainName}\${DomainUser1}'' , @DefaultSchema=''${OtherDBs_Schema}'',@isDefaultDb = 1 ;' ;
+        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''$(DomainName)\$(DomainUser1)'' , @DefaultSchema=''$(OtherDBs_Schema)'',@isDefaultDb = 1 ;' ;
         execute sp_executesql @tsql ;
         
-        SET @tsql = 'update #testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
-        execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '${DomainName}\${DomainUser1}', @ServerName = @@SERVERNAME, @SQLLogin = '${DomainName}\${DomainUser1}';    
+        SET @tsql = 'update $(TestingSchema).testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
+        execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '$(DomainName)\$(DomainUser1)', @ServerName = @@SERVERNAME, @SQLLogin = '$(DomainName)\$(DomainUser1)';    
         
         SET @TestReturnValInt = @TestReturnValInt + 1;
         SET @CreationWasOK = 1 ;
 
-        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''${DomainName}\${DomainUser2}'' , @DefaultSchema=''${OtherDBs_Schema}'',@isDefaultDb = 1 , @withServerAccessCreation = 1;' ;
+        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''$(DomainName)\$(DomainUser2)'' , @DefaultSchema=''$(OtherDBs_Schema)'',@isDefaultDb = 1 , @withServerAccessCreation = 1;' ;
         execute sp_executesql @tsql ;
 
-        SET @tsql = 'update #testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
-        execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '${DomainName}\${DomainUser2}', @ServerName = @@SERVERNAME, @SQLLogin = '${DomainName}\${DomainUser2}';    
+        SET @tsql = 'update $(TestingSchema).testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
+        execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '$(DomainName)\$(DomainUser2)', @ServerName = @@SERVERNAME, @SQLLogin = '$(DomainName)\$(DomainUser2)';    
         
         SET @TestReturnValInt = @TestReturnValInt + 1;
 
-        SET @tsql = 'DECLARE @DbName VARCHAR(256) ; SET @DbName = DB_NAME() ; execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = @DbName, @ContactLogin = ''${DomainName}\${DomainUser2}'' , @DefaultSchema=''${OtherDBs_Schema}'',@isDefaultDb = 1 ;' ;
+        SET @tsql = 'DECLARE @DbName VARCHAR(256) ; SET @DbName = DB_NAME() ; execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = @DbName, @ContactLogin = ''$(DomainName)\$(DomainUser2)'' , @DefaultSchema=''$(OtherDBs_Schema)'',@isDefaultDb = 1 ;' ;
         execute sp_executesql @tsql ;
 
         SET @TestReturnValInt = @TestReturnValInt + 1;
 
-        SET @tsql = 'DECLARE @DbName VARCHAR(256) ; SET @DbName = DB_NAME() ; execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = @DbName, @ContactLogin = ''${LocalSQLLogin3}'' , @DefaultSchema=''${CurrentDB_Schema1}'',@isDefaultDb = 1 , @withServerAccessCreation = 1;' ;
+        SET @tsql = 'DECLARE @DbName VARCHAR(256) ; SET @DbName = DB_NAME() ; execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = @DbName, @ContactLogin = ''$(LocalSQLLogin3)'' , @DefaultSchema=''$(CurrentDB_Schema1)'',@isDefaultDb = 1 , @withServerAccessCreation = 1;' ;
         execute sp_executesql @tsql ;
 
-        SET @tsql = 'update #testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
-        execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '${LocalSQLLogin3}', @ServerName = @@SERVERNAME, @SQLLogin = '${LocalSQLLogin3}';    
+        SET @tsql = 'update $(TestingSchema).testContacts set DbUserName = @DbUserName where SQLLogin = @SQLLogin'
+        execute sp_executesql @tsql , N'@DbUserName VARCHAR(512),@ServerName VARCHAR(512) , @SQLLogin VARCHAR(256)' , @DbUserName = '$(LocalSQLLogin3)', @ServerName = @@SERVERNAME, @SQLLogin = '$(LocalSQLLogin3)';    
         
         SET @TestReturnValInt = @TestReturnValInt + 1;
 
         -- call it twice to check the edition mode is OK
-        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''${DomainName}\${DomainUser1}'' , @DefaultSchema=''${OtherDBs_Schema}'',@isDefaultDb = 1 ;' ;
+        SET @tsql = 'execute [security].[' + @ProcedureName + '] @ServerName = @@SERVERNAME , @DbName = ''master'', @ContactLogin = ''$(DomainName)\$(DomainUser1)'' , @DefaultSchema=''$(OtherDBs_Schema)'',@isDefaultDb = 1 ;' ;
         execute sp_executesql @tsql ;
 
         SET @TestReturnValInt = @TestReturnValInt + 1;
@@ -177,7 +187,7 @@ BEGIN
 END
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -200,9 +210,9 @@ BEGIN TRY
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql, N'@cnt BIGINT OUTPUT', @cnt = @TestReturnValInt OUTPUT ;
 
-    if(@TestReturnValInt <> ${expectedSQLLoginsCountAfterSQLMappingsCreation})
+    if(@TestReturnValInt <> $(expectedSQLLoginsCountAfterSQLMappingsCreation))
     BEGIN
-        SET @ErrorMessage = 'Unexpected number of SQL Logins : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : ${expectedSQLLoginsCountAfterSQLMappingsCreation}';
+        SET @ErrorMessage = 'Unexpected number of SQL Logins : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : $(expectedSQLLoginsCountAfterSQLMappingsCreation)';
         RAISERROR(@ErrorMessage,12,1);
     END
     COMMIT TRANSACTION;
@@ -219,7 +229,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------
 
@@ -241,9 +251,9 @@ BEGIN TRY
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql, N'@cnt BIGINT OUTPUT', @cnt = @TestReturnValInt OUTPUT ;
 
-    if(@TestReturnValInt <> ${expectedSQLMappingsTotalCount})
+    if(@TestReturnValInt <> $(expectedSQLMappingsTotalCount))
     BEGIN
-        SET @ErrorMessage = 'Unexpected number of SQL Mappings : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : ${expectedSQLMappingsTotalCount}';
+        SET @ErrorMessage = 'Unexpected number of SQL Mappings : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : $(expectedSQLMappingsTotalCount)';
         RAISERROR(@ErrorMessage,12,1);
     END
     COMMIT TRANSACTION;
@@ -260,7 +270,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 -- ---------------------------------------------------------------------------------------------------------
 
@@ -282,9 +292,9 @@ BEGIN TRY
 	PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
     execute sp_executesql @tsql, N'@cnt BIGINT OUTPUT', @cnt = @TestReturnValInt OUTPUT ;
 
-    if(@TestReturnValInt <> ${expectedDatabaseSchemasCountAfterSQLMappingsCreation})
+    if(@TestReturnValInt <> $(expectedDatabaseSchemasCountAfterSQLMappingsCreation))
     BEGIN
-        SET @ErrorMessage = 'Unexpected number of SQL Mappings : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : ${expectedDatabaseSchemasCountAfterSQLMappingsCreation}';
+        SET @ErrorMessage = 'Unexpected number of Database Schemas : ' + CONVERT(VARCHAR,@TestReturnValInt) + '. Expected : $(expectedDatabaseSchemasCountAfterSQLMappingsCreation)';
         RAISERROR(@ErrorMessage,12,1);
     END
     COMMIT TRANSACTION;
@@ -301,7 +311,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -315,7 +325,7 @@ SET @ErrorMessage = NULL;
 
 set @tsql = 'SELECT @cnt = COUNT(*)'  + @LineFeed +
             'FROM' + @LineFeed +
-            '    #testContacts' + @LineFeed +
+            '    $(TestingSchema).testContacts' + @LineFeed +
             'WHERE DbuserName is null' + @LineFeed
             ;
 
@@ -343,7 +353,7 @@ BEGIN CATCH
 END CATCH
 
 BEGIN TRAN
-INSERT into #testResults values (@TestID , @TestName , @TestDescription, @TestResult , @ErrorMessage );
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
 
 -- ---------------------------------------------------------------------------------------------------------

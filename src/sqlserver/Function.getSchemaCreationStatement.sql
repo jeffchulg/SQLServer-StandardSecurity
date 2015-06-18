@@ -138,9 +138,9 @@ BEGIN
                 'IF (@SchemaOwner is null ) -- then the schema does not exist ' + @LineFeed  +
                 'BEGIN' + @LineFeed  +                
                 '    -- create it !' + @LineFeed  +
-                '    EXEC (''USE ' + QUOTENAME(@DbName) + ' ; EXEC sp_executesql N''''CREATE SCHEMA [tdoc] AUTHORIZATION [dbo]'''''')' + @LineFeed +
+                '    EXEC (''USE ' + QUOTENAME(@DbName) + ' ; EXEC sp_executesql N''''CREATE SCHEMA ''+@dynamicDeclaration+'' AUTHORIZATION '+QUOTENAME(@SchemaAuthorization)+''''''')' + @LineFeed +
                 'END' + @LineFeed +
-                'ELSE IF @SchemaOwner <> ''' + QUOTENAME(@SchemaAuthorization) + '''' + @LineFeed +
+                'ELSE IF @SchemaOwner <> ''gest'' and @SchemaOwner <> ''' + QUOTENAME(@SchemaAuthorization) + '''' + @LineFeed +
                 'BEGIN' + @LineFeed +
                 '    EXEC (''ALTER AUTHORIZATION on SCHEMA::' + QUOTENAME(@SchemaName) + ' TO ' + QUOTENAME(@SchemaAuthorization) + ''')' + @LineFeed +
                 'END' + @LineFeed 

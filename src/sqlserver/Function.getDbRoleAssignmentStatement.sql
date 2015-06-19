@@ -23,7 +23,7 @@ END
 GO
 
 ALTER Function [security].[getDbRoleAssignmentStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @RoleName                       VARCHAR(max),
     @MemberName                     VARCHAR(max),
     @PermissionLevel                VARCHAR(10),
@@ -82,6 +82,9 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
+	----------------------------------------------------------------------------------	
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN

@@ -160,9 +160,9 @@ BEGIN TRY
     ROLLBACK TRANSACTION 
     
     SET @ErrorCount = @ErrorCount + 1
-    SET @TestResult = 'FAILURE';
-    SET @ErrorMessage = 'Trial to add [$(LocalSQLLogin2)] (a SQL Login mapped to database user [$(LocalSQLLogin4)]) as member of a DATABASE Role ($(CustomRoleName1)) succeeded. It should never work as Login should have not been created!'  ;
-    PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
+    SET @TestResult = 'WARN';
+    SET @ErrorMessage = 'MISSING CHECK - Trial to add [$(LocalSQLLogin4)] (a SQL Login mapped to database user [$(LocalSQLLogin4)]) as member of a DATABASE Role ($(CustomRoleName1)) succeeded. It should never work as this database user should have not been created (the mapping is done with another username)!'  ;
+    PRINT '    > WARNING -' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
     
 END TRY
 BEGIN CATCH        

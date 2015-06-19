@@ -22,7 +22,7 @@ ALTER Function [security].[getLoginCreationStatement] (
     @LoginName                      VARCHAR(max),
     @AuthMode                       VARCHAR(7) = 'SQLSRVR',-- Other possibility  'WINDOWS'
     @Passwd                         VARCHAR(64) = '',
-    @DefaultDatabase                VARCHAR(32),
+    @DefaultDatabase                VARCHAR(128),
     @isActive                       BIT = 1,
     @NoHeader                       BIT = 0,
     @NoDependencyCheckGen           BIT = 0,

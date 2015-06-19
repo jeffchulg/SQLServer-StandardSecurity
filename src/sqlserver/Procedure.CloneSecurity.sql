@@ -26,7 +26,7 @@ GO
 
 ALTER PROCEDURE [security].[CloneSecurity] (
     @ServerName  		varchar(512) = @@ServerName,
-	@DbName		 		varchar(64)  = NULL,
+	@DbName		 		varchar(128)  = NULL,
 	@TargetServerName	varchar(512) = @@ServerName,
 	@TargetDbName		varchar(64)  = NULL,
 	@ExactCopy	 		BIT		  	 = 0,

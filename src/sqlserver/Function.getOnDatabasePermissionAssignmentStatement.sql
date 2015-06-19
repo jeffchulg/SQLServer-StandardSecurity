@@ -21,7 +21,7 @@ END
 GO
 
 ALTER Function [security].[getOnDatabasePermissionAssignmentStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @Grantee                        VARCHAR(256),
     @isUser                         BIT,
     @PermissionLevel                VARCHAR(10),

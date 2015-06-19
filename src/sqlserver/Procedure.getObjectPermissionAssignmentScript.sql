@@ -27,7 +27,7 @@ GO
 
 ALTER Procedure [security].[getObjectPermissionAssignmentScript] (    
     @ServerName  		    varchar(512),    
-    @DbName  		        varchar(64),    
+    @DbName  		        varchar(128),    
     @Grantee                varchar(64)     = NULL,
     @isUser                 BIT             = NULL,
 	@AsOf 				    DATETIME 		= NULL ,

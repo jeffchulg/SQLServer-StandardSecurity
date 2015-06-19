@@ -1,10 +1,9 @@
-/*requires cleanups.sql */
+/*requires cleanups.sql*/
 /*requires Cleanup.DatabaseRoleMembers.sql*/
-/*requires Cleanup.DatabaseRoles.sql*/
 
 SET @TestID = @TestID + 1 ;
-SET @TestName = 'DatabaseSchema Cleanup by T-SQL "DELETE" statement ';
-SET @TestDescription = 'Removes Data from [security].[DatabaseSchema] table';
+SET @TestName = 'DatabaseRoles Cleanup by T-SQL "DELETE" statement ';
+SET @TestDescription = 'Removes Data from [security].[DatabaseRoles] table';
 SET @TestResult = 'SUCCESS';
 SET @ErrorMessage = '';
 

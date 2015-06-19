@@ -1,11 +1,10 @@
 #requires -version 2
 param(
     [cmdletbinding()]
-    <#[parameter(ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, Mandatory = $false)]
+    [parameter(ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, Mandatory = $false)]
     [string]$RepositoryServer ,
     [parameter(ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, Mandatory = $false)]
     [string]$RepositoryDatabase,
-    #>
     [parameter(ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, Mandatory = $true)]
     [string]$TargetSQLInstance,
     <#[parameter(ValueFromPipeline = $false, ValueFromPipelineByPropertyName = $true, Mandatory = $false)]
@@ -46,7 +45,7 @@ param(
 #>
  
 #---------------------------------------------------------[Initialisations]--------------------------------------------------------
- 
+
 #Set Error Action to Silently Continue
 $ErrorActionPreference = "SilentlyContinue"
 
@@ -122,6 +121,10 @@ foreach ($config in $configFile.configs.config) {
 		# keep track of this configuration		
         $currentConfig = $config
 		
+		if([System.IO.Path]::IsPathRooted($config.logging.logpath) -ne $true) {			
+			$config.logging.logpath = [string](Join-Path -Path $scriptPath -ChildPath $config.logging.logpath)
+		}
+		
 		# getting back actual logfile 
 		$newSLogPath = Resolve-Path $config.logging.logpath
 		[bool] $changedLogDest = $false;
@@ -165,7 +168,11 @@ foreach ($config in $configFile.configs.config) {
 		# load libraries
         foreach ($curLibrary in $config.libraries.Library) {
             if ($curLibrary.Type -eq "Powershell") {
-                $LibraryLocation = Resolve-Path $curLibrary.location                
+				if([System.IO.Path]::IsPathRooted($curLibrary.location) -ne $true) {
+					$curLibrary.location = [string](Join-Path -Path $scriptPath -ChildPath $curLibrary.location)
+				}
+                $LibraryLocation = Resolve-Path $curLibrary.location              
+				Write-Host $LibraryLocation
                 $LibraryFiles = get-childitem -Recurse -Path $LibraryLocation -include *.ps1 -exclude "Powershell-Logger.ps1" | Sort-Object                
                 if ($LibraryFiles -eq $null) {
                     Log-Write -LogPath $sLogFile -LineValue "No library to load" -foreground yellow
@@ -201,11 +208,34 @@ if($ret -eq $false) {
     Log-Error -LogPath "$sLogFile" -ErrorDesc "Unable to load Invoke-SQLCmd Powershell command" -ExitGracefully $true
 }
 
-$RepositoryServer   = $config.repository.hostname
-$RepositoryDatabase = $config.repository.database
-$OutputDatabase     = $config.repository.OutputDatabase
-$OutputSchemaName   = $config.repository.OutputSchema
-$OutputTableName    = $config.repository.OutputTable
+if($RepositoryServer -eq $null) {
+	$RepositoryServer   = $currentConfig.repository.hostname
+}
+else {
+	$currentConfig.repository.hostname = $RepositoryServer
+}
+
+if($RepositoryDatabase -eq $null) {
+	$RepositoryDatabase = $currentConfig.repository.database
+}
+else {
+	$currentConfig.repository.database = $RepositoryDatabase
+}
+
+$OutputDatabase     = $currentConfig.repository.OutputDatabase
+$OutputSchemaName   = $currentConfig.repository.OutputSchema
+$OutputTableName    = $currentConfig.repository.OutputTable
+
+
+# TODO : Validate parameters
+
+if($currentConfig.Debug -eq 1) {
+	Log-Write -LogPath $sLogFile -LineValue "[DEBUG] - RepositoryServer   : $RepositoryServer"
+	Log-Write -LogPath $sLogFile -LineValue "[DEBUG] - RepositoryDatabase : $RepositoryDatabase"
+	Log-Write -LogPath $sLogFile -LineValue "[DEBUG] - OutputDatabase     : $OutputDatabase"
+	Log-Write -LogPath $sLogFile -LineValue "[DEBUG] - OutputTableName    : $OutputTableName"
+	Log-Write -LogPath $sLogFile -LineValue "[DEBUG] - OutputFile         : $OutputFile"
+}
 
 $sqlScript = "
 exec [security].[getSecurityScript]
@@ -219,7 +249,10 @@ exec [security].[getSecurityScript]
     @OutputTableName = '${OutputTableName}'" 
 
 
-$OutputFile = join-path "$pwd" "$OutputFile"
+if([System.IO.Path]::IsPathRooted($OutputFile) -ne $true) {
+	$curLibrary.location = [string](Join-Path -Path "$pwd" -ChildPath "$OutputFile")
+}
+
 Log-Write -LogPath $sLogFile -LineValue "Output file : $OutputFile" 
     
 $tmpLogFile =  "C:\Windows\Temp\" + $MyInvocation.MyCommand.name + "_" + (Get-Random) + ".txt"

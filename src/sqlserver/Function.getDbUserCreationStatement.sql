@@ -19,7 +19,7 @@ END
 GO
 
 ALTER FUNCTION [security].[getDbUserCreationStatement] (
-    @DbName  		                varchar(32),
+    @DbName  		                varchar(128),
 	@LoginName		                varchar(32),
 	@UserName		                varchar(32),
 	@SchemaName		                varchar(32),
@@ -74,6 +74,8 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0
+    ----------------------------------------------------------------------------------
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------
  ===================================================================================
 */

@@ -62,7 +62,7 @@ SET @SQL = 'ALTER view [security].[DatabaseUsers]
                     left join [security].[SQLMappings] m
 						on l.SqlLogin   = m.SqlLogin
 					  and  l.ServerName = m.ServerName
-                where c.isActive = 1'
+                /*where c.isActive = 1*/'
 EXEC (@SQL)
 if @@ERROR = 0
 BEGIN

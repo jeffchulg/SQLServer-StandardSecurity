@@ -27,7 +27,7 @@ GO
 ALTER Procedure [security].[getLogin2DbUserMappingsScript] (    
     @ServerName  		    varchar(512),    
     @LoginName  		    varchar(512)    = NULL,    
-    @DbName  		        varchar(64)     = NULL ,    
+    @DbName  		        varchar(128)     = NULL ,    
 	@AsOf 				    DATETIME 		= NULL ,
 	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,
     @OutputDatabaseName     NVARCHAR(128) 	= NULL ,

@@ -19,7 +19,7 @@ BEGIN
 END
 GO
 ALTER Function [security].[getSchemaCreationStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @SchemaName                     VARCHAR(max),
     @isActive                       BIT = 1,
     @NoHeader                       BIT = 0,

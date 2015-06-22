@@ -22,7 +22,7 @@ ALTER Function [security].[getLoginCreationStatement] (
     @LoginName                      VARCHAR(max),
     @AuthMode                       VARCHAR(7) = 'SQLSRVR',-- Other possibility  'WINDOWS'
     @Passwd                         VARCHAR(64) = '',
-    @DefaultDatabase                VARCHAR(32),
+    @DefaultDatabase                VARCHAR(128),
     @isActive                       BIT = 1,
     @NoHeader                       BIT = 0,
     @NoDependencyCheckGen           BIT = 0,
@@ -81,7 +81,7 @@ AS
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb              VARCHAR(16) = '0.1.1';
+    DECLARE @versionNb              VARCHAR(16) = '0.1.2';
     DECLARE @tsql                   VARCHAR(max);
     DECLARE @LoginDeclaration       VARCHAR(512);
     DECLARE @ErrorDbNotExists       VARCHAR(max);
@@ -205,10 +205,12 @@ BEGIN
                 'if @loginHasPwdPolicyChecked <> 0' + @LineFeed +
                 'BEGIN' + @LineFeed +
                 '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_POLICY=OFF' + @LineFeed +
+
                 'END' + @LineFeed +                
                 'if @loginHasPwdExpireChecked <> 0' + @LineFeed +
                 'BEGIN' + @LineFeed +
                 '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_EXPIRATION=OFF' + @LineFeed +
+
                 'END' + @LineFeed                				
 	END
 	

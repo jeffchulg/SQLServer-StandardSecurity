@@ -17,13 +17,13 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-            
-    PRINT '    Function [security].[getDbRoleAssignmentStatement] created.'
+			
+	PRINT '    Function [security].[getDbRoleAssignmentStatement] created.'
 END
 GO
 
 ALTER Function [security].[getDbRoleAssignmentStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @RoleName                       VARCHAR(max),
     @MemberName                     VARCHAR(max),
     @PermissionLevel                VARCHAR(10),
@@ -84,6 +84,9 @@ AS
     24/12/2014  JEL         Version 0.1.0 
     --------------------------------------------------------------------------------
     02/04/2014  JEL         Corrected bug when database and server collations are different.      
+	----------------------------------------------------------------------------------	
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
@@ -92,13 +95,13 @@ BEGIN
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
-    DECLARE @LineFeed           VARCHAR(10)
+    DECLARE @LineFeed 			VARCHAR(10)
     
     /* Sanitize our inputs */
-    SELECT 
-        @LineFeed           = CHAR(13) + CHAR(10) ,
+	SELECT 
+		@LineFeed 			= CHAR(13) + CHAR(10) ,
         @DynDeclare         = 'DECLARE @RoleName   VARCHAR(64)' + @LineFeed +
-                              'DECLARE @MemberName VARCHAR(64)' + @LineFeed +
+							  'DECLARE @MemberName VARCHAR(64)' + @LineFeed +
                               'SET @RoleName   = QUOTENAME(''' + @RoleName + ''')' + @LineFeed  +
                               'SET @MemberName = QUOTENAME(''' + @MemberName + ''')' + @LineFeed  
 
@@ -147,8 +150,8 @@ BEGIN
         END 
 */      
     END
-    
-    SET @tsql = @tsql /*+ 
+    /*
+    SET @tsql = @tsql + 
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
                 + @LineFeed        */
     
@@ -178,19 +181,19 @@ BEGIN
                     'BEGIN' + @LineFeed +
                     '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_droprolemember @rolename = '''''' + @RoleName + '''''', @MemberName = '''''' + @MemberName + '''''''')' + @LineFeed +
                     '    -- TODO : check return code to ensure role member is really dropped' + @LineFeed +
-                    'END' + @LineFeed   
+                    'END' + @LineFeed  
         
     END 
     ELSE 
     BEGIN 
         return cast('Unknown PermissionLevel ' + @PermissionLevel as int);
     END     
-    
+	
     SET @tsql = @tsql + @LineFeed  +
-                'GO' + @LineFeed 
+				'GO' + @LineFeed 
     RETURN @tsql
 END
-go  
+go	
 
 PRINT '    Function [security].[getDbRoleAssignmentStatement] altered.'
 

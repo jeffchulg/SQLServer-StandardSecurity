@@ -19,7 +19,7 @@ END
 GO
 
 ALTER FUNCTION [security].[getDbUserCreationStatement] (
-    @DbName  		                varchar(32),
+    @DbName  		                varchar(128),
 	@LoginName		                varchar(32),
 	@UserName		                varchar(32),
 	@SchemaName		                varchar(32),
@@ -76,6 +76,9 @@ AS
     24/12/2014  JEL         Version 0.1.0
     --------------------------------------------------------------------------------
     02/04/2014  JEL         Corrected bug when database and server collations are different.  
+    ----------------------------------------------------------------------------------
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
+    ----------------------------------------------------------------------------------
  ===================================================================================
 */
 BEGIN
@@ -147,7 +150,7 @@ BEGIN
                 'if isnull(@defaultSchema,''<NULL>'') <> isnull(@CurSchemaName,''<NULL>'')' + @LineFeed + 
                 'BEGIN' + @LineFeed +
 				'    EXEC (''USE ' + QUOTENAME(@DbName) + '; EXEC sp_executesql N''''alter user '' + @CurDbUser + '' WITH DEFAULT_SCHEMA = '' + @CurSchemaName + '''''''')' + @LineFeed +
-                'END' + @LineFeed    
+                'END' + @LineFeed       
     
     
     SET @tsql = @tsql +

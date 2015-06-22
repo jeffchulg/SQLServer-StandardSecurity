@@ -21,7 +21,7 @@ END
 GO
 
 ALTER Function [security].[getOnDatabasePermissionAssignmentStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @Grantee                        VARCHAR(256),
     @isUser                         BIT,
     @PermissionLevel                VARCHAR(10),
@@ -86,7 +86,7 @@ AS
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
+    DECLARE @versionNb          varchar(16) = '0.1.1';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -136,9 +136,9 @@ BEGIN
                 '    ' + QUOTENAME(@DbName) + '.sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
                 '    class_desc    COLLATE French_CI_AS                              = ''DATABASE'' COLLATE French_CI_AS' + @LineFeed + 
+
                 'and QUOTENAME(USER_NAME(grantee_principal_id)) COLLATE French_CI_AS = @Grantee COLLATE French_CI_AS' + @LineFeed +
                 'and QUOTENAME(permission_name) COLLATE French_CI_AS                 = QUOTENAME(@PermissionName) COLLATE French_CI_AS' + @LineFeed
-
     DECLARE @PermAuthorization VARCHAR(64)    
     
     select 
@@ -148,7 +148,7 @@ BEGIN
     where 
         ParamName = 'ObjectPermissionGrantorDenier';
                 
-    if @PermissionLevel = 'GRANT'
+	if @PermissionLevel = 'GRANT'
     BEGIN 
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'' COLLATE French_CI_AS)' + @LineFeed +
@@ -159,6 +159,7 @@ BEGIN
             SET @tsql = @tsql +
                         'WITH GRANT OPTION '
         END 
+
         
         SET @tsql = @tsql + 
                     ' AS ' + QUOTENAME(@PermAuthorization) +  '''''''' + ')' + @LineFeed +
@@ -175,7 +176,7 @@ BEGIN
                     'END' + @LineFeed                    
         
     END 
-    ELSE IF @PermissionLevel = 'REVOKE'
+	ELSE IF @PermissionLevel = 'REVOKE'
     BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +

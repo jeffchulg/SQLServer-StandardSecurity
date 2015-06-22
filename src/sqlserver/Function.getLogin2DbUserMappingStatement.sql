@@ -21,7 +21,7 @@ GO
 
 ALTER FUNCTION [security].getLogin2DbUserMappingStatement (
     @LoginName			    varchar(32),
-    @DbName				    varchar(64),
+    @DbName				    varchar(128),
     @UserName			    varchar(32),
     @DefaultSchemaName	    varchar(32),    
     @NoHeader               BIT = 0,
@@ -79,12 +79,15 @@ AS
     24/12/2014  JEL         Version 0.1.0
     --------------------------------------------------------------------------------
     02/04/2014  JEL         Corrected bug when database and server collations are different.    
+    ----------------------------------------------------------------------------------	
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb        varchar(16) = '0.1.0';
+    DECLARE @versionNb        varchar(16) = '0.1.2';
     DECLARE @tsql             varchar(max);   
     DECLARE @ErrorDbNotExists varchar(max);
     

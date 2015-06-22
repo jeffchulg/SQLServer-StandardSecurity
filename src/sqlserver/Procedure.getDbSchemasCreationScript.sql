@@ -27,7 +27,7 @@ GO
 
 ALTER Procedure [security].[getDbSchemasCreationScript] (    
     @ServerName  		    varchar(512),    
-    @DbName  		        varchar(64),    
+    @DbName  		        varchar(128),    
     @SchemaName             varchar(64)     = NULL,	
 	@AsOf 				    DATETIME 		= NULL ,
 	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,

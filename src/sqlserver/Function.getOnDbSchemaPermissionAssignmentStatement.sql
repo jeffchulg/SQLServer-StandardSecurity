@@ -15,13 +15,13 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-            
-    PRINT '    Function [security].[getOnDbSchemaPermissionAssignmentStatement] created.'
+			
+	PRINT '    Function [security].[getOnDbSchemaPermissionAssignmentStatement] created.'
 END
 GO
 
 ALTER Function [security].[getOnDbSchemaPermissionAssignmentStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @Grantee                        VARCHAR(256),
     @isUser                         BIT,
     @PermissionLevel                VARCHAR(10),
@@ -88,19 +88,19 @@ AS
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
+    DECLARE @versionNb          varchar(16) = '0.1.1';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
-    DECLARE @LineFeed           VARCHAR(10)
+    DECLARE @LineFeed 			VARCHAR(10);
     
     /* Sanitize our inputs */
-    SELECT  
-        @LineFeed           = CHAR(13) + CHAR(10) ,
+	SELECT  
+		@LineFeed 			= CHAR(13) + CHAR(10) ,
         @DynDeclare         = 'DECLARE @Grantee         VARCHAR(256)' + @LineFeed +
-                              'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
-                              'DECLARE @PermissionName  VARCHAR(256)' + @LineFeed +
-                              'DECLARE @SchemaName      VARCHAR(64)' + @LineFeed +
+							  'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
+							  'DECLARE @PermissionName  VARCHAR(256)' + @LineFeed +
+							  'DECLARE @SchemaName      VARCHAR(64)' + @LineFeed +
                               'SET @Grantee         = ''' + QUOTENAME(@Grantee) + '''' + @LineFeed  +
                               'SET @PermissionLevel = ''' + @PermissionLevel + '''' + @LineFeed  +
                               'SET @PermissionName  = ''' + @PermissionName + '''' + @LineFeed  +
@@ -140,10 +140,10 @@ BEGIN
                 '    ' + QUOTENAME(@DbName) + '.sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
                 '    class_desc     COLLATE French_CI_AS                              = ''SCHEMA''  COLLATE French_CI_AS' + @LineFeed + 
+
                 'and QUOTENAME(USER_NAME(grantee_principal_id))  COLLATE French_CI_AS = @Grantee  COLLATE French_CI_AS' + @LineFeed +
                 'and QUOTENAME(SCHEMA_NAME(major_id)) COLLATE French_CI_AS            = @SchemaName  COLLATE French_CI_AS' + @LineFeed +
                 'and QUOTENAME(permission_name)  COLLATE French_CI_AS                 = QUOTENAME(@PermissionName)  COLLATE French_CI_AS' + @LineFeed
-
     DECLARE @PermAuthorization VARCHAR(64)    
     
     select 
@@ -178,7 +178,7 @@ BEGIN
         SET @tsql = @tsql + 
                     ' AS ' + QUOTENAME(@PermAuthorization) +  '''''''' + ')' + @LineFeed +
                     'END' + @LineFeed                    
-        
+					
     END 
     ELSE IF @PermissionLevel = 'REVOKE'
     BEGIN
@@ -192,13 +192,13 @@ BEGIN
     BEGIN 
         return cast('Unknown PermissionLevel ' + @PermissionLevel as int);
     END     
-    
+	
     SET @tsql = @tsql + @LineFeed  +
-                'GO' + @LineFeed 
+				'GO' + @LineFeed 
                 
     RETURN @tsql
 END
-go  
+go	
 
 PRINT '    Function [security].[getOnDbSchemaPermissionAssignmentStatement] altered.'
 

@@ -48,8 +48,8 @@
 			</task>
 		</PreprocessingTasks>
         <Tests>            
-              <!--  <Test name="Deploy"                 order="100" type="SQLScript" FileLocation="..\..\dist\securityApplier_SQLServer.sql" 			  mustSucceed="true"/>-->
-               <!-- <Test name="DefineSecurity"         order="200" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-DefineSecurity.sql" mustSucceed="true"/>-->
+                <Test name="Deploy"                 order="100" type="SQLScript" FileLocation="..\..\dist\securityApplier_SQLServer.sql" 			  mustSucceed="true"/>
+                <Test name="DefineSecurity"         order="200" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-DefineSecurity.sql" mustSucceed="true"/>
                 <Test name="GenerateSecurityScript" order="300" type="PSScript"  FileLocation="..\..\dist\Documenter\Generate-SQLSecurity.ps1" 		  mustSucceed="true">
                     <params>
                         <param Name="RepositoryServer"      value="{TARGET_INSTANCE}"/>
@@ -59,9 +59,8 @@
                     </params>
                 </Test>
                 <Test name="ApplySecurityScript"    order="400" type="SQLScript" FileLocation="{GenerateSecurityScript:OutputFile}" 				    mustSucceed="true"/>
-                <Test name="ValidateSecurity"       order="500" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Validation.sql" 	mustSucceed="true"/>
-				<!--
-				<Test name="Cleanups"				order="10000" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Cleanups.sql"     mustSucceed="true" RunEvenIfPreviousError="true" StartFromOrder="200"/>-->
+                <Test name="ValidateSecurity"       order="500" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Validation.sql" 	mustSucceed="true"/>				
+				<Test name="Cleanups"				order="10000" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Cleanups.sql"     mustSucceed="true" RunEvenIfPreviousError="true" StartFromOrder="200"/>
         </Tests>	
 		<PostprocessingTasks>
 			<task name="DisplayTestsResults"   order="200" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Results.sql" TestOrderMin="200">

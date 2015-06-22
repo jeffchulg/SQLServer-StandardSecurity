@@ -20,7 +20,7 @@ BEGIN
 END
 GO
 ALTER Function [security].[getDbRoleCreationStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @RoleName                       VARCHAR(max),
     @isStandard                     BIT = 0,
     @isActive                       BIT = 1,
@@ -77,6 +77,9 @@ AS
     24/12/2014  JEL         Version 0.1.0 
     --------------------------------------------------------------------------------
     02/04/2014  JEL         Corrected bug when database and server collations are different.      
+	----------------------------------------------------------------------------------	
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN

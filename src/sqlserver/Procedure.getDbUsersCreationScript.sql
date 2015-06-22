@@ -27,7 +27,7 @@ GO
 
 ALTER Procedure [security].[getDbUsersCreationScript] (    
     @ServerName  		    varchar(512),
-    @DbName  		        varchar(32),    
+    @DbName  		        varchar(128),    
     @UserName               varchar(64)     = NULL,	
 	@AsOf 				    DATETIME 		= NULL ,
 	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,

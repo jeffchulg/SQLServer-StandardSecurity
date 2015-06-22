@@ -25,7 +25,7 @@ GO
 
 ALTER Procedure [security].[getDbRolesAssignmentScript] (    
     @ServerName  		    varchar(512),    
-    @DbName  		        varchar(64),    
+    @DbName  		        varchar(128),    
     @RoleName               varchar(64)     = NULL,	
     @MemberName             varchar(64)     = NULL,	
 	@AsOf 				    DATETIME 		= NULL ,

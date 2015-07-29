@@ -52,10 +52,11 @@ SET @SQL = 'ALTER view [security].[logins]
                     c.[AuthMode],
                     l.[ServerName],
                     l.[SQLLogin],
+                    l.[PermissionLevel],
                     m.DbName,
 					m.DbUserName,
                     m.DefaultSchema,
-                    c.isActive,
+                    c.isActive,                    
                     m.isLocked
                 from [security].[Contacts] c
                     inner join [Security].[SQLlogins] l

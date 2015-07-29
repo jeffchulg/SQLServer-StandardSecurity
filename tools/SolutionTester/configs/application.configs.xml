@@ -16,7 +16,7 @@
                 <type>Powershell</type>
             </library>
         </libraries>
-        <target HostName="SI-S-SERV236" InstanceName="MSSQLSERVER" DatabaseName="JEL_SecurityManager_TestingFeature" SolutionVersion="">  <!--AuthMode="Credential"--> 
+        <target HostName="SI-S-SERV357" InstanceName="MSSQLSERVER" DatabaseName="SecurityManager" SolutionVersion="">  <!--AuthMode="Credential"--> 
             <!--<credential type="usernamePassword" alias="MyAccount">
                 <username>                
                     MyUser

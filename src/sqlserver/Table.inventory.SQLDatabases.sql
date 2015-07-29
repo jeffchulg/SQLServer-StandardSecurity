@@ -36,7 +36,7 @@ IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[invento
 BEGIN
     CREATE TABLE [inventory].[SQLDatabases] (
         ServerName      VARCHAR(256) NOT NULL,
-        DbName          VARCHAR(64)  NOT NULL,
+        DbName          VARCHAR(128)  NOT NULL,
         isUserDatabase  BIT          NOT NULL,
         Reason          VARCHAR(MAX) NULL,
         DbCreationDate  DATETIME     NULL,

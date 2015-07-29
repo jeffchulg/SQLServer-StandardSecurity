@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.Security.ApplicationParams.sql*/
+/*requires Table.ApplicationParams.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

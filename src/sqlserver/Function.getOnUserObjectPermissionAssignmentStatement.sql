@@ -116,7 +116,7 @@ BEGIN
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
-    DECLARE @LineFeed           VARCHAR(10)
+    DECLARE @LineFeed           VARCHAR(10);
     
     /* Sanitize our inputs */
     SELECT  

@@ -241,6 +241,7 @@ as (
         ('data_modifier','UPDATE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
 --        ('data_reader','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('data_reader','SELECT',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
+        ('endusers','SHOWPLAN',0,'DATABASE','GRANT',1,GETDATE(),GETDATE()),
         ('endusers','data_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('endusers','data_reader',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
         ('endusers','prog_executors',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),

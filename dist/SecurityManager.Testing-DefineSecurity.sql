@@ -74,6 +74,17 @@ SET @ErrorCount = 0;
 
 PRINT 'Starting testing for solution $(SolutionName)';
 PRINT '' ;
+PRINT 'Creating temporary table in which created Contacts will be stored' ;
+
+IF(OBJECT_ID('$(TestingSchema).testContacts') is not null)
+	DROP TABLE $(TestingSchema).testContacts
+
+CREATE TABLE $(TestingSchema).testContacts (
+    SQLLogin VARCHAR(512) NOT NULL ,
+    DbUserName VARCHAR(512) 
+) ;
+
+
 
 PRINT 'Creating temporary table in which tests results will be stored';
 
@@ -88,17 +99,6 @@ CREATE TABLE $(TestingSchema).testResults (
     TestResult      VARCHAR(16)     NOT NULL,
     ErrorMessage    NVARCHAR(MAX)
 );
-
-PRINT 'Creating temporary table in which created Contacts will be stored' ;
-
-IF(OBJECT_ID('$(TestingSchema).testContacts') is not null)
-	DROP TABLE $(TestingSchema).testContacts
-
-CREATE TABLE $(TestingSchema).testContacts (
-    SQLLogin VARCHAR(512) NOT NULL ,
-    DbUserName VARCHAR(512) 
-) ;
-
 
 
 

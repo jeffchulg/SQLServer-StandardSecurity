@@ -1,6 +1,6 @@
 /*requires Schema.Security.sql*/
 /*requires Table.Contacts.sql*/
-/*requires Table.SQLlogins.sql*/
+/*requires Table.SQLLogins.sql*/
 /*requires Table.SQLMappings.sql*/
 
 /**

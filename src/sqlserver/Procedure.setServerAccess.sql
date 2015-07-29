@@ -1,6 +1,6 @@
 /*requires Schema.Security.sql*/
 /*requires Table.Contacts.sql*/
-/*requires Table.SQLlogins.sql*/
+/*requires Table.SQLLogins.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -160,8 +160,10 @@ BEGIN
                 @CurJob = @ContactsJob , 
                 @CurName = @ContactName
         
+        DECLARE @PermissionLevel VARCHAR(6) = 'GRANT' ;
         if @isAllow = 1 
         BEGIN 
+            SET @PermissionLevel = 'DENY';
             MERGE 
                 [security].[SQLLogins] l
             using   
@@ -192,12 +194,12 @@ BEGIN
 	
 	BEGIN CATCH
 		SELECT
-        ERROR_NUMBER() AS ErrorNumber
-        ,ERROR_SEVERITY() AS ErrorSeverity
-        ,ERROR_STATE() AS ErrorState
-        ,ERROR_PROCEDURE() AS ErrorProcedure
-        ,ERROR_LINE() AS ErrorLine
-        ,ERROR_MESSAGE() AS ErrorMessage;
+            ERROR_NUMBER() AS ErrorNumber
+            ,ERROR_SEVERITY() AS ErrorSeverity
+            ,ERROR_STATE() AS ErrorState
+            ,ERROR_PROCEDURE() AS ErrorProcedure
+            ,ERROR_LINE() AS ErrorLine
+            ,ERROR_MESSAGE() AS ErrorMessage;
 		
         if @_noTmpTblDrop = 0 and OBJECT_ID('#logins' ) is not null
             DROP TABLE #logins ;

@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.SqlLogins.sql*/
+/*requires Table.SQLLogins.sql*/
 /*requires Table.Contacts.sql*/
 /*requires Table.SQLMappings.sql*/
 

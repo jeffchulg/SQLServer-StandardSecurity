@@ -27,6 +27,7 @@ ALTER Function [security].[getLoginCreationStatement] (
     @NoHeader                       BIT = 0,
     @NoDependencyCheckGen           BIT = 0,
     @NoGrantConnectSQL              BIT = 0,
+    @ConnectSQLPermLevel            VARCHAR(6) = 'GRANT',
     @Debug                          BIT = 0
 )
 RETURNS VARCHAR(max)
@@ -74,6 +75,8 @@ AS
     24/12/2014  JEL         Version 0.1.0
  							TODO : manage GUIDs
     ----------------------------------------------------------------------------------
+    30/03/2015  JEL         An error can occur when the login doesn't exist.
+    ----------------------------------------------------------------------------------
     12/06/2015  JEL         Correcting Bug in CHECK_POLICY part : it was exchanged with CHECK_EXPIRATION
                             ==> problem !
     ----------------------------------------------------------------------------------
@@ -81,7 +84,7 @@ AS
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb              VARCHAR(16) = '0.1.2';
+    DECLARE @versionNb              VARCHAR(16) = '0.1.3';
     DECLARE @tsql                   VARCHAR(max);
     DECLARE @LoginDeclaration       VARCHAR(512);
     DECLARE @ErrorDbNotExists       VARCHAR(max);
@@ -165,7 +168,7 @@ BEGIN
                 '-- ENABLE|DISABLE login' + @LineFeed + 
                 'if @loginIsDisabled = ' + CAST(@isActive as CHAR(1)) + @LineFeed +
                 'BEGIN' + @LineFeed +               
-                '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' ' + CASE WHEN @isActive = 1 THEN 'ENABLE' ELSE 'DISABLE' END + @LineFeed +               
+                '    EXEC (''USE [master] ; ALTER LOGIN ' + QUOTENAME(@LoginName) + ' ' + CASE WHEN @isActive = 1 THEN 'ENABLE' ELSE 'DISABLE' END + ''');' + @LineFeed +               
                 'END' + @LineFeed 
 
     -- TODO : make it go to DatabasePermissions                
@@ -173,9 +176,9 @@ BEGIN
     BEGIN
         SET @tsql = @tsql + @LineFeed +                 
                 '-- If necessary, give the login the permission to connect the database engine' + @LineFeed  +
-                'if not exists (select 1 from master.sys.server_permissions where QUOTENAME(SUSER_NAME(grantee_principal_id)) = @loginToPlayWith and permission_name = ''CONNECT SQL'' and state_desc = ''GRANT'')' + @LineFeed +
+                'if not exists (select 1 from master.sys.server_permissions where QUOTENAME(SUSER_NAME(grantee_principal_id)) = @loginToPlayWith and permission_name = ''CONNECT SQL'' and state_desc = '''+ @ConnectSQLPermLevel +''')' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    EXEC (''USE [master] ; GRANT CONNECT SQL TO ' + QUOTENAME(@LoginName) + ''' );' + @LineFeed  +
+                '    EXEC (''USE [master] ; '+ @ConnectSQLPermLevel +' CONNECT SQL TO ' + QUOTENAME(@LoginName) + ''' );' + @LineFeed  +
                 'END' + @LineFeed 
     END 
 
@@ -204,12 +207,12 @@ BEGIN
                 '-- by default : no password policy is defined' + @LineFeed +
                 'if @loginHasPwdPolicyChecked <> 0' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_POLICY=OFF' + @LineFeed +
+                '    EXEC (''use [master]; ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_POLICY=OFF'');' + @LineFeed +
 
                 'END' + @LineFeed +                
                 'if @loginHasPwdExpireChecked <> 0' + @LineFeed +
                 'BEGIN' + @LineFeed +
-                '    ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_EXPIRATION=OFF' + @LineFeed +
+                '    EXEC (''use [master]; ALTER LOGIN ' + QUOTENAME(@LoginName) + ' WITH CHECK_EXPIRATION=OFF'');' + @LineFeed +
 
                 'END' + @LineFeed                				
 	END

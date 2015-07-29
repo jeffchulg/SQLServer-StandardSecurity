@@ -4,7 +4,7 @@
 /*requires Table.SQLMappings.sql*/
 /*requires Table.DatabasePermissions.sql*/
 /*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.SQLlogins.sql*/
+/*requires Table.SQLLogins.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

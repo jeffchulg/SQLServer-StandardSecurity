@@ -1,15 +1,15 @@
-/*requires Schema.Security.sql*/
-/*requires Table.Contacts.sql*/
-/*requires Table.ApplicationParams.sql*/
+/*requires Schema.Inventory.sql*/
+/*requires Table.inventory.SQLInstances.sql*/
+/*requires Table.inventory.SQLDatabases.sql*/
 
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'PROCEDURE [security].[ManageContacts]'
+PRINT 'PROCEDURE [inventory].[ManageSQLInstance]'
 
-IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[ManageContacts]') AND type in (N'P'))
+IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[inventory].[ManageSQLInstance]') AND type in (N'P'))
 BEGIN
-    EXECUTE ('CREATE Procedure [security].[ManageContacts] ( ' +
+    EXECUTE ('CREATE Procedure [inventory].[ManageSQLInstance] ( ' +
             ' @ServerName    varchar(512), ' +
             ' @DbName    varchar(50) ' +
             ') ' +
@@ -28,98 +28,82 @@ BEGIN
 END
 GO
 
-ALTER PROCEDURE [security].[ManageContacts] (
-    @SQLLogin       VARCHAR(256),
-    @ContactName    VARCHAR(MAX),
-    @JobTitle       VARCHAR(64) = 'N/A',
-    @isActive       BIT = 1,
-    @Department     VARCHAR(64) = 'N/A',
-    @UseSQLAuth     BIT = 0,
-    @DropLogin      BIT = 0,
-    @Debug			BIT = 0
+ALTER PROCEDURE [inventory].[ManageSQLInstance] (
+    @ServerName         VARCHAR(256),
+    @Description        VARCHAR(MAX) = NULL,
+    @AppEnvironment     VARCHAR(16)  = NULL,
+    @ServerCollation    VARCHAR(128) = NULL,
+    @PrimaryBU          VARCHAR(256) = NULL,
+    @ServerCreationDate DATETIME     = NULL,
+    @SQLVersion         VARCHAR(256) = NULL,
+    @SQLEdition         VARCHAR(256) = NULL,
+    @Debug              BIT = 0
 )
 AS 
 /*
-    Example Usage : exec [security].[ManageContacts] @ServerName = 'MyServer1' , @Debug = 1 , @Description = 'Test Server',@AppEnvironment = 'TEST', @PrimaryBU = 'MyCorp/IT/DB'
+    Example Usage : exec [inventory].[ManageSQLInstance] @ServerName = 'MyServer1' , @Debug = 1 , @Description = 'Test Server',@AppEnvironment = 'TEST', @PrimaryBU = 'MyCorp/IT/DB'
         Checks : 
-            select * from [security].[Contacts] where ServerName = 'MyServer1'
-            select * from [security].[SQLDatabases] where ServerName = 'MyServer1'
+            select * from [inventory].[SQLInstances] where ServerName = 'MyServer1'
+            select * from [inventory].[SQLDatabases] where ServerName = 'MyServer1'
 */  
 BEGIN 
     SET NOCOUNT ON;
     
     declare @tsql NVARCHAR(MAX);
     declare @cnt  TINYINT ;
-    DECLARE @authmode VARCHAR(64) ;
-
-    if(@DropLogin = 1) 
-    BEGIN 
-        if(@Debug = 1) 
-        BEGIN 
-            PRINT 'TODO Trying to drop login ' + QUOTENAME(@SQLLogin) 
-        END     
-        RETURN
-    END 
     
-    if(@UseSQLAuth = 0) 
-    BEGIN 
-        select 
-            @authmode = ISNULL(ParamValue,ISNULL(DefaultValue,'SQLSRVR')) 
-        from 
-            security.ApplicationParams
-        where 
-            ParamName = 'SQLServerAuthModeStr';
-    END
-    ELSE 
-    BEGIN 
-        select 
-            @authmode = ISNULL(ParamValue,ISNULL(DefaultValue,'WINDOWS')) 
-        from 
-            security.ApplicationParams
-        where 
-            ParamName = 'WindowsAuthModeStr';
-    END 
+    -- sanitize input 
+    SELECT  
+        @ServerName = upper(@ServerName),
+        @AppEnvironment = upper(@AppEnvironment)
+    ;
     
-    select @cnt = count(*) from [security].[Contacts] where SQLLogin = @SQLLogin
+    select @cnt = count(*) from [inventory].[SQLInstances] where ServerName = @ServerName
     
     if(@cnt = 0) 
     BEGIN 
         if(@Debug = 1) 
         BEGIN 
-            PRINT 'No documented SQL login "' + @SQLLogin + '".'
+            PRINT 'No documented server "' + @ServerName + '".'
         END 
         
-        insert into [security].[Contacts] (
-            SqlLogin,Name,job,isActive,Department,authmode
+        insert into [inventory].[SQLInstances] (
+            ServerName,Description,AppEnvironment,ServerCollation,PrimaryBU,ServerCreationDate,SQLVersion,SQLEdition
         )
         values (
-            @SQLLogin,@ContactName,@JobTitle,@isActive,@Department,@authmode
+            @ServerName,@Description,@AppEnvironment,@ServerCollation,@PrimaryBU,@ServerCreationDate,@SQLVersion,@SQLEdition
         )
     END 
     ELSE 
     BEGIN 
         if(@Debug = 1) 
         BEGIN 
-            PRINT 'A contact with name "' + @SQLLogin + '" is documented. Updating informations (if necessary)'
+            PRINT 'A server with name "' + @ServerName + '" is documented. Updating informations'
         END 
         
         DECLARE @UpdateValues TABLE (ColumnName Varchar(128), ColumnType Varchar(128), GivenValue varchar(MAX), ShouldBeWithValue BIT ) ;
         
         insert into @UpdateValues (ColumnName , ColumnType , GivenValue , ShouldBeWithValue  )
             select 
-                'Name','VARCHAR',@ContactName,1
+                'Description','VARCHAR',@Description,1
             UNION ALL 
             select 
-                'job','VARCHAR',@JobTitle,1
+                'AppEnvironment','VARCHAR',@AppEnvironment,1
             UNION ALL 
             select 
-                'isActive','BIT',CONVERT(VARCHAR,@isActive),1
+                'ServerCollation','VARCHAR',@ServerCollation,1
             UNION ALL 
             select 
-                'Department','VARCHAR',@Department,1
+                'PrimaryBU','VARCHAR',@PrimaryBU,1
             UNION ALL 
             select 
-                'authmode','VARCHAR',@authmode,1
+                'ServerCreationDate','DATETIME',convert(varchar(256), @ServerCreationDate, 21),1
+            UNION ALL 
+            select 
+                'SQLVersion','VARCHAR',@SQLVersion,1
+            UNION ALL 
+            select 
+                'SQLEdition','VARCHAR',@SQLEdition,1
         ;
         
         
@@ -131,7 +115,6 @@ BEGIN
         DECLARE @varcharVal     VARCHAR(MAX);
         DECLARE @CurSBWV        BIT; -- current should be with value 
         DECLARE @datetimeVal    DATETIME;        
-        DECLARE @bitVal         BIT;        
         
         
         OPEN getUpdateValues  ;
@@ -143,23 +126,18 @@ BEGIN
         WHILE (@@FETCH_STATUS = 0) 
         BEGIN 
         
-            if(@CurSBWV = 1 and @varcharVal is not null and @varcharVal <> 'N/A') 
+            if(@CurSBWV = 1 and @varcharVal is not null) 
             BEGIN 
-                SET @tsql = 'update [security].[Contacts] SET ' + QUOTENAME(@CurColName) + ' = @ColumnValue WHERE SQLLogin = @SQLLogin' ;
+                SET @tsql = 'update [inventory].[SQLInstances] SET ' + QUOTENAME(@CurColName) + ' = @ColumnValue WHERE ServerName = @ServerName' ;
                 
                 if(@CurColType = 'VARCHAR') 
                 BEGIN 
-                    exec sp_executesql @tsql , N'@ColumnValue VARCHAR(MAX), @SQLLogin VARCHAR(1024)', @varcharVal, @SQLLogin
+                    exec sp_executesql @tsql , N'@ColumnValue VARCHAR(MAX), @ServerName VARCHAR(1024)', @varcharVal, @ServerName
                 END 
                 ELSE IF (@CurColType = 'DATETIME') 
                 BEGIN 
                     SET @datetimeVal = convert(DATETIME, @varcharVal, 21)
-                    exec sp_executesql @tsql , N'@ColumnValue DATETIME, @SQLLogin VARCHAR(1024)' , @datetimeVal , @SQLLogin
-                END 
-                ELSE IF (@CurColType = 'BIT') 
-                BEGIN 
-                    SET @bitVal = convert(bit, @varcharVal)
-                    exec sp_executesql @tsql , N'@ColumnValue BIT, @SQLLogin VARCHAR(1024)' , @bitVal , @SQLLogin
+                    exec sp_executesql @tsql , N'@ColumnValue DATETIME, @ServerName VARCHAR(1024)' , @datetimeVal , @ServerName
                 END 
                 ELSE 
                 BEGIN 
@@ -191,6 +169,28 @@ BEGIN
         DEALLOCATE getUpdateValues ;
 
     END 
+    
+    -- declaring system databases list
+    if(@Debug = 1) 
+    BEGIN 
+        PRINT 'Now managing system databases creation "' + @ServerName + '".'
+    END     
+    
+    MERGE [inventory].[SQLDatabases] t
+    using ( 
+        SELECT @ServerName as ServerName, 'master' as DbName UNION ALL 
+        SELECT @ServerName ,'msdb' UNION ALL 
+        SELECT @ServerName ,'tempdb' UNION ALL
+        SELECT @ServerName ,('model')
+    ) i
+    on 
+        t.ServerName = i.ServerName
+    and t.DbName     = i.DbName
+    WHEN NOT MATCHED BY TARGET THEN 
+        insert (ServerName,DbName, isUserDatabase,Reason, Comments)
+        values (i.ServerName,i.DbName , 0, 'SQL Server system database', 'Added automatically by [inventory].[ManageSQLInstance] procedure')
+    ;
+    
     
 END;
 GO

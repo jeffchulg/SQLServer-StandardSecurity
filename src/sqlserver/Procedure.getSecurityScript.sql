@@ -6,7 +6,7 @@
 /*requires Procedure.CreateTempTables4Generation.sql*/
 /*requires Procedure.SaveSecurityGenerationResult.sql*/
 /*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.SQLlogins.sql*/
+/*requires Table.SQLLogins.sql*/
 /*requires Procedure.getDbSchemasCreationScript.sql*/
 /*requires Procedure.getLoginsCreationScript.sql*/
 /*requires Procedure.getDbUsersCreationScript.sql*/

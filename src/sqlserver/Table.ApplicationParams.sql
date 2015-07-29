@@ -9,19 +9,19 @@
 
 	==================================================================================
   BUGS:
- 
+
     BUGID       Fixed   Description
     ==========  =====   ==========================================================
     ----------------------------------------------------------------------------------
   ==================================================================================
   Notes :
- 
+
         Exemples :
         -------
- 
+
   ==================================================================================
   Revision history
- 
+
     Date        Name                Description
     ==========  ================    ================================================
     24/12/2014  Jefferson Elias     VERSION 1.0.0
@@ -58,7 +58,7 @@ BEGIN
 	PRINT '   Table [security].[ApplicationParams] created.'
 END
 ELSE
-BEGIN		
+BEGIN
     PRINT '   Table [security].[ApplicationParams] already exists.'
 END
 GO
@@ -102,7 +102,7 @@ BEGIN
                'END' + CHAR(13);
 
     EXEC (@SQL) ;
-	
+
 	PRINT '   Trigger [TRG_I_ApplicationParams] created.'
 END
 
@@ -165,10 +165,14 @@ using (
 	select 'ObjectPermissionGrantorDenier','dbo','dbo',0,'Name of the grantor to use for object permission grant/deny GRANT <PERMISSION> ON <OBJECT> TO <GRANTEE> AS <ObjectPermissionGrantorDenier>'
 	union all
 	select 'SchemaAuthorization4Creation','dbo','dbo',0,'Value in the TSQL Command CREATE SCHEMA ... AUTHORIZATION [<SchemaAuthorization4Creation>]'
-	union all 	
+	union all
     select 'RoleAuthorization4Creation','dbo','dbo',0,'Value in the TSQL Command CREATE ROLE ... AUTHORIZATION [<RoleAuthorization4Creation>]'
-	union all 
-	select 'Version','0.1.0','0.1.0',0,'Version number for the solution'
+	union all
+	select 'Version','0.2.0','0.2.0',0,'Version number for the solution'
+    union all
+	select 'SQLServerAuthModeStr','SQLSRVR','SQLSRVR',0,'String to use to qualify SQL Server authentication for SQL logins'
+    union all
+	select 'WindowsAuthModeStr','WINDOWS','WINDOWS',0,'String to use to qualify Windows authentication for SQL logins'
 ) i
 on p.ParamName = i.ParamName
 WHEN MATCHED THEN
@@ -194,4 +198,4 @@ WHEN NOT MATCHED BY TARGET THEN
 	)
 ;
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' 
+PRINT ''

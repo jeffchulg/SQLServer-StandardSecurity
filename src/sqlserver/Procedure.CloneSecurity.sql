@@ -4,7 +4,7 @@
 /*requires Table.SQLMappings.sql*/
 /*requires Table.DatabasePermissions.sql*/
 /*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.SQLlogins.sql*/
+/*requires Table.SQLLogins.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -26,9 +26,9 @@ GO
 
 ALTER PROCEDURE [security].[CloneSecurity] (
     @ServerName  		varchar(512) = @@ServerName,
-	@DbName		 		varchar(64)  = NULL,
+	@DbName		 		varchar(128)  = NULL,
 	@TargetServerName	varchar(512) = @@ServerName,
-	@TargetDbName		varchar(64)  = NULL,
+	@TargetDbName		varchar(128)  = NULL,
 	@ExactCopy	 		BIT		  	 = 0,
 	@Debug		 		BIT		  	 = 0
 )

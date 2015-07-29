@@ -35,21 +35,21 @@ AS
 		If this table doesn't exist, it will create it.
 		If this table exists, it will check that it is suitable for insertion and then
 		perform the inserts.
-  
+
    ARGUMENTS :
-    @OutputDatabaseName     name of the database where we'll keep track of the generated script 
-    @OutputSchemaName       name of the database schema in which we'll keep track of the generated script 
-    @OutputTableName        name of the table in which we'll actually keep track of the generated script 
+    @OutputDatabaseName     name of the database where we'll keep track of the generated script
+    @OutputSchemaName       name of the database schema in which we'll keep track of the generated script
+    @OutputTableName        name of the table in which we'll actually keep track of the generated script
     @VersionNumber          version number to store in the generation table, if set to null, it's the one
                             in ApplicationParams table which will be taken.
-  
+
    REQUIREMENTS:
-  
+
 	EXAMPLE USAGE :
-		
+
    ==================================================================================
    BUGS:
-  
+
      BUGID       Fixed   Description
      ==========  =====   ==========================================================
      ----------------------------------------------------------------------------------
@@ -59,11 +59,11 @@ AS
         .   VBO     Vincent Bouquette   (vincent.bouquette@chu.ulg.ac.be)
         .   BBO     Bernard Bozert      (bernard.bozet@chu.ulg.ac.be)
         .   JEL     Jefferson Elias     (jelias@chu.ulg.ac.be)
-  
+
    COMPANY: CHU Liege
    ==================================================================================
    Revision History
-  
+
      Date        Nom         Description
      ==========  =====       ==========================================================
      24/12/2014  JEL         Version 0.0.1
@@ -78,39 +78,39 @@ BEGIN
 
 	DECLARE @LineFeed 			VARCHAR(10)
     DECLARE @StringToExecute    VARCHAR(MAX)
-    
+
 	/* Sanitize our inputs */
-	SELECT 
-		@LineFeed 			= CHAR(13) + CHAR(10)	
-	
-	if @VersionNumber is null 
+	SELECT
+		@LineFeed 			= CHAR(13) + CHAR(10)
+
+	if @VersionNumber is null
 	BEGIN
-		-- we'll get the global version number 
-		select 
+		-- we'll get the global version number
+		select
 			@VersionNumber = ParamValue
 		from [security].[ApplicationParams]
 		where ParamName = 'Version'
-		
-		if @Debug = 1
-		BEGIN 
-			PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Generator version number set to ' + @VersionNumber
-		END 
-	END
-	
-	BEGIN TRY 
 
-		IF OBJECT_ID('tempdb..##SecurityGenerationResults') is not null 
+		if @Debug = 1
+		BEGIN
+			PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Generator version number set to ' + @VersionNumber
+		END
+	END
+
+	BEGIN TRY
+
+		IF OBJECT_ID('tempdb..##SecurityGenerationResults') is not null
 		    AND @OutputDatabaseName IS NOT NULL
 			AND @OutputSchemaName IS NOT NULL
 			AND @OutputTableName IS NOT NULL
 			AND EXISTS ( SELECT *
 						 FROM   sys.databases
-						 WHERE  QUOTENAME([name]) = @OutputDatabaseName) 
+						 WHERE  QUOTENAME([name]) = @OutputDatabaseName)
 		BEGIN
-			if @Debug = 1 
+			if @Debug = 1
 			BEGIN
 				PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Creating table (if not exists) where we must save results'
-			END            
+			END
 			SET @StringToExecute = 'USE '
 				+ @OutputDatabaseName
 				+ '; IF EXISTS(SELECT * FROM '
@@ -125,7 +125,7 @@ BEGIN
 				+ @OutputSchemaName + '.'
 				+ @OutputTableName
 				+ ' (
-				GenerationDate 	    DATETIME NOT NULL, 				
+				GenerationDate 	    DATETIME NOT NULL,
 				ServerName 			VARCHAR(256) NOT NULL,
 				DbName     			VARCHAR(64)  NULL,
 				ObjectName          VARCHAR(512)  NULL,
@@ -134,35 +134,35 @@ BEGIN
 				OperationType		VARCHAR(64) not null,
 				QueryText			VARCHAR(MAX) NOT NULL,
 				cc_ServerDb			AS [ServerName] + ISNULL('':'' + [DbName],'''') + ISNULL(''-'' + [ObjectName] + ''-'',''''), -- need for null values of DbName...
-				CONSTRAINT [PK_' + CAST(NEWID() AS CHAR(36)) + '] PRIMARY KEY CLUSTERED (GenerationDate ASC, cc_ServerDb ASC ,OperationOrder ASC));'               
-			
+				CONSTRAINT [PK_' + CAST(NEWID() AS CHAR(36)) + '] PRIMARY KEY CLUSTERED (GenerationDate ASC, cc_ServerDb ASC ,OperationOrder ASC));'
+
 			EXEC(@StringToExecute);
-							
-			if @Debug = 1 
+
+			if @Debug = 1
 			BEGIN
-				PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Filling in with results '                    
-			END                                 
-			
+				PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Filling in with results '
+			END
+
 			SET @StringToExecute = N'IF EXISTS(SELECT * FROM '
 				+ @OutputDatabaseName
 				+ '.INFORMATION_SCHEMA.SCHEMATA WHERE (SCHEMA_NAME) = '''
-				+ @OutputSchemaName + ''') ' + @LineFeed 
+				+ @OutputSchemaName + ''') ' + @LineFeed
 				+ '    INSERT '
 				+ @OutputDatabaseName + '.'
 				+ @OutputSchemaName + '.'
 				+ @OutputTableName
-				+ ' (' + @LineFeed 
-				+ '        GenerationDate, ServerName, DbName, ObjectName,GeneratorVersion, OperationOrder, OperationType, QueryText' + @LineFeed 
-				+ ')' + @LineFeed 
-				+ '    SELECT ' + + @LineFeed 
-				+ '        CAST (''' + CONVERT(VARCHAR,GETDATE(),121) + ''' AS DATETIME)' + @LineFeed 
-				+ '        ,ServerName' + @LineFeed 
-				+ '        ,DbName' + @LineFeed 
-				+ '        ,ObjectName' + @LineFeed 
-				+ '        ,''' + @VersionNumber+''''  + @LineFeed 
-				+ '        ,OperationOrder' + @LineFeed 
-				+ '        ,OperationType' + @LineFeed 
-				+ '        ,QueryText' + @LineFeed 
+				+ ' (' + @LineFeed
+				+ '        GenerationDate, ServerName, DbName, ObjectName,GeneratorVersion, OperationOrder, OperationType, QueryText' + @LineFeed
+				+ ')' + @LineFeed
+				+ '    SELECT ' + + @LineFeed
+				+ '        CAST (''' + CONVERT(VARCHAR,GETDATE(),121) + ''' AS DATETIME)' + @LineFeed
+				+ '        ,ServerName' + @LineFeed
+				+ '        ,DbName' + @LineFeed
+				+ '        ,ObjectName' + @LineFeed
+				+ '        ,''' + @VersionNumber+''''  + @LineFeed
+				+ '        ,OperationOrder' + @LineFeed
+				+ '        ,OperationType' + @LineFeed
+				+ '        ,QueryText' + @LineFeed
 				+ '    FROM ##SecurityGenerationResults ' + @LineFeed
 				+ '    ORDER BY ServerName, OperationOrder,DbName';
 			EXEC(@StringToExecute);
@@ -176,19 +176,19 @@ BEGIN
 				+ 'CREATE TABLE '
 				+ @OutputTableName
 		END
-*/	
+*/
 		ELSE IF (SUBSTRING(@OutputTableName, 2, 1) = '#')
 		BEGIN
 			RAISERROR('Due to the nature of Dymamic SQL, only global (i.e. double pound (##)) temp tables are supported for @OutputTableName', 16, 0)
 		END
-	
+
 	END TRY
-	
+
 	BEGIN CATCH
 		declare @ErrorMessage nvarchar(max), @ErrorSeverity int, @ErrorState int;
 		select @ErrorMessage = ERROR_MESSAGE() + ' Line ' + cast(ERROR_LINE() as nvarchar(5)), @ErrorSeverity = ERROR_SEVERITY(), @ErrorState = ERROR_STATE();
 	    raiserror (@ErrorMessage, @ErrorSeverity, @ErrorState);
-		
+
 	END CATCH
 END
 GO
@@ -196,4 +196,4 @@ GO
 PRINT '    Procedure [security].[SaveSecurityGenerationResult] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' 	
+PRINT ''

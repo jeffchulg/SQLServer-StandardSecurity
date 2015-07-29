@@ -21,7 +21,7 @@ END
 GO
 
 ALTER Function [security].[getOnDatabasePermissionAssignmentStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @Grantee                        VARCHAR(256),
     @isUser                         BIT,
     @PermissionLevel                VARCHAR(10),
@@ -80,11 +80,13 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.    
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
+    DECLARE @versionNb          varchar(16) = '0.1.1';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -126,17 +128,17 @@ BEGIN
     END
     
     SET @tsql = @tsql + 
-                'USE ' + QUOTENAME(@DbName) + @LineFeed +
-                + @LineFeed + 
+               /* 'USE ' + QUOTENAME(@DbName) + @LineFeed +
+                + @LineFeed + */
                 'DECLARE @CurPermLevel VARCHAR(10)' + @LineFeed +
-                'select @CurPermLevel = state_desc' + @LineFeed +
+                'select @CurPermLevel = state_desc COLLATE French_CI_AS' + @LineFeed +
                 'from' + @LineFeed +
-                'sys.database_permissions' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
-                '    class_desc                                 = ''DATABASE''' + @LineFeed + 
-                'and QUOTENAME(USER_NAME(grantee_principal_id)) = @Grantee' + @LineFeed +
-                'and QUOTENAME(permission_name)                 = QUOTENAME(@PermissionName)' + @LineFeed
+                '    class_desc    COLLATE French_CI_AS                              = ''DATABASE'' COLLATE French_CI_AS' + @LineFeed + 
 
+                'and QUOTENAME(USER_NAME(grantee_principal_id)) COLLATE French_CI_AS = @Grantee COLLATE French_CI_AS' + @LineFeed +
+                'and QUOTENAME(permission_name) COLLATE French_CI_AS                 = QUOTENAME(@PermissionName) COLLATE French_CI_AS' + @LineFeed
     DECLARE @PermAuthorization VARCHAR(64)    
     
     select 
@@ -146,39 +148,40 @@ BEGIN
     where 
         ParamName = 'ObjectPermissionGrantorDenier';
                 
-    if @PermissionLevel = 'GRANT'
+	if @PermissionLevel = 'GRANT'
     BEGIN 
         SET @tsql = @tsql +  
-                    'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'')' + @LineFeed +
+                    'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' to ' + QUOTENAME(@Grantee) + ' ' 
         if @isWithGrantOption = 1
         BEGIN 
             SET @tsql = @tsql +
                         'WITH GRANT OPTION '
-        END               
+        END 
+
         
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) +  '''''''' + ')' + @LineFeed +
                     'END' + @LineFeed
     END 
     ELSE if @PermissionLevel = 'DENY' 
     BEGIN 
         SET @tsql = @tsql +  
-                    'if (@CurPermLevel <> ''DENY'')' + @LineFeed +
+                    'if (@CurPermLevel <> ''DENY'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' to ' + QUOTENAME(@Grantee) + ' ' 
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) +  '''''''' + ')' + @LineFeed +
                     'END' + @LineFeed                    
         
     END 
-    ELSE IF @PermissionLevel = 'REVOKE'
+	ELSE IF @PermissionLevel = 'REVOKE'
     BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) +  '''''''' + ')' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE

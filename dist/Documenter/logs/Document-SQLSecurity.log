@@ -1,0 +1,199 @@
+***************************************************************************************************
+Started processing at [06/19/2015 11:46:29].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_11-46-28.sql
+Error: An error has occurred [An error occurred while executing script.
+Error message : The given path's format is not supported.].
+
+***************************************************************************************************
+Finished processing at [06/19/2015 11:46:29].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/19/2015 11:48:21].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-17_10-40-22.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-17_10-40-22.sql
+Error: An error has occurred [An error occurred while executing script.
+Error message : The given path's format is not supported.].
+
+***************************************************************************************************
+Finished processing at [06/19/2015 11:48:21].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/19/2015 11:48:26].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_11-48-26.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_11-48-26.sql
+Error: An error has occurred [An error occurred while executing script.
+Error message : The given path's format is not supported.].
+
+***************************************************************************************************
+Finished processing at [06/19/2015 11:48:26].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/19/2015 11:54:57].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_11-54-56.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_11-54-56.sql
+
+***************************************************************************************************
+Finished processing at [06/19/2015 11:54:58].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/19/2015 14:27:28].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_14-27-28.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_14-27-28.sql
+
+***************************************************************************************************
+Finished processing at [06/19/2015 14:27:29].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/19/2015 14:33:24].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_14-33-24.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_14-33-24.sql
+
+***************************************************************************************************
+Finished processing at [06/19/2015 14:33:25].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/19/2015 14:57:45].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_14-57-45.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_14-57-45.sql
+
+***************************************************************************************************
+Finished processing at [06/19/2015 14:57:46].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/19/2015 15:05:08].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_15-05-08.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-19_15-05-08.sql
+
+***************************************************************************************************
+Finished processing at [06/19/2015 15:05:09].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [06/22/2015 10:18:09].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV236
+[DEBUG] - RepositoryDatabase : JEL_SecurityManager_TestingFeature
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-22_10-18-09.sql
+Output file : D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-22_10-18-09.sql
+
+***************************************************************************************************
+Finished processing at [06/22/2015 10:18:10].
+***************************************************************************************************

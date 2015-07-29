@@ -378,6 +378,29 @@ BEGIN
                             SET @FullObjectName = @FullObjectName + ':' + @SubObjectName
                         END 
                     END
+                    ELSE IF @ObjectClass = 'DATABASE_ROLE'
+                    BEGIN 
+                        SET @StringToExecute = 'PRINT ''. Commands for permission assignment on role "' +  QUOTENAME(@ObjectName) + ' to ' + QUOTENAME(@CurGrantee) + '" on ' + @DbName + '"''' + @LineFeed +                    
+                                                [security].[getOnDbRolePermissionAssignmentStatement](
+                                                    @DbName,
+                                                    @CurGrantee,
+                                                    @CurGranteeIsUser,
+                                                    @PermissionLevel,
+                                                    @PermissionName,
+                                                    @isWithGrantOption,
+                                                    @ObjectName,
+                                                    @isActive,                                            
+                                                    1, -- no header
+                                                    1, -- no dependency check 
+                                                    @Debug
+                                                )                            
+                                                
+                        SET @FullObjectName = @PermissionLevel + ' ' + @PermissionName + ' on ROLE::' + QUOTENAME(@ObjectName)  + ' to ' + @CurGrantee
+                        if @SubObjectName is not null 
+                        BEGIN 
+                            SET @FullObjectName = @FullObjectName + ':' + @SubObjectName
+                        END 
+                    END
                     ELSE 
                         RAISERROR('Unsupported %s object class for object permission assignment generation' , 16,0,@ObjectClass)
 

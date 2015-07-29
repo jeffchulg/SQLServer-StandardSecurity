@@ -27,7 +27,7 @@ GO
 
 ALTER Procedure [security].[getDbRolesCreationScript] (    
     @ServerName  		    varchar(512),    
-    @DbName  		        varchar(64),    
+    @DbName  		        varchar(128),    
     @RoleName               varchar(64)     = NULL,	
 	@AsOf 				    DATETIME 		= NULL ,
 	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,

@@ -1,0 +1,19 @@
+***************************************************************************************************
+Started processing at [06/16/2015 09:19:48].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'F:\JEL-DBA\Projets\SQLServer-StandardSecurity\branches\functionnality---Testing\tools\SolutionTester\configs\application.configs.xml'
+Now taking care to switch logging from F:\JEL-DBA\Projets\SQLServer-StandardSecurity\branches\functionnality---Testing\tools\SolutionTester\logs\SolutionTester.ps1.log to F:\JEL-DBA\Projets\SQLServer-StandardSecurity\branches\functionnality---Testing\tools\SolutionTester\logs\SolutionTester_SecurityManager_2015-06-16.log
+Loading files under directory F:\JEL-DBA\Projets\SQLServer-StandardSecurity\branches\functionnality---Testing\tools\SolutionTester\ps-libs
+[DEBUG] - Loading library named Utils\Add-PSSnapinIfNotYetAdded.ps1
+[DEBUG] - Loading library named Utils\Test-PSCommandExists.ps1
+Error: An error has occurred [Not SQL Server 2012+].
+Error: An error has occurred [Not SQL Server 2008 or 2008 R2].
+
+***************************************************************************************************
+Finished processing at [06/16/2015 09:19:50].
+***************************************************************************************************

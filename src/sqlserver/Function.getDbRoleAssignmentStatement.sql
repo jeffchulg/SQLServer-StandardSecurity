@@ -23,7 +23,7 @@ END
 GO
 
 ALTER Function [security].[getDbRoleAssignmentStatement] (
-    @DbName                         VARCHAR(64),
+    @DbName                         VARCHAR(128),
     @RoleName                       VARCHAR(max),
     @MemberName                     VARCHAR(max),
     @PermissionLevel                VARCHAR(10),
@@ -82,6 +82,11 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.      
+	----------------------------------------------------------------------------------	
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
@@ -145,22 +150,22 @@ BEGIN
         END 
 */      
     END
-    
+    /*
     SET @tsql = @tsql + 
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
-                + @LineFeed        
+                + @LineFeed        */
     
     if @PermissionLevel = 'GRANT'
     BEGIN 
         SET @tsql = @tsql +  
                     'if not exists ( '+ @LineFeed +
                     '    select 1 ' + @LineFeed +
-                    '    from sys.database_role_members ' + @LineFeed +
-                    '    where QUOTENAME(USER_NAME(member_principal_id)) = @MemberName' + @LineFeed +
-                    '    and QUOTENAME(USER_NAME(role_principal_id ))  = @RoleName' + @LineFeed +
+                    '    from ' + QUOTENAME(@DbName) + '.sys.database_role_members ' + @LineFeed +
+                    '    where QUOTENAME(USER_NAME(member_principal_id)) COLLATE French_CI_AS = @MemberName COLLATE French_CI_AS' + @LineFeed +
+                    '    and QUOTENAME(USER_NAME(role_principal_id ))  COLLATE French_CI_AS = @RoleName COLLATE French_CI_AS' + @LineFeed +
                     ')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXECUTE sp_addrolemember @rolename = ''' + @RoleName + ''', @MemberName = ''' + @MemberName + '''' + @LineFeed +
+                    '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_addrolemember @rolename = ''''' + @RoleName + ''''', @MemberName = ''''' + @MemberName + ''''''')' + @LineFeed +
                     '    -- TODO : check return code to ensure role member is really added' + @LineFeed +
                     'END' + @LineFeed
     END 
@@ -169,14 +174,14 @@ BEGIN
         SET @tsql = @tsql +  
                     'if exists ( '+ @LineFeed +
                     '    select 1 ' + @LineFeed +
-                    '    from sys.database_role_members ' + @LineFeed +
-                    '    where QUOTENAME(USER_NAME(member_principal_id)) = @MemberName' + @LineFeed +
-                    '''    and QUOTENAME(USER_NAME(role_principal_id ))  = @RoleName' + @LineFeed +
+                    '    from ' + QUOTENAME(@DbName) + '.sys.database_role_members ' + @LineFeed +
+                    '    where QUOTENAME(USER_NAME(member_principal_id)) COLLATE French_CI_AS = @MemberName COLLATE French_CI_AS' + @LineFeed +
+                    '''    and QUOTENAME(USER_NAME(role_principal_id )) COLLATE French_CI_AS  = @RoleName COLLATE French_CI_AS' + @LineFeed +
                     ')' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXECUTE sp_droprolemember @rolename = ''' + @RoleName + ''', @MemberName = ''' + @MemberName + '''' + @LineFeed +
+                    '    EXEC (''USE ' + QUOTENAME(@DbName) + '; exec sp_droprolemember @rolename = '''''' + @RoleName + '''''', @MemberName = '''''' + @MemberName + '''''''')' + @LineFeed +
                     '    -- TODO : check return code to ensure role member is really dropped' + @LineFeed +
-                    'END' + @LineFeed   
+                    'END' + @LineFeed  
         
     END 
     ELSE 

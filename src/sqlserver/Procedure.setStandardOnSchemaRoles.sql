@@ -27,7 +27,7 @@ GO
 
 ALTER PROCEDURE [security].[setStandardOnSchemaRoles] (
     @ServerName  varchar(512) = @@SERVERNAME,
-    @DbName      varchar(64)  = NULL,
+    @DbName      varchar(128)  = NULL,
     @SchemaName  varchar(64)  = NULL,
     @StdRoleName varchar(64)  = NULL,
     @Debug       BIT          = 0
@@ -100,13 +100,14 @@ AS
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.0.1';
+    DECLARE @versionNb          varchar(16) = '0.1.1';
     DECLARE @tsql               varchar(max);
     DECLARE @CurServerName      varchar(512)
     DECLARE @CurDbName          varchar(64)
     DECLARE @CurRoleName        varchar(64) 
     DECLARE @CurDescription     varchar(2048)
     DECLARE @curIsActive        BIT
+	DECLARE @TransactionOpened  BIT
     DECLARE @SchemaRoleSep      VARCHAR(64)
     
     select @SchemaRoleSep = ParamValue
@@ -117,7 +118,11 @@ BEGIN
     SET @CurDbName     = @DbName
     
     BEGIN TRY
-    BEGIN TRANSACTION
+		if(@@TRANCOUNT = 0)
+		BEGIN 
+			BEGIN TRANSACTION;
+			SET @TransactionOpened = 1;
+		END 
         if(@CurServerName is null) 
         BEGIN
             -- needs to loop on all servers defined in SQLMappings
@@ -301,8 +306,11 @@ BEGIN
                 PRINT '--------------------------------------------------------------------------------------------------------------'
             END
         end
-    COMMIT
-    END TRY
+		if(@TransactionOpened = 1)
+		BEGIN 
+			COMMIT
+		END 
+	END TRY
     BEGIN CATCH
         SELECT
         ERROR_NUMBER() AS ErrorNumber
@@ -327,8 +335,11 @@ BEGIN
             close getSchemasRoles
             deallocate getSchemasRoles 
         end
-        ROLLBACK
-    END CATCH
+		IF @@TRANCOUNT > 0 and @TransactionOpened = 1
+        BEGIN 
+            ROLLBACK ;
+        END
+	END CATCH
 END
 GO
 

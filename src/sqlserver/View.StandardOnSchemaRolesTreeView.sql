@@ -32,7 +32,7 @@
 */
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'View [security].[logins] Creation'
+PRINT 'View [security].[StandardOnSchemaRolesTreeView] Creation'
 
 DECLARE @SQL VARCHAR(MAX)
 IF  NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesTreeView]'))

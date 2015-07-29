@@ -1,0 +1,78 @@
+<configs>
+    <config>
+        <filename>SolutionTester.ps1</filename>
+        <debug>1</debug>   
+		<logging>
+			<logpath>.\logs</logpath>
+			<logname>SolutionTester_{SOLUTIONNAME}_{DATE}.log</logname>
+			<append>0</append>
+			<!-- <notification>
+				<email>jefferson.elias@chu.ulg.ac.be<email>
+			</notification>-->
+		</logging>
+        <libraries>
+            <library>
+                <location>.\ps-libs</location>
+                <type>Powershell</type>
+            </library>
+        </libraries>
+        <target HostName="SI-S-SERV236" InstanceName="MSSQLSERVER" DatabaseName="JEL_SecurityManager_TestingFeature" SolutionVersion="">  <!--AuthMode="Credential"--> 
+            <!--<credential type="usernamePassword" alias="MyAccount">
+                <username>                
+                    MyUser
+                </username>                
+                <password type="clear" value="MyPas\$dsio23"/>
+                <password type="Encrypted" algorithm=""/>                    
+            </credential>-->            
+            <credential type="CurrentADUser" alias="CurrentUser"/>
+            <!--<credential type="System.Management.Automation.PSCredential" alias="" FileLocation=""/> 
+                $MyCredentials=GET-CREDENTIAL –Credential “CONTOSO\Username” | EXPORT-CLIXML C:\Scriptfolder\SecureCredentials.xml 
+                $MyCredentials=IMPORT-CLIXML C:\Scriptfolder\SecureCredentials.xml
+                -->
+        </target>
+		<PreprocessingTasks>
+			<task name="CreateDatabaseIfNotExists"      order="100" type="SQLCommand">
+				<command>
+				
+				</command>
+			</task>
+			<task name="CreateTestingSchemaIfNotExists" order="200" type="SQLCommand">
+				<command>
+				
+				</command>
+			</task>
+			<task name="AcquireTestingRepositoryLock"   order="300" type="SQLCommand">
+				<command>
+				
+				</command>
+			</task>
+		</PreprocessingTasks>
+        <Tests>            
+                <Test name="Deploy"                 order="100" type="SQLScript" FileLocation="..\..\dist\securityApplier_SQLServer.sql" 			  mustSucceed="true"/>
+                <Test name="DefineSecurity"         order="200" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-DefineSecurity.sql"  mustSucceed="true"/>
+                <Test name="GenerateSecurityScript" order="300" type="PSScript"  FileLocation="..\..\dist\Documenter\Generate-SQLSecurity.ps1" 		  mustSucceed="true">
+                    <params>
+                        <param Name="RepositoryServer"      value="{TARGET_INSTANCE}"/>
+                        <param Name="RepositoryDatabase"    value="{TARGET_DBNAME}"/>
+                        <param Name="TargetSQLInstance"     value="{TARGET_INSTANCE}"/>
+                        <param Name="OutputFile"            value="{LOG_PATH}\{SCRIPT_BASENAME}_{TARGET_INSTANCE}_{DATESTAMP}.sql"/>
+                    </params>
+                </Test>
+                <Test name="ApplySecurityScript"    order="400" type="SQLScript" FileLocation="{GenerateSecurityScript:OutputFile}" 				    mustSucceed="true"/>
+                <Test name="ValidateSecurity"       order="500" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Validation.sql" 	mustSucceed="true"/>				
+				<Test name="Cleanups"				order="10000" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Cleanups.sql"     mustSucceed="true" RunEvenIfPreviousError="true" StartFromOrder="200"/>
+        </Tests>	
+		<PostprocessingTasks>
+			<task name="DisplayTestsResults"   order="200" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-Results.sql" TestOrderMin="200">
+				<command>
+				
+				</command>
+			</task>
+			<task name="ReleaseTestingRepositoryLock"   order="200" type="SQLCommand">
+				<command>
+				
+				</command>
+			</task>
+		</PostprocessingTasks>		
+    </config>
+</configs>

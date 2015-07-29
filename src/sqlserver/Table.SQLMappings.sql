@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.SqlLogins.sql*/
+/*requires Table.SQLLogins.sql*/
 /*requires Table.DatabaseSchemas.sql*/
 
 /**
@@ -62,7 +62,7 @@ BEGIN
 END
 ELSE 
 BEGIN 
-    DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('[Reason]')
+    DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('Reason')
     DECLARE @ColumnDef      NVARCHAR(MAX)   = '[VARCHAR](MAX)'
     DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[SQLMappings]'
     DECLARE @tsql           NVARCHAR(max)
@@ -70,7 +70,7 @@ BEGIN
     IF NOT EXISTS( 
         SELECT 1 
         FROM  sys.columns 
-        WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) and system_type_id = 40
+        WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) 
     )
     BEGIN
         SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef

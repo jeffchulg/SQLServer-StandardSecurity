@@ -32,8 +32,10 @@ ALTER PROCEDURE [security].[setDatabaseAccess] (
     @isDefaultDb                BIT          = 0,
     @withServerAccessCreation   BIT          = 0,
     @exactMatch                 BIT          = 1,
+    @Reason                     VARCHAR(MAX) = NULL,
     @isAllow                    BIT          = 1,
     @isActive                   BIT          = 1,
+    @_noTmpTblDrop              BIT          = 0,
 	@Debug		 		        BIT		  	 = 0
 )
 AS
@@ -230,7 +232,8 @@ BEGIN
                     DbName,
                     DbUserName,
                     DefaultSchema,
-                    isDefaultDb
+                    isDefaultDb,
+                    Reason
                 )
                 values (
                     i.ServerName,                        
@@ -238,7 +241,8 @@ BEGIN
                     i.DbName,
                     i.SQLLogin,
                     @DefaultSchema,
-                    @isDefaultDb
+                    @isDefaultDb,
+                    @Reason
                 )
             ;
               
@@ -317,18 +321,21 @@ BEGIN
         END 
         ELSE 
             RAISERROR('Not yet implemented ! ',16,0)
+        
+        if @_noTmpTblDrop = 0 and OBJECT_ID('#logins' ) is not null
+            DROP TABLE #logins ;
 	END TRY
 	
 	BEGIN CATCH
 		SELECT
-        ERROR_NUMBER() AS ErrorNumber
-        ,ERROR_SEVERITY() AS ErrorSeverity
-        ,ERROR_STATE() AS ErrorState
-        ,ERROR_PROCEDURE() AS ErrorProcedure
-        ,ERROR_LINE() AS ErrorLine
-        ,ERROR_MESSAGE() AS ErrorMessage;
-		
-        if OBJECT_ID('#logins' ) is not null
+            ERROR_NUMBER() AS ErrorNumber
+            ,ERROR_SEVERITY() AS ErrorSeverity
+            ,ERROR_STATE() AS ErrorState
+            ,ERROR_PROCEDURE() AS ErrorProcedure
+            ,ERROR_LINE() AS ErrorLine
+            ,ERROR_MESSAGE() AS ErrorMessage;
+            
+        if @_noTmpTblDrop = 0 and OBJECT_ID('#logins' ) is not null
             DROP TABLE #logins ;
         
 		if CURSOR_STATUS('local','loginsToManage') >= 0 

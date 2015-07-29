@@ -1,0 +1,350 @@
+***************************************************************************************************
+Started processing at [06/22/2015 10:18:06].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\configs\application.configs.xml'
+Starting Replace-TextTags
+Completed Successfully.
+ 
+Now taking care to switch logging from D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\SolutionTester.ps1.log to D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\SolutionTester_SecurityManager_2015-06-22.log
+Loading files under directory D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\ps-libs
+[DEBUG] - Loading library named Utils\Add-PSSnapinIfNotYetAdded.ps1
+[DEBUG] - Loading library named Utils\Test-PSCommandExists.ps1
+Commandlet Invoke-SQLCmd already available
+Validating parameters
+    > Credentials definition
+    > Target count
+    > Target Server connectivity
+    > Target SQL Server Database availability
+[DEBUG] - SolutionName     : SecurityManager
+[DEBUG] - Target Instance  : SI-S-SERV236
+[DEBUG] - Target Database  : JEL_SecurityManager_TestingFeature
+[DEBUG] - Used Credentials : CurrentUser
+    > Tests dependant files existence and setting values corresponding to tags in config file
+Starting Replace-TextTags
+Completed Successfully.
+ 
+Starting Replace-TextTags
+Completed Successfully.
+ 
+Starting Replace-TextTags
+Completed Successfully.
+ 
+Starting Replace-TextTags
+Completed Successfully.
+ 
+[DEBUG] - Current Test : GenerateSecurityScript
+Starting Replace-TextTags
+Completed Successfully.
+ 
+[DEBUG] - Current Test FileLocation is ..\..\dist\Documenter\Generate-SQLSecurity.ps1
+[DEBUG] - Current Test : ApplySecurityScript
+[DEBUG] - Current Test has a FileLocation parameter which references another test
+[DEBUG] - Referenced test.param is GenerateSecurityScript.OutputFile
+Starting Replace-TextTags
+Completed Successfully.
+ 
+Starting Replace-TextTags
+Completed Successfully.
+ 
+[DEBUG] - Current Test FileLocation is D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-22_10-18-09.sql
+[DEBUG] - Current Test : ValidateSecurity
+Starting Replace-TextTags
+Completed Successfully.
+ 
+[DEBUG] - Current Test FileLocation is ..\..\dist\SecurityManager.Testing-Validation.sql
+Now performing tests defined in configuration file
+    > GenerateSecurityScript
+        => POWERSHELL SCRIPT ..\..\dist\Documenter\Generate-SQLSecurity.ps1
+    . Test Successful.
+    > ApplySecurityScript
+        => SQL SCRIPT D:\SecurityManager\branches\functionnality---Testing\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV236_2015-06-22_10-18-09.sql
+
+
+            :::::::::::::::::::::::::: SQLCMD LOG ::::::::::::::::::::::::::::::::
+
+
+            **********************
+            Windows PowerShell transcript start
+            Start time: 20150622101810
+            Username  : CHULG\c168350 
+            Machine	  : SI-S-SERV386 (Microsoft Windows NT 6.2.9200.0) 
+            **********************
+            Transcript started, output file is C:\Windows\Temp\SolutionTester.ps1_1466955591.txt
+            . Commands for "John Doe" from department "MyCorp/IT Service/Application Support Team"
+            . Commands for "Jane Doe" from department "External/DevCorp/DevProduct"
+            . Commands for "John Smith" from department "External/DevCorp/DevProduct"
+            . Commands for "Lazy Worker" from department "External/DevCorp/DevProduct"
+            . Commands for "c168350" from department "MyCorp/IT Service/DBA"
+            . Commands for "SAI_Db" from department "MyCorp/IT Service/Validation Team"
+            . Commands for Schema "ApplicationSchema1" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Schema "ApplicationSchema2" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Schema "dbo" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Schema "dbo" in database "master"
+            Changed database context to 'master'.
+            . Commands for Database User "ApplicationSQLUser1" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Database User "ApplicationSQLUser3" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Database User "CHULg\c168350" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Database User "DbUser2" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Database User "DbUser4" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for Database User "CHULg\c168350" in database "master"
+            Changed database context to 'master'.
+            . Commands for Database User "CHULg\SAI_Db" in database "master"
+            Changed database context to 'master'.
+            . Commands to map login "[ApplicationSQLUser1] to user [ApplicationSQLUser1]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands to map login "[ApplicationSQLUser2] to user [DbUser2]" on JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands to map login "[ApplicationSQLUser3] to user [ApplicationSQLUser3]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands to map login "[ApplicationSQLUser4] to user [DbUser4]" on JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands to map login "[CHULg\c168350] to user [CHULg\c168350]" on JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands to map login "[CHULg\c168350] to user [CHULg\c168350]" on master"
+            Changed database context to 'master'.
+            . Commands to map login "[CHULg\SAI_Db] to user [CHULg\SAI_Db]" on master"
+            Changed database context to 'master'.
+            . Commands for role "ApplicationSchema1_data_modifier" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_data_reader" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_endusers" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_full_access" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_managers" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_prog_executors" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_responsible" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_struct_modifier" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema1_struct_viewer" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_data_modifier" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_data_reader" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_endusers" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_full_access" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_managers" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_prog_executors" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_responsible" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_struct_modifier" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "ApplicationSchema2_struct_viewer" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "CustomRole" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role "InactiveCustomRole" in database "JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_endusers] > [ApplicationSchema1_data_modifier]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_responsible] > [ApplicationSchema1_data_modifier]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_endusers] > [ApplicationSchema1_data_reader]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_responsible] > [ApplicationSchema1_data_reader]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_full_access] > [ApplicationSchema1_endusers]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[CustomRole] > [ApplicationSchema1_endusers]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_full_access] > [ApplicationSchema1_managers]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_responsible] > [ApplicationSchema1_managers]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_endusers] > [ApplicationSchema1_prog_executors]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_managers] > [ApplicationSchema1_struct_modifier]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema1_managers] > [ApplicationSchema1_struct_viewer]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_endusers] > [ApplicationSchema2_data_modifier]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_responsible] > [ApplicationSchema2_data_modifier]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_endusers] > [ApplicationSchema2_data_reader]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_responsible] > [ApplicationSchema2_data_reader]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_full_access] > [ApplicationSchema2_endusers]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_full_access] > [ApplicationSchema2_managers]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_responsible] > [ApplicationSchema2_managers]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_endusers] > [ApplicationSchema2_prog_executors]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_managers] > [ApplicationSchema2_struct_modifier]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSchema2_managers] > [ApplicationSchema2_struct_viewer]" on 
+            JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSQLUser1] > [CustomRole]" on JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for role assignment "[ApplicationSQLUser3] > [CustomRole]" on JEL_SecurityManager_TestingFeature"
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_data_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_data_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_data_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_data_reader' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_prog_executors' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema1' for database principal 
+            'ApplicationSchema1_struct_viewer' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_data_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_data_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_data_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_data_reader' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_prog_executors' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'JEL_SecurityManager_TestingFeature' for database 
+            principal 'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_struct_modifier' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            . Commands for permission assignment on database schema 'ApplicationSchema2' for database principal 
+            'ApplicationSchema2_struct_viewer' on database 'JEL_SecurityManager_TestingFeature'
+            Changed database context to 'JEL_SecurityManager_TestingFeature'.
+            **********************
+            Windows PowerShell transcript end
+            End time: 20150622101811
+            **********************
+
+
+            :::::::::::::::::::::::::END OF SQLCMD LOG::::::::::::::::::::::::::::
+
+
+    . Test Successful.
+    > ValidateSecurity
+        => SQL SCRIPT ..\..\dist\SecurityManager.Testing-Validation.sql
+
+
+            :::::::::::::::::::::::::: SQLCMD LOG ::::::::::::::::::::::::::::::::
+
+
+            **********************
+            Windows PowerShell transcript start
+            Start time: 20150622101811
+            Username  : CHULG\c168350 
+            Machine	  : SI-S-SERV386 (Microsoft Windows NT 6.2.9200.0) 
+            **********************
+            Transcript started, output file is C:\Windows\Temp\SolutionTester.ps1_1398892960.txt
+            **********************
+            Windows PowerShell transcript end
+            End time: 20150622101811
+            **********************
+
+
+            :::::::::::::::::::::::::END OF SQLCMD LOG::::::::::::::::::::::::::::
+
+
+    . Test Successful.
+
+***************************************************************************************************
+Finished processing at [06/22/2015 10:18:11].
+***************************************************************************************************

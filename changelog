@@ -34,6 +34,8 @@ SecurityApplier 1.0.2, XXXX
             deny   / 	deny   		  / !! n/a !! 
 
             at this time, this field is not used for generation.		
+	
+	- Application testing framework is now implemented and partially operational.
 
 ================
 * Core Changes *
@@ -56,7 +58,7 @@ SecurityApplier 1.0.2, XXXX
 ================
 *   Bug Fix    *
 ================
-	- Correction for Bug #00016
+	- Some bug fixes
 
 ---------------------------------
 SecurityApplier 1.0.1, 2014-11-17

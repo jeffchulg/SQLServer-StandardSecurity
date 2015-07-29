@@ -19,7 +19,7 @@ END
 GO
 
 ALTER FUNCTION [security].[getDbUserCreationStatement] (
-    @DbName  		                varchar(32),
+    @DbName  		                varchar(128),
 	@LoginName		                varchar(32),
 	@UserName		                varchar(32),
 	@SchemaName		                varchar(32),
@@ -74,6 +74,10 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0
+    --------------------------------------------------------------------------------
+    02/04/2014  JEL         Corrected bug when database and server collations are different.  
+    ----------------------------------------------------------------------------------
+	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------
  ===================================================================================
 */
@@ -125,9 +129,9 @@ BEGIN
                 '    return' + @LineFeed+
                 'END' + @LineFeed +
                 '' + @LineFeed +
-                'Use '+ QUOTENAME(@DbName) + @LineFeed+
+               -- 'Use '+ QUOTENAME(@DbName) + @LineFeed+
 				'-- 1.2 Check that the schema exists in that database' + @LineFeed + 
-				'if not exists (select 1 from sys.schemas where QUOTENAME(name) = @CurSchemaName)' + @LineFeed +
+				'if not exists (select 1 from ' + QUOTENAME(@DbName) + '.sys.schemas where QUOTENAME(name) COLLATE French_CI_AS = @CurSchemaName COLLATE French_CI_AS)' + @LineFeed +
 				'BEGIN' + @LineFeed + 
                 '    RAISERROR ( ''The given schema ('+@SchemaName + ') does not exist'',0,1 ) WITH NOWAIT' + @LineFeed +
                 '    return' + @LineFeed+	
@@ -135,18 +139,18 @@ BEGIN
     END
     
     SET @tsql = @tsql + 
-                'Use '+ QUOTENAME(@DbName) + @LineFeed +
+              --  'Use '+ QUOTENAME(@DbName) + @LineFeed +
                 'DECLARE @gotName       VARCHAR(64)' + @LineFeed +                
                 'DECLARE @defaultSchema VARCHAR(64)' + @LineFeed +                
-                'select @gotName = name, @defaultSchema = default_schema_name from sys.database_principals WHERE QUOTENAME(NAME) = @CurDbUser and Type in (''S'',''U'')' + @LineFeed +
+                'select @gotName = name COLLATE French_CI_AS, @defaultSchema = default_schema_name COLLATE French_CI_AS from ' + QUOTENAME(@DbName) + '.sys.database_principals WHERE QUOTENAME(NAME) = @CurDbUser COLLATE French_CI_AS and Type COLLATE French_CI_AS in (''S'' COLLATE French_CI_AS,''U'' COLLATE French_CI_AS)' + @LineFeed +
                 'IF @gotName is null' + @LineFeed +
 				'BEGIN' + @LineFeed +
-				'    EXEC (''create user '' + @CurDbUser + '' FOR LOGIN '' + @CurLoginName )' + @LineFeed +
+				'    EXEC (''USE ' + QUOTENAME(@DbName) + '; EXEC sp_executesql N''''create user '' + @CurDbUser + '' FOR LOGIN '' + @CurLoginName + '''''''')' + @LineFeed +
 				'END' + @LineFeed +
                 'if isnull(@defaultSchema,''<NULL>'') <> isnull(@CurSchemaName,''<NULL>'')' + @LineFeed + 
                 'BEGIN' + @LineFeed +
-				'    EXEC (''alter user '' + @CurDbUser + '' WITH DEFAULT_SCHEMA = '' + @CurSchemaName )' + @LineFeed +
-                'END' + @LineFeed    
+				'    EXEC (''USE ' + QUOTENAME(@DbName) + '; EXEC sp_executesql N''''alter user '' + @CurDbUser + '' WITH DEFAULT_SCHEMA = '' + @CurSchemaName + '''''''')' + @LineFeed +
+                'END' + @LineFeed       
     
     
     SET @tsql = @tsql +

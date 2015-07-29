@@ -35,7 +35,7 @@ PRINT '-------------------------------------------------------------------------
 PRINT 'Table [security].[DatabasePermissions] Creation'
 
 
-IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[DatabasePermissions]') AND type in (N'U'))
+IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[DatabasePermissions]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [security].[DatabasePermissions] (
         [ServerName]        [VARCHAR](256) NOT NULL,
@@ -66,7 +66,7 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[DatabasePermissions]') AND name = N'UN_DatabasePermissions')
+IF  NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[DatabasePermissions]') AND name = N'UN_DatabasePermissions')
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         ADD CONSTRAINT [UN_DatabasePermissions]
@@ -112,16 +112,30 @@ END
 GO
 */
 
-IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_ObjectClass]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
+DECLARE @Version VARCHAR(128)
+select @Version = ParamValue From security.Applicationparams where ParamName = 'Version';
+
+IF  EXISTS (
+    SELECT 1 FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_ObjectClass]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]')
+    and @Version < '1.0.3'
+)
+BEGIN
+    ALTER TABLE [security].[DatabasePermissions]
+        DROP CONSTRAINT [CK_DatabasePermissions_ObjectClass]        
+	PRINT '     Constraint [CK_DatabasePermissions_ObjectClass] dropped.'
+END
+GO
+
+IF  NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_ObjectClass]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         WITH CHECK ADD CONSTRAINT [CK_DatabasePermissions_ObjectClass]
-            CHECK (([ObjectClass] in ('SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER')))
+            CHECK (([ObjectClass] in ('SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER','DATABASE_ROLE')))
 	PRINT '     Constraint [CK_DatabasePermissions_ObjectClass] created.'
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
+IF  NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_DatabasePermissions_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[DatabasePermissions]'))
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         WITH CHECK ADD CONSTRAINT [CK_DatabasePermissions_PermissionLevel]
@@ -130,7 +144,7 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[CK_DatabasePermissions_OnlyGrantWithGrantOption]') AND type = 'C')
+IF  NOT EXISTS (SELECT 1 FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[CK_DatabasePermissions_OnlyGrantWithGrantOption]') AND type = 'C')
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         ADD  CONSTRAINT [CK_DatabasePermissions_OnlyGrantWithGrantOption]
@@ -140,7 +154,7 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_isWithGrantOption]') AND type = 'D')
+IF  NOT EXISTS (SELECT 1 FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_isWithGrantOption]') AND type = 'D')
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         ADD CONSTRAINT [DF_DatabasePermissions_isWithGrantOption]
@@ -150,7 +164,7 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_CreationDate]') AND type = 'D')
+IF  NOT EXISTS (SELECT 1 FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_CreationDate]') AND type = 'D')
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         ADD CONSTRAINT [DF_DatabasePermissions_CreationDate]
@@ -160,7 +174,7 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_LastModified]') AND type = 'D')
+IF  NOT EXISTS (SELECT 1 FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_LastModified]') AND type = 'D')
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         ADD CONSTRAINT [DF_DatabasePermissions_LastModified] DEFAULT (Getdate()) FOR [LastModified]
@@ -169,7 +183,7 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_ServerName]') AND type = 'D')
+IF  NOT EXISTS (SELECT 1 FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_ServerName]') AND type = 'D')
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         ADD CONSTRAINT [DF_DatabasePermissions_ServerName] DEFAULT (@@SERVERNAME) FOR [ServerName]
@@ -178,7 +192,7 @@ BEGIN
 END
 GO
 
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_isActive]') AND type = 'D')
+IF  NOT EXISTS (SELECT 1 FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_DatabasePermissions_isActive]') AND type = 'D')
 BEGIN
     ALTER TABLE [security].[DatabasePermissions]
         ADD CONSTRAINT [DF_DatabasePermissions_isActive] DEFAULT (0) FOR [isActive]
@@ -189,7 +203,7 @@ GO
 
 DECLARE @SQL VARCHAR(MAX)
 
-IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_DatabasePermissions]'))
+IF  NOT EXISTS (SELECT 1 FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_DatabasePermissions]'))
 BEGIN
     SET @SQL = 'CREATE TRIGGER [security].[TRG_I_DatabasePermissions] ' + CHAR(13) +
                '  ON security.DatabasePermissions ' + CHAR(13) +
@@ -290,7 +304,7 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_I_DatabasePermissions]' + CHAR(13) +
 EXEC (@SQL);
 PRINT '    Trigger [security].[TRG_I_DatabasePermissions] altered.'
 
-IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_DatabasePermissions]'))
+IF  NOT EXISTS (SELECT 1 FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_DatabasePermissions]'))
 BEGIN
     SET @SQL = 'CREATE TRIGGER [security].[TRG_U_DatabasePermissions] ' + CHAR(13) +
                '  ON security.DatabasePermissions ' + CHAR(13) +

@@ -309,3 +309,4 @@ EXEC (@SQL);
 PRINT '    Trigger [security].[TRG_U_DatabaseSchemas] altered.'
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT ''
+GO

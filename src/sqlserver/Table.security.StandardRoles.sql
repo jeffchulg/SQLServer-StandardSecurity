@@ -112,10 +112,11 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_I_StandardRoles]' + CHAR(13) +
             'BEGIN' + CHAR(13) +
             '    UPDATE [security].StandardRoles ' + CHAR(13) +
             '        SET LastModified = GETDATE()'+CHAR(13) +
-            '        ,   CreationDate = GETDATE() ' + CHAR(13) +
+            ',           CreationDate = CASE WHEN i.CreationDate IS NULL THEN GETDATE() ELSE i.CreationDate END ' + CHAR(13) +
             '    FROM [security].StandardRoles o ' + CHAR(13) +
             '        INNER JOIN inserted i' +CHAR(13) +
-            '    on o.[RoleName] = i.[RoleName]' +CHAR(13) +
+            '           ON o.RoleScope = i.RoleScope' + CHAR(13) +
+            '           and o.RoleName = i.RoleName' +CHAR(13) +
             'END' ;
 EXEC (@SQL);
 PRINT '    Trigger [security].[TRG_I_StandardRoles] altered.'
@@ -144,7 +145,8 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_U_StandardRoles]' + CHAR(13) +
             '        SET LastModified = GETDATE()'+CHAR(13) +
             '    FROM [security].StandardRoles o ' + CHAR(13) +
             '        INNER JOIN inserted i' +CHAR(13) +
-            '    on o.[RoleName] = i.[RoleName]' +CHAR(13) +
+           '           ON o.RoleScope = i.RoleScope' + CHAR(13) +
+            '           and o.RoleName = i.RoleName' +CHAR(13) +
             'END' ;
 EXEC (@SQL);
 
@@ -183,7 +185,17 @@ as (
 			('DATABASE','db_datareader',0,1,'Defined by Microsoft for database access regulation',1),
 			('DATABASE','db_datawriter',0,1,'Defined by Microsoft for database access regulation',1),
 			('DATABASE','db_denydatareader',0,1,'Defined by Microsoft for database access regulation',1),
-			('DATABASE','db_denydatawriter',0,1,'Defined by Microsoft for database access regulation',1)		
+			('DATABASE','db_denydatawriter',0,1,'Defined by Microsoft for database access regulation',1),
+		    ('DATABASE','CHULG_SAI_RA',0,0,'Standard role for application managers at CHU Liege',1),		    
+			('SCHEMA','data_modifier',1,0,'Can modify data in schema',1),
+			('SCHEMA','data_reader',1,0,'Can read data in schema',1),
+			('SCHEMA','endusers',1,0,'Has all the permissions an application database user should have',1),
+			('SCHEMA','full_access',1,0,'Can do everything inside the schema',1),
+			('SCHEMA','managers',1,0,'Can manage a database schema',1),
+			('SCHEMA','prog_executors',1,0,'Can execute things in a database schema',1),
+			('SCHEMA','responsible',1,0,'A role for application responsible (vs. DBA) at CHU Liege',1),
+			('SCHEMA','struct_modifier',1,0,'Can run DDL commands',1),
+			('SCHEMA','struct_viewer',1,0,'Can extract DDL from an object in the schema',1)
     ) c (
         [RoleScope],[RoleName],[needsPrefix],[isDefinedByMSSQL],[Description],[isActive]
     )

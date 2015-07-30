@@ -39,7 +39,7 @@ IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[securit
 BEGIN
 	CREATE TABLE [security].[DatabaseRoleMembers](
 		[ServerName]    [varchar](256) NOT NULL,
-		[DbName]        [varchar](64) NOT NULL,
+		[DbName]        [varchar](128) NOT NULL,
 		[RoleName]      [varchar](64) NOT NULL,
 		[MemberName]	[varchar](64) NOT NULL,
 		[MemberIsRole]	[bit] NOT NULL,

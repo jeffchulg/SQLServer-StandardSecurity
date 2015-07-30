@@ -2,7 +2,7 @@
 /*requires Table.security.StandardRoles.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'View [security].[logins] Creation'
+PRINT 'View [security].[StandardOnSchemaRoles] Creation'
 
 IF (EXISTS( select 1 from sys.all_objects where OBJECT_ID = OBJECT_ID('[security].[StandardOnSchemaRoles]') and type_desc = 'USER_TABLE'))
 BEGIN 
@@ -22,13 +22,15 @@ DECLARE @SQL VARCHAR(MAX);
 IF  NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRoles]'))
 BEGIN
     SET @SQL =  'CREATE view [security].[StandardOnSchemaRoles]
-                AS
+				 WITH SCHEMABINDING
+                AS					
                 select ''Not implemented'' as Col1'
     EXEC (@SQL)
 	PRINT '    View [security].[StandardOnSchemaRoles] created.'
 END
 
 SET @SQL = 'ALTER view [security].[StandardOnSchemaRoles]
+				WITH SCHEMABINDING
                 AS
                  select
                     RoleName,
@@ -54,19 +56,38 @@ BEGIN
 END
 GO
 
-IF(	OBJECT_ID('[security].[StandardOnSchemaRoles_bak]') IS NOT NULL AND EXISTS (
+DECLARE @retval int   
+DECLARE @tsql nvarchar(500);
+DECLARE @ParmDefinition nvarchar(500);
+SET @ParmDefinition = N'@retvalOUT int OUTPUT';
+
+SELECT @tsql = N'SELECT @retvalOUT = count(*) FROM (
 	select RoleName,Description,isActive from [security].[StandardOnSchemaRoles_bak]
 	except
-	select RoleName,Description,isActive from [security].[StandardOnSchemaRoles]
-))
+	select RoleName,Description,isActive from [security].[StandardOnSchemaRoles])';
+
+
+
+SET @ParmDefinition = N'@retvalOUT int OUTPUT';
+IF(	OBJECT_ID('[security].[StandardOnSchemaRoles_bak]') IS NOT NULL)
 BEGIN 
-	exec sp_executesql N'DROP VIEW [security].[StandardOnSchemaRoles]';
-	EXEC sp_rename N'[security].[StandardOnSchemaRoles_bak]','StandardOnSchemaRoles';
-	RAISERROR('Problem while trying to upgrade',12,1);
-END 
-ELSE 
-BEGIN 
-	exec sp_executesql N'DROP TABLE [security].[StandardOnSchemaRoles_bak]';
+	
+	EXEC sp_executesql @tsql, @ParmDefinition, @retvalOUT=@retval OUTPUT;
+
+	if(@retVal > 0)
+	BEGIN 
+		exec sp_executesql N'DROP VIEW [security].[StandardOnSchemaRoles]';
+		EXEC sp_rename N'[security].[StandardOnSchemaRoles_bak]','StandardOnSchemaRoles';
+		RAISERROR('Problem while trying to upgrade',12,1);
+	END
+	ELSE 
+	BEGIN 
+		IF(EXISTS (SELECT 1 FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_StandardOnSchemaRolesSecurity_StandardOnSchemaRoles]') AND parent_object_id = OBJECT_ID('[security].[StandardOnSchemaRoles_bak]')))
+		BEGIN 
+			exec sp_executesql N'ALTER TABLE [security].[StandardOnSchemaRolesSecurity] DROP CONSTRAINT [FK_StandardOnSchemaRolesSecurity_StandardOnSchemaRoles]';
+		END 
+		exec sp_executesql N'DROP TABLE [security].[StandardOnSchemaRoles_bak]';
+	END 
 END 
 
 GO 

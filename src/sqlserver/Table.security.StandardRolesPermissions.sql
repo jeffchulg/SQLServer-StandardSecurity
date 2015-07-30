@@ -279,7 +279,7 @@ BEGIN TRY
 		
 		PRINT '    Copying data from [security].[StandardOnSchemaRolesSecurity] into StandardRolesPermissions';
 		
-	/*	with standardSchemaRolesPerms
+		with standardSchemaRolesPerms
 		AS (
 			select 	
 				'SCHEMA' 		  as RoleScope,
@@ -322,32 +322,50 @@ BEGIN TRY
 			values (
 				i.RoleScope,i.RoleName,i.ObjectClass,i.ObjectType,i.PermissionLevel,i.PermissionName,i.DbName,i.SchemaName,i.ObjectName,i.SubObjectName,i.isWithGrantOption,i.isDefinedByMSSQL,i.Reason,i.isActive,i.CreationDate
 			)
-		;*/
+		;
 	END 
 	ELSE
 	BEGIN 
 		with standardSchemaRolesPerms
 		AS (
 			select 	*
-				FROM  ( VALUES 
-			        ('SCHEMA','data_modifier','DELETE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','data_modifier','INSERT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','data_modifier','UPDATE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','data_reader','SELECT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','endusers','SHOWPLAN','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','prog_executors','EXECUTE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','ALTER','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE FUNCTION','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE PROCEDURE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE SYNONYM','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE TABLE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE TYPE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE VIEW','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','REFERENCES','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_viewer','VIEW DEFINITION','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',NULL,0,0,'',1,'2014-12-24 14:21:52.617')
+				FROM VAlUES (
+			        ('SCHEMA','data_modifier','DELETE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','data_modifier','INSERT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','data_modifier','UPDATE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','data_reader','SELECT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','endusers','SHOWPLAN','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','prog_executors','EXECUTE''DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','ALTER''DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE FUNCTION','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE PROCEDURE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE SYNONYM','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE TABLE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE TYPE'',DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE VIEW','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','REFERENCES','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_viewer','VIEW DEFINITION','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617')
 				) c (
 					RoleScope,RoleName,PermissionName,ObjectClass,PermissionLevel,ObjectType,DbName,SchemaName,ObjectName,SubObjectName,isWithGrantOption,isDefinedByMSSQL,Reason,isActive,CreationDate
-				)				
+				)
+				'SCHEMA' 		  as RoleScope,
+				RoleName		  as RoleName,
+				PermissionClass   as ObjectClass,
+				null 			  as ObjectType ,
+				PermissionLevel	  as PermissionLevel,
+				PrivName 		  as PermissionName,
+				NULL			  as DbName,
+				NULL			  as SchemaName,
+				CASE WHEN PermissionClass = 'DATABASE_SCHEMA' THEN '$(SCHEMA_NAME}' WHEN PermissionClass = 'DATABASE' THEN '$(DATABASE)' ELSE NULL END 
+								  as ObjectName /*No given schemaname in standard*/,
+				NULL			  as SubObjectName,
+				0			      as isWithGrantOption,
+				0				  as isDefinedByMSSQL,
+				NULL			  as Reason/*no column Reason*/,
+				isActive		  as isActive,
+				CreationDate	  as CreationDate 
+			from [security].[StandardOnSchemaRolesSecurity]
+			where isRoleMembership = 0 
 		)
 		MERGE [security].[StandardRolesPermissions] t
 		using standardSchemaRolesPerms i
@@ -421,8 +439,6 @@ BEGIN TRY
 			)
 		;
 	END ;	
-	
-	
 END TRY 
 
 BEGIN CATCH 

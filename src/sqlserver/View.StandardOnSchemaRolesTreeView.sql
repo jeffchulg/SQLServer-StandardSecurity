@@ -1,6 +1,6 @@
 /*requires Schema.Security.sql*/
-/*requires Table.StandardOnSchemaRoles.sql*/
-/*requires Table.StandardOnSchemaRolesSecurity.sql*/
+/*requires View.security.StandardOnSchemaRoles.sql*/
+/*requires View.security.StandardOnSchemaRolesSecurity.sql*/
 
 /**
   ==================================================================================

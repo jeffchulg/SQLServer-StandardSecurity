@@ -1,7 +1,7 @@
 /*requires Schema.Security.sql*/
 /*requires Table.DatabaseRoles.sql*/
 /*requires Table.DatabasePermissions.sql*/
-/*requires Table.StandardOnSchemaRoles.sql*/
+/*requires View.security.StandardOnSchemaRoles.sql*/
 /*requires Table.DatabaseSchemas.sql*/
 /*requires Table.SQLMappings.sql*/
 /*requires Table.StandardExclusion.sql*/

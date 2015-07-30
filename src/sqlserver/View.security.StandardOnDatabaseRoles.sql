@@ -43,23 +43,38 @@ PRINT '    View altered.'
 GO
 
 
+DECLARE @retval int   
+DECLARE @tsql nvarchar(500);
+DECLARE @ParmDefinition nvarchar(500);
+SET @ParmDefinition = N'@retvalOUT int OUTPUT';
 
-IF(	OBJECT_ID('[security].[StandardOnDatabaseRoles_bak]') IS NOT NULL AND EXISTS (
+SELECT @tsql = N'SELECT @retvalOUT = count(*) FROM (
 	select RoleName,Description,isActive from [security].[StandardOnDatabaseRoles_bak]
 	except
-	select RoleName,Description,isActive from [security].[StandardOnDatabaseRoles]
-))
+	select RoleName,Description,isActive from [security].[StandardOnDatabaseRoles]';
+
+
+
+SET @ParmDefinition = N'@retvalOUT int OUTPUT';
+IF(	OBJECT_ID('[security].[StandardOnDatabaseRoles_bak]') IS NOT NULL)
 BEGIN 
-	exec sp_executesql N'DROP VIEW [security].[StandardOnDatabaseRoles]';
-	EXEC sp_rename N'[security].[StandardOnDatabaseRoles_bak]','StandardOnDatabaseRoles';
-	RAISERROR('Problem while trying to upgrade',12,1);
-END 
-ELSE 
-BEGIN 
-	exec sp_executesql N'DROP TABLE [security].[StandardOnDatabaseRoles_bak]';
+	
+	EXEC sp_executesql @tsql, @ParmDefinition, @retvalOUT=@retval OUTPUT;
+
+	if(@retVal > 0)
+	BEGIN 
+		exec sp_executesql N'DROP VIEW [security].[StandardOnDatabaseRoles]';
+		EXEC sp_rename N'[security].[StandardOnDatabaseRoles_bak]','StandardOnDatabaseRoles';
+		RAISERROR('Problem while trying to upgrade',12,1);
+	END
+	ELSE 
+	BEGIN 
+		exec sp_executesql N'DROP TABLE [security].[StandardOnDatabaseRoles_bak]';
+	END 
 END 
 
 GO 
+
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT '' 

@@ -1,6 +1,5 @@
 /*requires Schema.Security.sql*/
 /*requires Table.security.StandardRoles.sql*/
-/*requires Table.security.StandardRoles.sql*/
 
 /**
   ==================================================================================

@@ -314,7 +314,7 @@ BEGIN TRY
 			('SCHEMA','responsible','SCHEMA','data_reader','GRANT','',1,0,'2014-12-24 14:21:52.617'),
 			('SCHEMA','responsible','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617')
         ) c (
-			RoleScope,RoleName,RoleMemberScope,MemberName,PermissionLevel,isDefinedByMSSQL,Reason,isActive,CreationDate
+			RoleScope,RoleName,RoleMemberScope,MemberName,PermissionLevel,Reason,isActive,isDefinedByMSSQL,CreationDate
 		))
         MERGE [security].[StandardRoleMembers] t
         using standardSchemaRolesPerms i

@@ -1,5 +1,6 @@
 /*requires Schema.Security.sql*/
 /*requires Table.security.StandardRoles.sql*/
+/*requires Table.security.StandardRoles.sql*/
 
 /**
   ==================================================================================
@@ -270,6 +271,9 @@ PRINT '    Trigger [security].[TRG_U_StandardRolesPermissions] altered.'
 GO
 
 PRINT '    Getting back data from old version table (if exists).'
+
+DECLARE @SQL VARCHAR(MAX)
+
 BEGIN TRAN 
 BEGIN TRY 
 
@@ -279,93 +283,78 @@ BEGIN TRY
 		
 		PRINT '    Copying data from [security].[StandardOnSchemaRolesSecurity] into StandardRolesPermissions';
 		
-		with standardSchemaRolesPerms
-		AS (
-			select 	
-				'SCHEMA' 		  as RoleScope,
-				RoleName		  as RoleName,
-				PermissionClass   as ObjectClass,
-				null 			  as ObjectType ,
-				PermissionLevel	  as PermissionLevel,
-				PrivName 		  as PermissionName,
-				NULL			  as DbName,
-				NULL			  as SchemaName,
-				CASE WHEN PermissionClass = 'DATABASE_SCHEMA' THEN '$(SCHEMA_NAME}' WHEN PermissionClass = 'DATABASE' THEN '$(DATABASE)' ELSE NULL END 
-								  as ObjectName /*No given schemaname in standard*/,
-				NULL			  as SubObjectName,
-				0			      as isWithGrantOption,
-				0				  as isDefinedByMSSQL,
-				NULL			  as Reason/*no column Reason*/,
-				isActive		  as isActive,
-				CreationDate	  as CreationDate 
-			from [security].[StandardOnSchemaRolesSecurity]
-			where isRoleMembership = 0 
-		)
-		MERGE [security].[StandardRolesPermissions] t
-		using standardSchemaRolesPerms i
-		on 	t.RoleScope 		= i.RoleScope
-		and t.RoleName 			= i.RoleName
-		and t.FullObjectType	= i.[ObjectClass] +  ISNULL(i.[ObjectType],'')
-		and t.PermissionName    = i.PermissionName
-		and t.FullObjectName 	= isNULL(i.[DbName],'') + isNULL(i.[SchemaName],'') + i.[ObjectName] + isNULL(i.[SubObjectName],'')		
-		WHEN MATCHED THEN 
-			update set	
-				t.PermissionLevel 	= i.PermissionLevel,
-				t.isWithGrantOption = i.isWithGrantOption,
-				--t.isDefinedByMSSQL  = i.isDefinedByMSSQL,
-				t.Reason     		= i.Reason,
-				t.isActive    		= i.isActive
-		WHEN NOT MATCHED THEN
-			insert (
-				RoleScope,RoleName,ObjectClass,ObjectType,PermissionLevel,PermissionName,DbName,SchemaName,ObjectName,SubObjectName,isWithGrantOption,isDefinedByMSSQL,Reason,isActive,CreationDate
-			)
-			values (
-				i.RoleScope,i.RoleName,i.ObjectClass,i.ObjectType,i.PermissionLevel,i.PermissionName,i.DbName,i.SchemaName,i.ObjectName,i.SubObjectName,i.isWithGrantOption,i.isDefinedByMSSQL,i.Reason,i.isActive,i.CreationDate
-			)
+		SET @SQL = 'with standardSchemaRolesPerms' + CHAR(13) +
+		'AS (' + CHAR(13) +
+		'	select 	' + CHAR(13) +
+		'		''SCHEMA'' 		  as RoleScope,' + CHAR(13) +
+		'		RoleName		  as RoleName,' + CHAR(13) +
+		'		PermissionClass   as ObjectClass,' + CHAR(13) +
+		'		null 			  as ObjectType ,' + CHAR(13) +
+		'		PermissionLevel	  as PermissionLevel,' + CHAR(13) +
+		'		PrivName 		  as PermissionName,' + CHAR(13) +
+		'		NULL			  as DbName,' + CHAR(13) +
+		'		NULL			  as SchemaName,' + CHAR(13) +
+		'		CASE WHEN PermissionClass = ''DATABASE_SCHEMA'' THEN ''$(SCHEMA_NAME)'' WHEN PermissionClass = ''DATABASE'' THEN ''$(DATABASE)'' ELSE NULL END ' + CHAR(13) +
+		'						  as ObjectName /*No given schemaname in standard*/,' + CHAR(13) +
+		'		NULL			  as SubObjectName,' + CHAR(13) +
+		'		0			      as isWithGrantOption,' + CHAR(13) +
+		'		0				  as isDefinedByMSSQL,' + CHAR(13) +
+		'		NULL			  as Reason/*no column Reason*/,' + CHAR(13) +
+		'		isActive		  as isActive,' + CHAR(13) +
+		'		CreationDate	  as CreationDate ' + CHAR(13) +
+		'	from [security].[StandardOnSchemaRolesSecurity]' + CHAR(13) +
+		'	where isRoleMembership = 0 ' + CHAR(13) +
+		')' + CHAR(13) +
+		'MERGE [security].[StandardRolesPermissions] t' + CHAR(13) +
+		'using standardSchemaRolesPerms i' + CHAR(13) +
+		'on 	t.RoleScope 		= i.RoleScope' + CHAR(13) +
+		'and t.RoleName 			= i.RoleName' + CHAR(13) +
+		'and t.FullObjectType	= i.[ObjectClass] +  ISNULL(i.[ObjectType],'')' + CHAR(13) +
+		'and t.PermissionName    = i.PermissionName' + CHAR(13) +
+		'and t.FullObjectName 	= isNULL(i.[DbName],'') + isNULL(i.[SchemaName],'') + i.[ObjectName] + isNULL(i.[SubObjectName],'')		' + CHAR(13) +
+		'WHEN MATCHED THEN ' + CHAR(13) +
+		'	update set	' + CHAR(13) +
+		'		t.PermissionLevel 	= i.PermissionLevel,' + CHAR(13) +
+		'		t.isWithGrantOption = i.isWithGrantOption,' + CHAR(13) +
+		'		--t.isDefinedByMSSQL  = i.isDefinedByMSSQL,' + CHAR(13) +
+		'		t.Reason     		= i.Reason,' + CHAR(13) +
+		'		t.isActive    		= i.isActive' + CHAR(13) +
+		'WHEN NOT MATCHED THEN' + CHAR(13) +
+		'	insert (' + CHAR(13) +
+		'		RoleScope,RoleName,ObjectClass,ObjectType,PermissionLevel,PermissionName,DbName,SchemaName,ObjectName,SubObjectName,isWithGrantOption,isDefinedByMSSQL,Reason,isActive,CreationDate' + CHAR(13) +
+		'	)' + CHAR(13) +
+		'	values (' + CHAR(13) +
+		'		i.RoleScope,i.RoleName,i.ObjectClass,i.ObjectType,i.PermissionLevel,i.PermissionName,i.DbName,i.SchemaName,i.ObjectName,i.SubObjectName,i.isWithGrantOption,i.isDefinedByMSSQL,i.Reason,i.isActive,i.CreationDate' + CHAR(13) +
+		'	)' + CHAR(13) 
 		;
+		
+		exec sp_executesql @SQL;
+		
 	END 
 	ELSE
 	BEGIN 
 		with standardSchemaRolesPerms
 		AS (
 			select 	*
-				FROM VAlUES (
-			        ('SCHEMA','data_modifier','DELETE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','data_modifier','INSERT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','data_modifier','UPDATE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','data_reader','SELECT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','endusers','SHOWPLAN','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','prog_executors','EXECUTE''DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','ALTER''DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE FUNCTION','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE PROCEDURE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE SYNONYM','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE TABLE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE TYPE'',DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','CREATE VIEW','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_modifier','REFERENCES','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617'),
-					('SCHEMA','struct_viewer','VIEW DEFINITION','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME}',1,'2014-12-24 14:21:52.617')
+				FROM ( VALUES 
+			        ('SCHEMA','data_modifier','DELETE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','data_modifier','INSERT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','data_modifier','UPDATE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','data_reader','SELECT','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','endusers','SHOWPLAN','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','prog_executors','EXECUTE','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','ALTER','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE FUNCTION','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE PROCEDURE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE SYNONYM','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE TABLE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE TYPE','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','CREATE VIEW','DATABASE','GRANT',NULL,NULL,NULL,'$(DATABASE)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_modifier','REFERENCES','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617'),
+					('SCHEMA','struct_viewer','VIEW DEFINITION','DATABASE_SCHEMA','GRANT',NULL,NULL,NULL,'$(SCHEMA_NAME)',NULL,1,0,NULL,1,'2014-12-24 14:21:52.617')
 				) c (
 					RoleScope,RoleName,PermissionName,ObjectClass,PermissionLevel,ObjectType,DbName,SchemaName,ObjectName,SubObjectName,isWithGrantOption,isDefinedByMSSQL,Reason,isActive,CreationDate
 				)
-				'SCHEMA' 		  as RoleScope,
-				RoleName		  as RoleName,
-				PermissionClass   as ObjectClass,
-				null 			  as ObjectType ,
-				PermissionLevel	  as PermissionLevel,
-				PrivName 		  as PermissionName,
-				NULL			  as DbName,
-				NULL			  as SchemaName,
-				CASE WHEN PermissionClass = 'DATABASE_SCHEMA' THEN '$(SCHEMA_NAME}' WHEN PermissionClass = 'DATABASE' THEN '$(DATABASE)' ELSE NULL END 
-								  as ObjectName /*No given schemaname in standard*/,
-				NULL			  as SubObjectName,
-				0			      as isWithGrantOption,
-				0				  as isDefinedByMSSQL,
-				NULL			  as Reason/*no column Reason*/,
-				isActive		  as isActive,
-				CreationDate	  as CreationDate 
-			from [security].[StandardOnSchemaRolesSecurity]
-			where isRoleMembership = 0 
 		)
 		MERGE [security].[StandardRolesPermissions] t
 		using standardSchemaRolesPerms i

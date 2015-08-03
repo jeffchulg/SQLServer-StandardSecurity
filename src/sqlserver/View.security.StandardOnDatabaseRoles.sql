@@ -37,7 +37,8 @@ SET @SQL = 'ALTER view [security].[StandardOnDatabaseRoles]
 					[CreationDate],
 					[lastmodified]
                 from [security].[StandardRoles] sr
-				where sr.RoleScope = ''DATABASE'''
+				where sr.RoleScope = ''DATABASE''
+				AND sr.isDefinedByMSSQL = 0';
 EXEC (@SQL)
 PRINT '    View altered.'
 GO

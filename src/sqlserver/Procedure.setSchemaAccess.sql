@@ -5,7 +5,7 @@
 /*requires Table.DatabaseSchemas.sql*/
 /*requires Table.DatabaseRoles.sql*/
 /*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.StandardOnSchemaRoles.sql*/
+/*requires View.security.StandardOnSchemaRoles.sql*/
 /*requires Procedure.setServerAccess.sql*/
 /*requires Function.security.getStandardOnSchemaRoleName.sql*/
 

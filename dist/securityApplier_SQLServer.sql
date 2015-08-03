@@ -1641,177 +1641,7 @@ GO
 PRINT '    Trigger [TRG_U_Contacts] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' -- 
-
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT 'Table [security].[StandardOnDatabaseRoles] Creation'
-
--- IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[StandardOnDatabaseRoles]') AND type in (N'U'))
--- BEGIN
-    -- CREATE TABLE [security].[StandardOnDatabaseRoles](
-        -- [RoleName]      [varchar](64) 	NOT NULL,
-		-- [Description]	[varchar](2048),
-        -- [isActive]      [bit]		 	NOT NULL,
-        -- [CreationDate]  [datetime] 		NOT NULL,
-        -- [lastmodified]  [datetime] 		NOT NULL
-    -- ) ON [PRIMARY];
-	
-	-- IF @@ERROR = 0
-		-- PRINT '   Table created.'
-	-- ELSE
-	-- BEGIN
-		-- PRINT '   Error while trying to create table.'
-		-- RETURN
-	-- END
--- END
--- /*
--- ELSE
--- BEGIN 
--- END
--- */
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnDatabaseRoles_CreationDate]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRoles]
-        -- ADD CONSTRAINT [DF_StandardOnDatabaseRoles_CreationDate] DEFAULT (Getdate()) FOR [CreationDate]
-	
-	-- PRINT '    Constraint [DF_StandardOnDatabaseRoles_CreationDate] created.'
--- END
-
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnDatabaseRoles_LastModified]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRoles]
-        -- ADD CONSTRAINT [DF_StandardOnDatabaseRoles_LastModified] DEFAULT (Getdate()) FOR [LastModified]
-	
-	-- PRINT '    Constraint [DF_StandardOnDatabaseRoles_LastModified] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[StandardOnDatabaseRoles]') AND name = N'PK_StandardOnDatabaseRoles')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRoles]
-        -- ADD CONSTRAINT [PK_StandardOnDatabaseRoles]
-            -- PRIMARY KEY CLUSTERED (
-                -- [RoleName] ASC
-            -- )
-        -- WITH (
-            -- PAD_INDEX               = OFF,
-            -- STATISTICS_NORECOMPUTE  = OFF,
-            -- SORT_IN_TEMPDB          = OFF,
-            -- IGNORE_DUP_KEY          = OFF,
-            -- ONLINE                  = OFF,
-            -- ALLOW_ROW_LOCKS         = ON,
-            -- ALLOW_PAGE_LOCKS        = ON
-        -- )
-    -- ON [PRIMARY]
-	
-	-- PRINT '    Primary key [PK_StandardOnDatabaseRoles] created.'
--- END
--- GO
-
-
--- DECLARE @SQL VARCHAR(MAX)
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_StandardOnDatabaseRoles]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_I_StandardOnDatabaseRoles] ' + CHAR(13) +
-               -- '  ON security.StandardOnDatabaseRoles ' + CHAR(13) +
-               -- '    FOR INSERT ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-	
-	-- PRINT '    Trigger [security].[TRG_I_StandardOnDatabaseRoles] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_I_StandardOnDatabaseRoles]' + CHAR(13) +
-            -- '    ON security.StandardOnDatabaseRoles' + CHAR(13) +
-            -- '    FOR INSERT' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnDatabaseRoles ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '        ,   CreationDate = GETDATE() ' + CHAR(13) +
-            -- '    FROM [security].StandardOnDatabaseRoles o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '    on o.[RoleName] = i.[RoleName]' +CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
--- PRINT '    Trigger [security].[TRG_I_StandardOnDatabaseRoles] altered.'
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_StandardOnDatabaseRoles]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_U_StandardOnDatabaseRoles] ' + CHAR(13) +
-               -- '  ON security.StandardOnDatabaseRoles ' + CHAR(13) +
-               -- '    FOR UPDATE ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-	-- PRINT '    Trigger [security].[TRG_U_StandardOnDatabaseRoles] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_U_StandardOnDatabaseRoles]' + CHAR(13) +
-            -- '    ON security.StandardOnDatabaseRoles' + CHAR(13) +
-            -- '    FOR UPDATE' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnDatabaseRoles ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '    FROM [security].StandardOnDatabaseRoles o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '    on o.[RoleName] = i.[RoleName]' +CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
-
--- PRINT '    Trigger [security].[TRG_U_StandardOnDatabaseRoles] altered.'
--- GO
-
--- PRINT '    Adding default data to [security].[StandardOnDatabaseRoles].'
-
--- --[StandardOnDatabaseRoles]---------------------------------------------------------------------------
--- ----------------------------------------------------------------------------------------------------
--- set nocount on;
--- ;
-
--- with cte_data(
--- [RoleName],[isActive],[CreationDate],[lastmodified],[Description])
--- as (
-    -- select * 
-    -- from (
-        -- values
-        -- ('CHULG_SAI_RA',1,'2015-03-14 00:00:00.000','2015-03-14 00:00:00.000','Standard role for application managers at CHU Liege')
-    -- ) c (
-        -- [RoleName],[isActive],[CreationDate],[lastmodified],[Description]
-    -- )
--- )
--- merge [security].[StandardOnDatabaseRoles] as t
--- using cte_data as s
--- on		t.[RoleName] = s.[RoleName]
--- when matched then
-	-- update set
-	-- [isActive] = s.[isActive],[CreationDate] = s.[CreationDate],[lastmodified] = s.[lastmodified],[Description] = s.[Description]
--- when not matched by target then
-	-- insert([RoleName],[isActive],[CreationDate],[lastmodified],[Description])
-	-- values(s.[RoleName],s.[isActive],s.[CreationDate],s.[lastmodified],s.[Description])
--- ;
-
-
-
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT '' 
+PRINT '' 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Procedure [security].[SecurityGenHelper_AppendCheck] Creation'
@@ -2336,202 +2166,7 @@ GO
 PRINT '    Procedure [security].[CreateTempTables4Generation] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' 	-- 
-
--- /**
-  -- ==================================================================================
-    -- DESCRIPTION
-		-- Creation of the [security].[StandardOnSchemaRoles] table.
-		-- This table will contain a list of security roles defined by our standard.
-
-	-- ==================================================================================
-  -- BUGS:
- 
-    -- BUGID       Fixed   Description
-    -- ==========  =====   ==========================================================
-    -- ----------------------------------------------------------------------------------
-  -- ==================================================================================
-  -- Notes :
- 
-        -- Exemples :
-        -- -------
- 
-  -- ==================================================================================
-  -- Revision history
- 
-    -- Date        Name                Description
-    -- ==========  ================    ================================================
-    -- 24/12/2014  Jefferson Elias     Version 0.1.0
-  -- ==================================================================================
--- */
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT 'Table [security].[StandardOnSchemaRoles] Creation'
-
--- IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRoles]') AND type in (N'U'))
--- BEGIN
-    -- CREATE TABLE [security].[StandardOnSchemaRoles](
-        -- [RoleName]      [varchar](64) 	NOT NULL,
-		-- [Description]	[varchar](2048),
-        -- [isActive]      [bit]		 	NOT NULL,
-        -- [CreationDate]  [datetime] 		NOT NULL,
-        -- [lastmodified]  [datetime] 		NOT NULL
-    -- ) ON [PRIMARY]
-	-- PRINT '    Table [security].[StandardOnSchemaRoles] created.'
--- END
--- /*
--- ELSE
--- BEGIN 
--- END
--- */
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRoles_CreationDate]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRoles]
-        -- ADD CONSTRAINT [DF_StandardOnSchemaRoles_CreationDate] DEFAULT (Getdate()) FOR [CreationDate]
-	
-	-- PRINT '    Constraint [DF_StandardOnSchemaRoles_CreationDate] created.'
--- END
-
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRoles_LastModified]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRoles]
-        -- ADD CONSTRAINT [DF_StandardOnSchemaRoles_LastModified] DEFAULT (Getdate()) FOR [LastModified]
-	
-	-- PRINT '    Constraint [DF_StandardOnSchemaRoles_LastModified] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRoles]') AND name = N'PK_StandardOnSchemaRoles')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRoles]
-        -- ADD CONSTRAINT [PK_StandardOnSchemaRoles]
-            -- PRIMARY KEY CLUSTERED (
-                -- [RoleName] ASC
-            -- )
-        -- WITH (
-            -- PAD_INDEX               = OFF,
-            -- STATISTICS_NORECOMPUTE  = OFF,
-            -- SORT_IN_TEMPDB          = OFF,
-            -- IGNORE_DUP_KEY          = OFF,
-            -- ONLINE                  = OFF,
-            -- ALLOW_ROW_LOCKS         = ON,
-            -- ALLOW_PAGE_LOCKS        = ON
-        -- )
-    -- ON [PRIMARY]
-	
-	-- PRINT '    Primary key [PK_StandardOnSchemaRoles] created.'
--- END
--- GO
-
-
--- DECLARE @SQL VARCHAR(MAX)
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_StandardOnSchemaRoles]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_I_StandardOnSchemaRoles] ' + CHAR(13) +
-               -- '  ON security.StandardOnSchemaRoles ' + CHAR(13) +
-               -- '    FOR INSERT ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-	
-	-- PRINT '    Trigger [security].[TRG_I_StandardOnSchemaRoles] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_I_StandardOnSchemaRoles]' + CHAR(13) +
-            -- '    ON security.StandardOnSchemaRoles' + CHAR(13) +
-            -- '    FOR INSERT' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnSchemaRoles ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '        ,   CreationDate = GETDATE() ' + CHAR(13) +
-            -- '    FROM [security].StandardOnSchemaRoles o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '    on o.[RoleName] = i.[RoleName]' +CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
--- PRINT '    Trigger [security].[TRG_I_StandardOnSchemaRoles] altered.'
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_StandardOnSchemaRoles]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_U_StandardOnSchemaRoles] ' + CHAR(13) +
-               -- '  ON security.StandardOnSchemaRoles ' + CHAR(13) +
-               -- '    FOR UPDATE ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-	-- PRINT '    Trigger [security].[TRG_U_StandardOnSchemaRoles] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_U_StandardOnSchemaRoles]' + CHAR(13) +
-            -- '    ON security.StandardOnSchemaRoles' + CHAR(13) +
-            -- '    FOR UPDATE' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnSchemaRoles ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '    FROM [security].StandardOnSchemaRoles o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '    on o.[RoleName] = i.[RoleName]' +CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
-
--- PRINT '    Trigger [security].[TRG_U_StandardOnSchemaRoles] altered.'
--- GO
-
--- PRINT '    Adding default data to [security].[StandardOnSchemaRoles].'
-
--- --[StandardOnSchemaRoles]---------------------------------------------------------------------------
--- ----------------------------------------------------------------------------------------------------
--- set nocount on;
--- ;with cte_data(
--- [RoleName],[isActive],[CreationDate],[lastmodified],[Description])
--- as (
-    -- select * 
-    -- from (
-        -- values
-        -- ('data_modifier',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
-        -- ('data_reader',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
-        -- ('endusers',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
-        -- ('full_access',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
-        -- ('managers',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
-        -- ('prog_executors',1,'2014-11-25 00:00:00.000','2014-11-25 00:00:00.000',null),
-        -- ('responsible',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
-        -- ('struct_modifier',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null),
-        -- ('struct_viewer',1,'2014-04-23 00:00:00.000','2014-04-23 00:00:00.000',null)
-    -- ) c (
-        -- [RoleName],[isActive],[CreationDate],[lastmodified],[Description]
-    -- )
--- )
--- merge [security].[StandardOnSchemaRoles] as t
--- using cte_data as s
--- on		1=1 and t.[RoleName] = s.[RoleName]
--- when matched then
-	-- update set
-	-- [isActive] = s.[isActive],[CreationDate] = s.[CreationDate],[lastmodified] = s.[lastmodified],[Description] = s.[Description]
--- when not matched by target then
-	-- insert([RoleName],[isActive],[CreationDate],[lastmodified],[Description])
-	-- values(s.[RoleName],s.[isActive],s.[CreationDate],s.[lastmodified],s.[Description])
--- ;
-
-
-
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT '' 
+PRINT '' 	
 
 /**
     Creation of the [inventory] schema
@@ -4304,494 +3939,7 @@ PRINT '   Trigger [TRG_U_SQLLogins] altered.'
 GO
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT ''-- 
--- 
-
--- /**
-  -- ==================================================================================
-    -- DESCRIPTION
-        -- Creation of the [security].[StandardOnDatabaseRolesSecurity] table.
-        -- This table will contain a list of privileges assigned to security roles defined by our standard.
-
-    -- ==================================================================================
-  -- BUGS:
- 
-    -- BUGID       Fixed   Description
-    -- ==========  =====   ==========================================================
-    -- ----------------------------------------------------------------------------------
-  -- ==================================================================================
-  -- Notes :
- 
-        -- Exemples :
-        -- -------
- 
-  -- ==================================================================================
-  -- Revision history
- 
-    -- Date        Name                Description
-    -- ==========  ================    ================================================
-    -- 24/12/2014  Jefferson Elias     Version 0.1.0
-  -- ==================================================================================
--- */
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT 'Table [security].[StandardOnDatabaseRolesSecurity] Creation'
-
-
--- IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[StandardOnDatabaseRolesSecurity]') AND type in (N'U'))
--- BEGIN
-    -- CREATE TABLE [security].[StandardOnDatabaseRolesSecurity](
-        -- [DbRoleName]        [varchar](64) NOT NULL,
-        -- [ObjectClass]       [VARCHAR](128) NOT NULL, -- 'SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER'
-                                                     -- -- 'DATABASE_ROLE','DATABASE_ROLE_ON_SCHEMA' => OBJECT_NAME = the role 
-        -- [ObjectType]        [VARCHAR](128) ,
-        -- [PermissionLevel]   [varchar](6) DEFAULT 'GRANT' not null,
-        -- [PermissionName]    [VARCHAR](128) NOT NULL,
-        -- [DbName]            [VARCHAR](64) ,
-        -- [SchemaName]        [VARCHAR](64) ,
-        -- [ObjectName]        [VARCHAR](128) NOT NULL,        
-        -- [SubObjectName]     [VARCHAR](128), -- column_name , partition_name             
-        -- [isWithGrantOption] BIT NOT NULL,
-        -- [Reason]            VARCHAR(2048),
-        -- [isActive]          BIT            NOT NULL,
-        -- [CreationDate]      [datetime] NULL,
-        -- [lastmodified]      [datetime] NULL,  
-        -- [FullObjectType]    AS (
-                                -- [ObjectClass] +  ISNULL([ObjectType],'')
-                            -- ),
-        -- [FullObjectName]    AS (
-                                -- isNULL([DbName],'') + isNULL([SchemaName],'') + [ObjectName] + isNULL([SubObjectName],'')
-                            -- )
-
-    -- ) ON [PRIMARY]
-    
-    
-    -- IF @@ERROR = 0
-        -- PRINT '   Table created.'
-    -- ELSE
-    -- BEGIN
-        -- PRINT '   Error while trying to create table.'
-        -- RETURN
-    -- END
--- END
-
--- /*
--- ELSE
--- BEGIN
-    
--- END
--- */
--- GO
-
-
--- IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[StandardOnDatabaseRolesSecurity]') AND name = N'UN_StandardOnDatabaseRolesSecurity')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- ADD CONSTRAINT [UN_StandardOnDatabaseRolesSecurity]
-            -- UNIQUE (
-                -- [DbRoleName],
-                -- [FullObjectType],
-                -- [PermissionName],
-                -- [FullObjectName]
-            -- )
-        -- WITH (
-            -- PAD_INDEX               = OFF,
-            -- STATISTICS_NORECOMPUTE  = OFF,
-            -- SORT_IN_TEMPDB          = OFF,
-            -- IGNORE_DUP_KEY          = OFF,
-            -- ONLINE                  = OFF,
-            -- ALLOW_ROW_LOCKS         = ON,
-            -- ALLOW_PAGE_LOCKS        = ON
-        -- )
-    -- ON [PRIMARY]
-    
-    -- PRINT '    Primary Key [UN_StandardOnDatabaseRolesSecurity] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnDatabaseRolesSecurity_ObjectClass]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnDatabaseRolesSecurity]'))
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- WITH CHECK ADD CONSTRAINT [CK_StandardOnDatabaseRolesSecurity_ObjectClass]
-            -- CHECK (([ObjectClass] in ('SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER','DATABASE_ROLE','DATABASE_ROLE_ON_SCHEMA')))
-    -- PRINT '     Constraint [CK_StandardOnDatabaseRolesSecurity_ObjectClass] created.'
--- END
--- GO
-
-
--- IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnDatabaseRolesSecurity_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnDatabaseRolesSecurity]'))
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- WITH CHECK ADD CONSTRAINT [CK_StandardOnDatabaseRolesSecurity_PermissionLevel]
-            -- CHECK (([PermissionLevel] in ('GRANT','REVOKE','DENY')))
-    -- PRINT '     Constraint [CK_StandardOnDatabaseRolesSecurity_PermissionLevel] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[CK_StandardOnDatabaseRolesSecurity_OnlyGrantWithGrantOption]') AND type = 'C')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- ADD  CONSTRAINT [CK_StandardOnDatabaseRolesSecurity_OnlyGrantWithGrantOption]
-            -- CHECK  ((NOT (PermissionLevel <> 'GRANT' AND [isWithGrantOption]=(1))))
-    
-    -- PRINT '    Constraint [CK_StandardOnDatabaseRolesSecurity_OnlyGrantWithGrantOption] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnDatabaseRolesSecurity_isWithGrantOption]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- ADD CONSTRAINT [DF_StandardOnDatabaseRolesSecurity_isWithGrantOption]
-            -- DEFAULT 0 FOR [isWithGrantOption]
-    
-    -- PRINT '    Constraint [DF_StandardOnDatabaseRolesSecurity_isWithGrantOption] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnDatabaseRolesSecurity_CreationDate]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- ADD CONSTRAINT [DF_StandardOnDatabaseRolesSecurity_CreationDate]
-            -- DEFAULT (Getdate()) FOR [CreationDate]
-    
-    -- PRINT '    Constraint [DF_StandardOnDatabaseRolesSecurity_CreationDate] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnDatabaseRolesSecurity_LastModified]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- ADD CONSTRAINT [DF_StandardOnDatabaseRolesSecurity_LastModified] DEFAULT (Getdate()) FOR [LastModified]
-    
-    -- PRINT '    Constraint [DF_StandardOnDatabaseRolesSecurity_LastModified] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnDatabaseRolesSecurity_isActive]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnDatabaseRolesSecurity]
-        -- ADD CONSTRAINT [DF_StandardOnDatabaseRolesSecurity_isActive] DEFAULT (0) FOR [isActive]
-    
-    -- PRINT '    Constraint [DF_StandardOnDatabaseRolesSecurity_isActive] created.'
--- END
--- GO
-
--- DECLARE @SQL VARCHAR(MAX)
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_StandardOnDatabaseRolesSecurity]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_I_StandardOnDatabaseRolesSecurity] ' + CHAR(13) +
-               -- '  ON security.StandardOnDatabaseRolesSecurity ' + CHAR(13) +
-               -- '    FOR INSERT ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-    -- PRINT '    Trigger [security].[TRG_I_StandardOnDatabaseRolesSecurity] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_I_StandardOnDatabaseRolesSecurity]' + CHAR(13) +
-            -- '    ON security.StandardOnDatabaseRolesSecurity' + CHAR(13) +
-            -- '    FOR INSERT' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnDatabaseRolesSecurity ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '        ,   CreationDate = GETDATE() ' + CHAR(13) +
-            -- '    FROM [security].StandardOnDatabaseRolesSecurity o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '           ON o.DbRoleName = i.DbRoleName' +CHAR(13) +            
-            -- '           and o.[ObjectClass] = i.[ObjectClass]' +CHAR(13) +
-            -- '           and ISNULL(o.[ObjectType],''null'') = ISNULL(i.[ObjectType],''null'')' +CHAR(13) +
-            -- '           and o.[PermissionName] = i.[PermissionName]' +CHAR(13) +
-            -- '           and ISNULL(o.[DbName],''null'') = ISNULL(i.[DbName],''null'')' +CHAR(13) +
-            -- '           and ISNULL(o.[SchemaName],''null'') = ISNULL(i.[SchemaName],''null'')' +CHAR(13) +
-            -- '           and o.[objectname] = i.[objectname]' +CHAR(13) +        
-            -- '           and ISNULL(o.[SubObjectName],''null'') = ISNULL(i.[SubObjectName],''null'')' +CHAR(13) +        
-            -- + CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
--- PRINT '    Trigger [security].[TRG_I_StandardOnDatabaseRolesSecurity] altered.'
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_StandardOnDatabaseRolesSecurity]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_U_StandardOnDatabaseRolesSecurity] ' + CHAR(13) +
-               -- '  ON security.StandardOnDatabaseRolesSecurity ' + CHAR(13) +
-               -- '    FOR UPDATE ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-    
-    -- PRINT '    Trigger [security].[TRG_U_StandardOnDatabaseRolesSecurity] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_U_StandardOnDatabaseRolesSecurity]' + CHAR(13) +
-            -- '    ON security.StandardOnDatabaseRolesSecurity' + CHAR(13) +
-            -- '    FOR UPDATE' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnDatabaseRolesSecurity ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '    FROM [security].StandardOnDatabaseRolesSecurity o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '           ON  o.DbRoleName = i.DbRoleName' +CHAR(13) +
-            -- '           and o.[ObjectClass] = i.[ObjectClass]' +CHAR(13) +
-            -- '           and ISNULL(o.[ObjectType],''null'') = ISNULL(i.[ObjectType],''null'')' +CHAR(13) +
-            -- '           and o.[PermissionName] = i.[PermissionName]' +CHAR(13) +
-            -- '           and ISNULL(o.[DbName],''null'') = ISNULL(i.[DbName],''null'')' +CHAR(13) +
-            -- '           and ISNULL(o.[SchemaName],''null'') = ISNULL(i.[SchemaName],''null'')' +CHAR(13) +
-            -- '           and o.[objectname] = i.[objectname]' +CHAR(13) +        
-            -- '           and ISNULL(o.[SubObjectName],''null'') = ISNULL(i.[SubObjectName],''null'')' +CHAR(13) +     
-            -- + CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
--- PRINT '    Trigger [security].[TRG_U_StandardOnDatabaseRolesSecurity] altered.'
--- GO
-
--- /* Roles to be defined :
--- CHULG_SAI_RA 
--- > dbo.SchemaChangeLog SELECT 
--- > DBA.dbo.CPUStatsHistory (etc.) SELECT
-
--- ApplicationSchemas_EndUsers > All OnSchema "endusers"
--- ApplicationSchemas_FullAccess > All OnSchema "FullAccess"
-
--- */
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT '' 
-
-
-
-/**
-  ==================================================================================
-    DESCRIPTION
-        Creation of the [inventory].[SQLDatabases] table.
-        
-        
-    ==================================================================================
-  BUGS:
- 
-    BUGID       Fixed   Description
-    ==========  =====   ==========================================================
-    ----------------------------------------------------------------------------------
-  ==================================================================================
-  Notes :
- 
-        Exemples :
-        -------
- 
-  ==================================================================================
-  Revision history
- 
-    Date        Name                Description
-    ==========  ================    ================================================
-    13/03/2015  Jefferson Elias     Version 0.1.0
-    ----------------------------------------------------------------------------------    
-  ==================================================================================
-*/
-
-PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'Table [inventory].[SQLDatabases] Creation'
-
-IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[inventory].[SQLDatabases]') AND type in (N'U'))
-BEGIN
-    CREATE TABLE [inventory].[SQLDatabases] (
-        ServerName      VARCHAR(256) NOT NULL,
-        DbName          VARCHAR(128)  NOT NULL,
-        isUserDatabase  BIT          NOT NULL,
-        Reason          VARCHAR(MAX) NULL,
-        DbCreationDate  DATETIME     NULL,
-        DbOwner         VARCHAR(128) NOT NULL default 'sa',
-        DbCollation     VARCHAR(128) NULL,
-        RecoveryModel   VARCHAR(16)  NULL,
-        CompatLevel     TINYINT NULL,       
-        CreationDate    DATETIME NOT NULL,
-        LastModified    DATETIME NOT NULL,
-        Comments        VARCHAR(MAX) NULL
-    )
-    ON [PRIMARY];
-    
-    IF @@ERROR = 0
-        PRINT '   Table created.'
-    ELSE
-    BEGIN
-        PRINT '   Error while trying to create table.'
-        RETURN
-    END
-END
-
-IF (OBJECTPROPERTY( OBJECT_ID( '[inventory].[SQLDatabases]' ), 'TableHasPrimaryKey' ) <> 1)
-BEGIN
-    ALTER TABLE [inventory].[SQLDatabases]
-        ADD  CONSTRAINT [PK_SQLDatabases ]
-            PRIMARY KEY (
-                [ServerName],
-                [DbName]
-            )
-    IF @@ERROR = 0
-        PRINT '   Primary Key [PK_SQLDatabases] created.'
-END
-GO
-
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[inventory].[DF_SQLDatabases_CreationDate]') AND type = 'D')
-BEGIN
-    ALTER TABLE [inventory].[SQLDatabases]
-        ADD CONSTRAINT [DF_SQLDatabases_CreationDate]
-            DEFAULT (Getdate()) FOR [CreationDate]
-        
-    PRINT '    Constraint [DF_SQLDatabases_CreationDate] created.'
-END
-GO
-
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[inventory].[DF_SQLDatabases_LastModified]') AND type = 'D')
-BEGIN
-    ALTER TABLE [inventory].[SQLDatabases]
-        ADD CONSTRAINT [DF_SQLDatabases_LastModified] DEFAULT (Getdate()) FOR [LastModified]
-    
-    PRINT '    Constraint [DF_SQLDatabases_LastModified] created.'
-END
-GO
-
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[inventory].[DF_SQLDatabases_ServerName]') AND type = 'D')
-BEGIN
-    ALTER TABLE [inventory].[SQLDatabases]
-        ADD CONSTRAINT [DF_SQLDatabases_ServerName] DEFAULT (@@SERVERNAME) FOR [ServerName]
-    
-    PRINT '    Constraint [DF_SQLDatabases_ServerName] created.'
-END
-GO
-
-IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[inventory].[CK_SQLDatabases_RecoveryModel]') AND parent_object_id = OBJECT_ID(N'[inventory].[SQLDatabases]'))
-BEGIN
-    ALTER TABLE [inventory].[SQLDatabases]
-        WITH CHECK ADD CONSTRAINT [CK_SQLDatabases_RecoveryModel]
-            CHECK (([RecoveryModel] in ('SIMPLE','BULK_LOGGED','FULL')))
-    PRINT '     Constraint [CK_SQLDatabases_RecoveryModel] created.'
-END
-GO
-
-
-DECLARE @SQL VARCHAR(MAX)
-
-IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[inventory].[TRG_I_SQLDatabases]'))
-BEGIN
-    SET @SQL = 'CREATE TRIGGER [inventory].[TRG_I_SQLDatabases] ' + CHAR(13) +
-               '  ON inventory.SQLDatabases ' + CHAR(13) +
-               '    FOR INSERT ' + CHAR(13) +
-               'AS' + CHAR(13) +
-               'BEGIN' + CHAR(13) +
-               '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               '    select @a = ''123''' + CHAR(13) +
-               'END' + CHAR(13);
-
-    EXEC (@SQL) ;
-    
-    PRINT '    Trigger [inventory].[TRG_I_SQLDatabases] created.'
-END
-
-SET @SQL =  'ALTER TRIGGER [inventory].[TRG_I_SQLDatabases]' + CHAR(13) +
-            '    ON inventory.SQLDatabases' + CHAR(13) +
-            '    FOR INSERT' +CHAR(13) +
-            'AS' + CHAR(13) +
-            'BEGIN' + CHAR(13) +
-            '    UPDATE [inventory].SQLDatabases ' + CHAR(13) +
-            '        SET LastModified = GETDATE()'+CHAR(13) +
-            '        ,   CreationDate = GETDATE() ' + CHAR(13) +
-            -- '         , CASE WHEN (i.DbName in (''master'',''msdb'',''tempdb'') AND (i.Reason is null)) 
-            '    FROM [inventory].SQLDatabases o ' + CHAR(13) +
-            '        INNER JOIN inserted i' +CHAR(13) +
-            '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
-            '           and o.DbName        = i.DbName' +CHAR(13) +
-            '' + CHAR(13) + 
-            '   DECLARE forEachRowCursor' + CHAR(13) + 
-            '   CURSOR LOCAL FOR' + CHAR(13) + 
-            '       select distinct ' + CHAR(13) + 
-            '           ServerName' + CHAR(13) + 
-            '       from inserted' + CHAR(13) + 
-            '' + CHAR(13) + 
-            '/**' + CHAR(13) + 
-            ' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
-            ' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
-            ' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
-            ' */' + CHAR(13) + 
-            '   DECLARE @currentServer  [VARCHAR](256)' + CHAR(13) + 
-            '   OPEN forEachRowCursor;' + CHAR(13) + 
-            '   FETCH next from forEachRowCursor ' + CHAR(13) + 
-            '       into @currentServer' + CHAR(13) + 
-                '' + CHAR(13) + 
-            '   WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
-            '   BEGIN' + CHAR(13) + 
-            '        exec [inventory].[ManageSQLInstance] @ServerName = @currentServer ;' + CHAR(13) + 
-            '   END;' + CHAR(13) + 
-            '   CLOSE forEachRowCursor;' + CHAR(13) + 
-            '   DEALLOCATE forEachRowCursor;' + CHAR(13) +                  
-            'END' ;
-EXEC (@SQL);
-PRINT '    Trigger [inventory].[TRG_I_SQLDatabases] altered.'
-
-IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[inventory].[TRG_U_SQLDatabases]'))
-BEGIN
-    SET @SQL = 'CREATE TRIGGER [inventory].[TRG_U_SQLDatabases] ' + CHAR(13) +
-               '  ON inventory.SQLDatabases ' + CHAR(13) +
-               '    FOR UPDATE ' + CHAR(13) +
-               'AS' + CHAR(13) +
-               'BEGIN' + CHAR(13) +
-               '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               '    select @a = ''123''' + CHAR(13) +
-               'END' + CHAR(13);
-
-    EXEC (@SQL) ;
-    PRINT '    Trigger [inventory].[TRG_U_SQLDatabases] created.'
-END
-
-SET @SQL =  'ALTER TRIGGER [inventory].[TRG_U_SQLDatabases]' + CHAR(13) +
-            '    ON inventory.SQLDatabases' + CHAR(13) +
-            '    FOR UPDATE' +CHAR(13) +
-            'AS' + CHAR(13) +
-            'BEGIN' + CHAR(13) +
-            '    UPDATE [inventory].SQLDatabases ' + CHAR(13) +
-            '        SET LastModified = GETDATE()'+CHAR(13) +
-            '    FROM [inventory].SQLDatabases o ' + CHAR(13) +
-            '        INNER JOIN inserted i' +CHAR(13) +
-            '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
-            '           and o.DbName        = i.DbName' +CHAR(13) +
-            '' + CHAR(13) + 
-            '   DECLARE forEachRowCursor' + CHAR(13) + 
-            '   CURSOR LOCAL FOR' + CHAR(13) + 
-            '       select distinct ' + CHAR(13) + 
-            '           ServerName' + CHAR(13) + 
-            '       from inserted' + CHAR(13) + 
-            '' + CHAR(13) + 
-            '/**' + CHAR(13) + 
-            ' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
-            ' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
-            ' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
-            ' */' + CHAR(13) + 
-            '   DECLARE @currentServer  [VARCHAR](256)' + CHAR(13) + 
-            '   OPEN forEachRowCursor;' + CHAR(13) + 
-            '   FETCH next from forEachRowCursor ' + CHAR(13) + 
-            '       into @currentServer' + CHAR(13) + 
-                '' + CHAR(13) + 
-            '   WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
-            '   BEGIN' + CHAR(13) + 
-            '        exec [inventory].[ManageSQLInstance] @ServerName = @currentServer ;' + CHAR(13) + 
-            '   END;' + CHAR(13) + 
-            '   CLOSE forEachRowCursor;' + CHAR(13) + 
-            '   DEALLOCATE forEachRowCursor;' + CHAR(13) +                  
-            'END' ;
-EXEC (@SQL);
-PRINT '    Trigger [inventory].[TRG_U_SQLDatabases] altered.'
-PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' 
-
+PRINT ''
 
 
 /**
@@ -6057,6 +5205,230 @@ PRINT '-------------------------------------------------------------------------
 PRINT '' 
 
 
+/**
+  ==================================================================================
+    DESCRIPTION
+        Creation of the [inventory].[SQLDatabases] table.
+        
+        
+    ==================================================================================
+  BUGS:
+ 
+    BUGID       Fixed   Description
+    ==========  =====   ==========================================================
+    ----------------------------------------------------------------------------------
+  ==================================================================================
+  Notes :
+ 
+        Exemples :
+        -------
+ 
+  ==================================================================================
+  Revision history
+ 
+    Date        Name                Description
+    ==========  ================    ================================================
+    13/03/2015  Jefferson Elias     Version 0.1.0
+    ----------------------------------------------------------------------------------    
+  ==================================================================================
+*/
+
+PRINT '--------------------------------------------------------------------------------------------------------------'
+PRINT 'Table [inventory].[SQLDatabases] Creation'
+
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[inventory].[SQLDatabases]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [inventory].[SQLDatabases] (
+        ServerName      VARCHAR(256) NOT NULL,
+        DbName          VARCHAR(128)  NOT NULL,
+        isUserDatabase  BIT          NOT NULL,
+        Reason          VARCHAR(MAX) NULL,
+        DbCreationDate  DATETIME     NULL,
+        DbOwner         VARCHAR(128) NOT NULL default 'sa',
+        DbCollation     VARCHAR(128) NULL,
+        RecoveryModel   VARCHAR(16)  NULL,
+        CompatLevel     TINYINT NULL,       
+        CreationDate    DATETIME NOT NULL,
+        LastModified    DATETIME NOT NULL,
+        Comments        VARCHAR(MAX) NULL
+    )
+    ON [PRIMARY];
+    
+    IF @@ERROR = 0
+        PRINT '   Table created.'
+    ELSE
+    BEGIN
+        PRINT '   Error while trying to create table.'
+        RETURN
+    END
+END
+
+IF (OBJECTPROPERTY( OBJECT_ID( '[inventory].[SQLDatabases]' ), 'TableHasPrimaryKey' ) <> 1)
+BEGIN
+    ALTER TABLE [inventory].[SQLDatabases]
+        ADD  CONSTRAINT [PK_SQLDatabases ]
+            PRIMARY KEY (
+                [ServerName],
+                [DbName]
+            )
+    IF @@ERROR = 0
+        PRINT '   Primary Key [PK_SQLDatabases] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[inventory].[DF_SQLDatabases_CreationDate]') AND type = 'D')
+BEGIN
+    ALTER TABLE [inventory].[SQLDatabases]
+        ADD CONSTRAINT [DF_SQLDatabases_CreationDate]
+            DEFAULT (Getdate()) FOR [CreationDate]
+        
+    PRINT '    Constraint [DF_SQLDatabases_CreationDate] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[inventory].[DF_SQLDatabases_LastModified]') AND type = 'D')
+BEGIN
+    ALTER TABLE [inventory].[SQLDatabases]
+        ADD CONSTRAINT [DF_SQLDatabases_LastModified] DEFAULT (Getdate()) FOR [LastModified]
+    
+    PRINT '    Constraint [DF_SQLDatabases_LastModified] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[inventory].[DF_SQLDatabases_ServerName]') AND type = 'D')
+BEGIN
+    ALTER TABLE [inventory].[SQLDatabases]
+        ADD CONSTRAINT [DF_SQLDatabases_ServerName] DEFAULT (@@SERVERNAME) FOR [ServerName]
+    
+    PRINT '    Constraint [DF_SQLDatabases_ServerName] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[inventory].[CK_SQLDatabases_RecoveryModel]') AND parent_object_id = OBJECT_ID(N'[inventory].[SQLDatabases]'))
+BEGIN
+    ALTER TABLE [inventory].[SQLDatabases]
+        WITH CHECK ADD CONSTRAINT [CK_SQLDatabases_RecoveryModel]
+            CHECK (([RecoveryModel] in ('SIMPLE','BULK_LOGGED','FULL')))
+    PRINT '     Constraint [CK_SQLDatabases_RecoveryModel] created.'
+END
+GO
+
+
+DECLARE @SQL VARCHAR(MAX)
+
+IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[inventory].[TRG_I_SQLDatabases]'))
+BEGIN
+    SET @SQL = 'CREATE TRIGGER [inventory].[TRG_I_SQLDatabases] ' + CHAR(13) +
+               '  ON inventory.SQLDatabases ' + CHAR(13) +
+               '    FOR INSERT ' + CHAR(13) +
+               'AS' + CHAR(13) +
+               'BEGIN' + CHAR(13) +
+               '    DECLARE @a varchar(MAX)' + CHAR(13) +
+               '    select @a = ''123''' + CHAR(13) +
+               'END' + CHAR(13);
+
+    EXEC (@SQL) ;
+    
+    PRINT '    Trigger [inventory].[TRG_I_SQLDatabases] created.'
+END
+
+SET @SQL =  'ALTER TRIGGER [inventory].[TRG_I_SQLDatabases]' + CHAR(13) +
+            '    ON inventory.SQLDatabases' + CHAR(13) +
+            '    FOR INSERT' +CHAR(13) +
+            'AS' + CHAR(13) +
+            'BEGIN' + CHAR(13) +
+            '    UPDATE [inventory].SQLDatabases ' + CHAR(13) +
+            '        SET LastModified = GETDATE()'+CHAR(13) +
+            '        ,   CreationDate = GETDATE() ' + CHAR(13) +
+            -- '         , CASE WHEN (i.DbName in (''master'',''msdb'',''tempdb'') AND (i.Reason is null)) 
+            '    FROM [inventory].SQLDatabases o ' + CHAR(13) +
+            '        INNER JOIN inserted i' +CHAR(13) +
+            '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
+            '           and o.DbName        = i.DbName' +CHAR(13) +
+            '' + CHAR(13) + 
+            '   DECLARE forEachRowCursor' + CHAR(13) + 
+            '   CURSOR LOCAL FOR' + CHAR(13) + 
+            '       select distinct ' + CHAR(13) + 
+            '           ServerName' + CHAR(13) + 
+            '       from inserted' + CHAR(13) + 
+            '' + CHAR(13) + 
+            '/**' + CHAR(13) + 
+            ' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
+            ' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
+            ' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
+            ' */' + CHAR(13) + 
+            '   DECLARE @currentServer  [VARCHAR](256)' + CHAR(13) + 
+            '   OPEN forEachRowCursor;' + CHAR(13) + 
+            '   FETCH next from forEachRowCursor ' + CHAR(13) + 
+            '       into @currentServer' + CHAR(13) + 
+                '' + CHAR(13) + 
+            '   WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
+            '   BEGIN' + CHAR(13) + 
+            '        exec [inventory].[ManageSQLInstance] @ServerName = @currentServer ;' + CHAR(13) + 
+            '   END;' + CHAR(13) + 
+            '   CLOSE forEachRowCursor;' + CHAR(13) + 
+            '   DEALLOCATE forEachRowCursor;' + CHAR(13) +                  
+            'END' ;
+EXEC (@SQL);
+PRINT '    Trigger [inventory].[TRG_I_SQLDatabases] altered.'
+
+IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[inventory].[TRG_U_SQLDatabases]'))
+BEGIN
+    SET @SQL = 'CREATE TRIGGER [inventory].[TRG_U_SQLDatabases] ' + CHAR(13) +
+               '  ON inventory.SQLDatabases ' + CHAR(13) +
+               '    FOR UPDATE ' + CHAR(13) +
+               'AS' + CHAR(13) +
+               'BEGIN' + CHAR(13) +
+               '    DECLARE @a varchar(MAX)' + CHAR(13) +
+               '    select @a = ''123''' + CHAR(13) +
+               'END' + CHAR(13);
+
+    EXEC (@SQL) ;
+    PRINT '    Trigger [inventory].[TRG_U_SQLDatabases] created.'
+END
+
+SET @SQL =  'ALTER TRIGGER [inventory].[TRG_U_SQLDatabases]' + CHAR(13) +
+            '    ON inventory.SQLDatabases' + CHAR(13) +
+            '    FOR UPDATE' +CHAR(13) +
+            'AS' + CHAR(13) +
+            'BEGIN' + CHAR(13) +
+            '    UPDATE [inventory].SQLDatabases ' + CHAR(13) +
+            '        SET LastModified = GETDATE()'+CHAR(13) +
+            '    FROM [inventory].SQLDatabases o ' + CHAR(13) +
+            '        INNER JOIN inserted i' +CHAR(13) +
+            '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
+            '           and o.DbName        = i.DbName' +CHAR(13) +
+            '' + CHAR(13) + 
+            '   DECLARE forEachRowCursor' + CHAR(13) + 
+            '   CURSOR LOCAL FOR' + CHAR(13) + 
+            '       select distinct ' + CHAR(13) + 
+            '           ServerName' + CHAR(13) + 
+            '       from inserted' + CHAR(13) + 
+            '' + CHAR(13) + 
+            '/**' + CHAR(13) + 
+            ' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
+            ' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
+            ' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
+            ' */' + CHAR(13) + 
+            '   DECLARE @currentServer  [VARCHAR](256)' + CHAR(13) + 
+            '   OPEN forEachRowCursor;' + CHAR(13) + 
+            '   FETCH next from forEachRowCursor ' + CHAR(13) + 
+            '       into @currentServer' + CHAR(13) + 
+                '' + CHAR(13) + 
+            '   WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
+            '   BEGIN' + CHAR(13) + 
+            '        exec [inventory].[ManageSQLInstance] @ServerName = @currentServer ;' + CHAR(13) + 
+            '   END;' + CHAR(13) + 
+            '   CLOSE forEachRowCursor;' + CHAR(13) + 
+            '   DEALLOCATE forEachRowCursor;' + CHAR(13) +                  
+            'END' ;
+EXEC (@SQL);
+PRINT '    Trigger [inventory].[TRG_U_SQLDatabases] altered.'
+PRINT '--------------------------------------------------------------------------------------------------------------'
+PRINT '' 
+
+
+
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'View [security].[StandardOnSchemaRoles] Creation'
 
@@ -6590,404 +5962,6 @@ PRINT ''
 
 
 
-/**
-  ==================================================================================
-    DESCRIPTION
-		Creation of the [security].[SQLMappings] table.
-		
-		This table will contain informations about logins to database user mappings
-		on a given server.
-
-	==================================================================================
-  BUGS:
- 
-    BUGID       Fixed   Description
-    ==========  =====   ==========================================================
-    ----------------------------------------------------------------------------------
-  ==================================================================================
-  Notes :
- 
-        Exemples :
-        -------
- 
-  ==================================================================================
-  Revision history
- 
-    Date        Name                Description
-    ==========  ================    ================================================
-    24/12/2014  Jefferson Elias     Version 0.1.0
-    ----------------------------------------------------------------------------------    
-    26/12/2014  Jefferson Elias     Added column "Reason" for documentation purpose
-  ==================================================================================
-*/
-
-PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'Table [security].[SQLMappings] Creation'
-
-IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[SQLMappings]') AND type in (N'U'))
-BEGIN
-    CREATE TABLE [security].[SQLMappings] (
-        [ServerName]      [VARCHAR](256) 	NOT NULL,		
-        [SqlLogin]        [VARCHAR](256) 	NOT NULL,
-		[DbName]	      [VARCHAR](64) 	NOT NULL, 
-		[DbUserName]	  [VARCHAR](64) 	NOT NULL, 
-        [DefaultSchema]   [VARCHAR](64) 	NOT NULL,
-		[isDefaultDb]	  [BIT]				NOT NULL,
-		[isLocked]	  	  [BIT]				NOT NULL,
-        [Reason]          VARCHAR(MAX),
-        [CreationDate]    datetime 			NOT NULL,
-        [lastmodified]    datetime 			NOT NULL
-    )
-    ON [PRIMARY]
-	
-	IF @@ERROR = 0
-		PRINT '   Table [security].[SQLMappings] created.'
-	ELSE
-	BEGIN
-		PRINT '   Error while trying to create table [security].[SQLMappings]'
-		RETURN
-	END
-END
-ELSE 
-BEGIN 
-    DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('Reason')
-    DECLARE @ColumnDef      NVARCHAR(MAX)   = '[VARCHAR](MAX)'
-    DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[SQLMappings]'
-    DECLARE @tsql           NVARCHAR(max)
-
-    IF NOT EXISTS( 
-        SELECT 1 
-        FROM  sys.columns 
-        WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) 
-    )
-    BEGIN
-        SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
-        execute sp_executesql @tsql
-        
-        PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
-    END
-
-END 
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_SQLMappings_SQLLogins]') AND parent_object_id = OBJECT_ID(N'[security].[SQLMappings]'))
-BEGIN
-    ALTER TABLE [security].[SQLMappings]
-        ADD  CONSTRAINT [FK_SQLMappings_SQLLogins]
-            FOREIGN KEY (
-                [ServerName],[SqlLogin]
-            )
-        REFERENCES [security].[SQLLogins] ([ServerName],[SqlLogin])
-	IF @@ERROR = 0
-		PRINT '   Foreign Key [FK_SQLMappings_SQLLogins] created.'
-	ELSE
-	BEGIN
-		PRINT '   Error while trying to create Foreign Key [FK_SQLMappings_Contacts]'
-		RETURN
-	END
-END
-GO
-
-IF (OBJECTPROPERTY( OBJECT_ID( '[security].[SQLMappings]' ), 'TableHasPrimaryKey' ) <> 1)
-BEGIN
-    ALTER TABLE [security].[SQLMappings]
-        ADD  CONSTRAINT [PK_SQLMappings ]
-            PRIMARY KEY (
-                [ServerName],[SqlLogin],[DbName]
-            )
-	IF @@ERROR = 0
-		PRINT '   Primary Key [PK_SQLMappings] created.'
-END
-GO
-
-IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[SQLMappings]') AND name = N'IDX_UN_SQLMappings_DefaultDb')
-BEGIN
-	CREATE UNIQUE INDEX 
-		[IDX_UN_SQLMappings_DefaultDb] 
-	ON [security].[SQLMappings] (
-		[ServerName],
-		[SqlLogin],
-		[DbName],
-		[isDefaultDb]
-	)
-    WHERE [isDefaultDb] = 1
-	
-	IF @@ERROR = 0 
-		PRINT '    Index [security].[IDX_UN_SQLMappings_DefaultDb] created.'
-END
-
-IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[SQLMappings]') AND name = N'IDX_UN_SQLMappings_DbUser')
-BEGIN
-	CREATE UNIQUE INDEX 
-		[IDX_UN_SQLMappings_DbUser] 
-	ON [security].[SQLMappings] (
-		[ServerName],
-		[DbName],
-        [DbUserName]
-	)   
-	
-	IF @@ERROR = 0 
-		PRINT '    Index [security].[IDX_UN_SQLMappings_DefaultDb] created.'
-END
-
-
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_isDefaultDb]') AND type = 'D')
-BEGIN
-    ALTER TABLE [security].[SQLMappings]
-        ADD CONSTRAINT [DF_SQLMappings_isDefaultDb] DEFAULT (0) FOR [isDefaultDb]
-	IF @@ERROR = 0
-		PRINT '   Constraint [DF_SQLMappings_isDefaultDb] created.'
-END
-
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_isLocked]') AND type = 'D')
-BEGIN
-    ALTER TABLE [security].[SQLMappings]
-        ADD CONSTRAINT [DF_SQLMappings_isLocked] DEFAULT (0) FOR [isLocked]
-	IF @@ERROR = 0
-		PRINT '   Constraint [DF_SQLMappings_isLocked] created.'
-END
-
-GO
-
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_CreationDate]') AND type = 'D')
-BEGIN
-    ALTER TABLE [security].[SQLMappings]
-        ADD CONSTRAINT [DF_SQLMappings_CreationDate] DEFAULT (Getdate()) FOR [CreationDate]
-	IF @@ERROR = 0
-		PRINT '   Constraint [DF_SQLMappings_CreationDate] created.'
-END
-
-GO
-
-IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_LastModified]') AND type = 'D')
-BEGIN
-    ALTER TABLE [security].[SQLMappings]
-        ADD CONSTRAINT [DF_SQLMappings_LastModified] DEFAULT (Getdate()) FOR [LastModified]
-	
-	IF @@ERROR = 0
-		PRINT '   Constraint [DF_SQLMappings_LastModified] created.'
-END
-
-GO
-
-DECLARE @SQL VARCHAR(MAX)
-
-IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_SQLMappings]'))
-BEGIN
-    SET @SQL = 'CREATE TRIGGER [security].[TRG_I_SQLMappings] ' + CHAR(13) +
-               '  ON security.SQLMappings ' + CHAR(13) +
-               '    FOR INSERT ' + CHAR(13) +
-               'AS' + CHAR(13) +
-               'BEGIN' + CHAR(13) +
-               '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               '    select @a = ''123''' + CHAR(13) +
-               'END' + CHAR(13);
-
-    EXEC (@SQL) ;
-	
-	IF @@ERROR = 0
-		PRINT '   Trigger [TRG_I_SQLMappings] created.'
-END
-
-SET @SQL =  'ALTER TRIGGER [security].[TRG_I_SQLMappings]' + CHAR(13) +
-            '    ON security.SQLMappings' + CHAR(13) +
-            '    FOR INSERT' +CHAR(13) +
-            'AS' + CHAR(13) +
-            'BEGIN' + CHAR(13) +
-            '    UPDATE [security].SQLMappings ' + CHAR(13) +
-            '        SET LastModified = GETDATE()'+CHAR(13) +
-            '        ,   CreationDate = GETDATE() ' + CHAR(13) +
-            '    FROM [security].SQLMappings o ' + CHAR(13) +
-            '        INNER JOIN inserted i' +CHAR(13) +
-            '            on upper(o.[ServerName]) = upper(i.[ServerName])' +CHAR(13) +
-            '           and upper(o.[SQLLogin])   = upper(i.[SQLLogin])' +CHAR(13) +
-            '           and upper(o.[DbName])     = upper(i.[DbName])' +CHAR(13) +
-            + CHAR(13) +
-			'	DECLARE forEachRowCursor' + CHAR(13) + 
-			'	CURSOR FOR' + CHAR(13) + 
-			'		select ' + CHAR(13) + 
-			'			ServerName,' + CHAR(13) + 
-			'			DbName,' + CHAR(13) + 
-			'			DefaultSchema,' + CHAR(13) + 
-			'			creationDate,' + CHAR(13) + 
-			'			lastModified' + CHAR(13) + 
-			'		from inserted' + CHAR(13) + 
-			'' + CHAR(13) + 
-			'/**' + CHAR(13) + 
-			' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
-			' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
-			' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
-			' */' + CHAR(13) + 
-			'	DECLARE @currentServer	[VARCHAR](256)' + CHAR(13) + 
-			'	DECLARE @currentDbName	[VARCHAR](64)' + CHAR(13) + 
-			'	DECLARE @currentSchema	[VARCHAR](64)' + CHAR(13) + 
-			'	DECLARE @currentCreate	datetime' + CHAR(13) + 
-			'	DECLARE @currentLastMod	datetime' + CHAR(13) + 
-				'' + CHAR(13) + 
-			'	OPEN forEachRowCursor;' + CHAR(13) + 
-			'	FETCH next from forEachRowCursor ' + CHAR(13) + 
-			'		into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod' + CHAR(13) + 
-				'' + CHAR(13) + 
-			'	WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
-			'	BEGIN' + CHAR(13) + 
-						'' + CHAR(13) + 
-			'	     merge [security].DatabaseSchemas s' + CHAR(13) +
-			'		 using ( ' + CHAR(13) + 
-			'			select ' + CHAR(13) + 
-			'				@currentServer  as ServerName,' + CHAR(13) + 
-			'				@currentDbName  as DbName,' + CHAR(13) + 
-			'				@currentSchema  as DefaultSchema,' + CHAR(13) + 
-			'				@currentCreate  as creationDate,' + CHAR(13) + 
-			'				@currentLastMod as  lastmodified' + CHAR(13) + 
-			'		 ) i' + CHAR(13) + 
-			'	     on  s.[ServerName]  = i.[ServerName]' + CHAR(13) +
-			'	     and s.DbName        = i.DbName' + CHAR(13) +
-			'	     and s.[SchemaName]  = i.[DefaultSchema]' + CHAR(13) +
-			'/*' + CHAR(13) +
-			'	     WHEN MATCHED then' + CHAR(13) +
-			'	         update set' + CHAR(13) +			
-			'	             isActive = 1' + CHAR(13) +
-			'*/' + CHAR(13) +
-			'	     WHEN NOT MATCHED BY TARGET THEN' + CHAR(13) +
-			'	        insert (' + CHAR(13) +
-			'	            ServerName,' + CHAR(13) +
-			'	            DbName,' + CHAR(13) +
-			'	            SchemaName,' + CHAR(13) +
-			'	             Description,' + CHAR(13) +
-			'	             isActive,' + CHAR(13) +
-			'	             creationDate,' + CHAR(13) +
-			'	             lastmodified' + CHAR(13) +
-			'	         )' + CHAR(13) +
-			'	         values (' + CHAR(13) +
-			'	             i.ServerName,' + CHAR(13) +
-			'	             i.DbName,' + CHAR(13) +
-			'	             i.DefaultSchema,' + CHAR(13) +
-			'	             ''Created automatically from SQLMappings table'',' + CHAR(13) +
-			'	             1,' + CHAR(13) +
-			'	             i.creationDate,' + CHAR(13) +
-			'	             i.lastModified	' + CHAR(13) +
-			'	         )' + CHAR(13) +
-			'	     ;' + CHAR(13) +					
-			'			FETCH next from forEachRowCursor ' + CHAR(13) + 
-			'				into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod			' + CHAR(13) + 
-			'	END;' + CHAR(13) + 
-			'	CLOSE forEachRowCursor;' + CHAR(13) + 
-			'	DEALLOCATE forEachRowCursor;' + CHAR(13) + 		
-			'END' ;
-EXEC (@SQL);
-
-IF @@ERROR = 0
-	PRINT '   Trigger [TRG_I_SQLMappings] altered.'
-
-IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_SQLMappings]'))
-BEGIN
-    SET @SQL = 'CREATE TRIGGER [security].[TRG_U_SQLMappings] ' + CHAR(13) +
-               '  ON security.SQLMappings ' + CHAR(13) +
-               '    FOR UPDATE ' + CHAR(13) +
-               'AS' + CHAR(13) +
-               'BEGIN' + CHAR(13) +
-               '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               '    select @a = ''123''' + CHAR(13) +
-               'END' + CHAR(13);
-
-    EXEC (@SQL) ;
-	
-	IF @@ERROR = 0
-		PRINT '   Trigger [TRG_U_SQLMappings] created.'
-END
-
-SET @SQL =  'ALTER TRIGGER [security].[TRG_U_SQLMappings]' + CHAR(13) +
-            '    ON security.SQLMappings' + CHAR(13) +
-            '    FOR UPDATE' +CHAR(13) +
-            'AS' + CHAR(13) +
-            'BEGIN' + CHAR(13) +
-            '    UPDATE [security].SQLMappings ' + CHAR(13) +
-            '        SET LastModified = GETDATE()'+CHAR(13) +
-            '    FROM [security].SQLMappings o ' + CHAR(13) +
-            '        INNER JOIN inserted i' +CHAR(13) +
-			'            on upper(o.[ServerName]) = upper(i.[ServerName])' +CHAR(13) +	
-            '           and upper(o.[SQLLogin])   = upper(i.[SQLLogin])' +CHAR(13) +
-            '           and upper(o.[DbName])     = upper(i.[DbName])' +CHAR(13) +	
-			+CHAR(13) +
-			'	DECLARE forEachRowCursor' + CHAR(13) + 
-			'	CURSOR FOR' + CHAR(13) + 
-			'		select ' + CHAR(13) + 
-			'			ServerName,' + CHAR(13) + 
-			'			DbName,' + CHAR(13) + 
-			'			DefaultSchema,' + CHAR(13) + 
-			'			creationDate,' + CHAR(13) + 
-			'			lastModified' + CHAR(13) + 
-			'		from inserted' + CHAR(13) + 
-			'' + CHAR(13) + 
-			'/**' + CHAR(13) + 
-			' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
-			' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
-			' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
-			' */' + CHAR(13) + 
-			'	DECLARE @currentServer	[VARCHAR](256)' + CHAR(13) + 
-			'	DECLARE @currentDbName	[VARCHAR](64)' + CHAR(13) + 
-			'	DECLARE @currentSchema	[VARCHAR](64)' + CHAR(13) + 
-			'	DECLARE @currentCreate	datetime' + CHAR(13) + 
-			'	DECLARE @currentLastMod	datetime' + CHAR(13) + 
-				'' + CHAR(13) + 
-			'	OPEN forEachRowCursor;' + CHAR(13) + 
-			'	FETCH next from forEachRowCursor ' + CHAR(13) + 
-			'		into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod' + CHAR(13) + 
-				'' + CHAR(13) + 
-			'	WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
-			'	BEGIN' + CHAR(13) + 
-						'' + CHAR(13) + 
-			'	     merge [security].DatabaseSchemas s' + CHAR(13) +
-			'		 using ( ' + CHAR(13) + 
-			'			select ' + CHAR(13) + 
-			'				@currentServer  as ServerName,' + CHAR(13) + 
-			'				@currentDbName  as DbName,' + CHAR(13) + 
-			'				@currentSchema  as DefaultSchema,' + CHAR(13) + 
-			'				@currentCreate  as creationDate,' + CHAR(13) + 
-			'				@currentLastMod as  lastmodified' + CHAR(13) + 
-			'		 ) i' + CHAR(13) + 
-			'	     on  s.[ServerName]  = i.[ServerName]' + CHAR(13) +
-			'	     and s.DbName        = i.DbName' + CHAR(13) +
-			'	     and s.[SchemaName]  = i.[DefaultSchema]' + CHAR(13) +
-			'/*' + CHAR(13) +
-			'	     WHEN MATCHED then' + CHAR(13) +
-			'	         update set' + CHAR(13) +			
-			'	             isActive = 1' + CHAR(13) +
-			'*/' + CHAR(13) +
-			'	     WHEN NOT MATCHED BY TARGET THEN' + CHAR(13) +
-			'	        insert (' + CHAR(13) +
-			'	            ServerName,' + CHAR(13) +
-			'	            DbName,' + CHAR(13) +
-			'	            SchemaName,' + CHAR(13) +
-			'	             Description,' + CHAR(13) +
-			'	             isActive,' + CHAR(13) +
-			'	             creationDate,' + CHAR(13) +
-			'	             lastmodified' + CHAR(13) +
-			'	         )' + CHAR(13) +
-			'	         values (' + CHAR(13) +
-			'	             i.ServerName,' + CHAR(13) +
-			'	             i.DbName,' + CHAR(13) +
-			'	             i.DefaultSchema,' + CHAR(13) +
-			'	             ''Created automatically from SQLMappings table'',' + CHAR(13) +
-			'	             1,' + CHAR(13) +
-			'	             i.creationDate,' + CHAR(13) +
-			'	             i.lastModified	' + CHAR(13) +
-			'	         )' + CHAR(13) +
-			'	     ;' + CHAR(13) +					
-			'			FETCH next from forEachRowCursor ' + CHAR(13) + 
-			'				into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod			' + CHAR(13) + 
-			'	END;' + CHAR(13) + 
-			'	CLOSE forEachRowCursor;' + CHAR(13) + 
-			'	DEALLOCATE forEachRowCursor;' + CHAR(13) + 
-            'END' ;
-EXEC (@SQL);
-IF @@ERROR = 0
-	PRINT '   Trigger [TRG_U_SQLMappings] altered.'
-GO
-
-
-
-
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Function [validator].[isValidPermissionDescription] Creation'
@@ -7487,6 +6461,404 @@ PRINT '    Procedure altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT ''        
+
+
+
+/**
+  ==================================================================================
+    DESCRIPTION
+		Creation of the [security].[SQLMappings] table.
+		
+		This table will contain informations about logins to database user mappings
+		on a given server.
+
+	==================================================================================
+  BUGS:
+ 
+    BUGID       Fixed   Description
+    ==========  =====   ==========================================================
+    ----------------------------------------------------------------------------------
+  ==================================================================================
+  Notes :
+ 
+        Exemples :
+        -------
+ 
+  ==================================================================================
+  Revision history
+ 
+    Date        Name                Description
+    ==========  ================    ================================================
+    24/12/2014  Jefferson Elias     Version 0.1.0
+    ----------------------------------------------------------------------------------    
+    26/12/2014  Jefferson Elias     Added column "Reason" for documentation purpose
+  ==================================================================================
+*/
+
+PRINT '--------------------------------------------------------------------------------------------------------------'
+PRINT 'Table [security].[SQLMappings] Creation'
+
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[SQLMappings]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [security].[SQLMappings] (
+        [ServerName]      [VARCHAR](256) 	NOT NULL,		
+        [SqlLogin]        [VARCHAR](256) 	NOT NULL,
+		[DbName]	      [VARCHAR](64) 	NOT NULL, 
+		[DbUserName]	  [VARCHAR](64) 	NOT NULL, 
+        [DefaultSchema]   [VARCHAR](64) 	NOT NULL,
+		[isDefaultDb]	  [BIT]				NOT NULL,
+		[isLocked]	  	  [BIT]				NOT NULL,
+        [Reason]          VARCHAR(MAX),
+        [CreationDate]    datetime 			NOT NULL,
+        [lastmodified]    datetime 			NOT NULL
+    )
+    ON [PRIMARY]
+	
+	IF @@ERROR = 0
+		PRINT '   Table [security].[SQLMappings] created.'
+	ELSE
+	BEGIN
+		PRINT '   Error while trying to create table [security].[SQLMappings]'
+		RETURN
+	END
+END
+ELSE 
+BEGIN 
+    DECLARE @ColumnName     VARCHAR(128)    = QUOTENAME('Reason')
+    DECLARE @ColumnDef      NVARCHAR(MAX)   = '[VARCHAR](MAX)'
+    DECLARE @FullTableName  NVARCHAR(MAX)   = N'[security].[SQLMappings]'
+    DECLARE @tsql           NVARCHAR(max)
+
+    IF NOT EXISTS( 
+        SELECT 1 
+        FROM  sys.columns 
+        WHERE QUOTENAME(Name) = @ColumnName and Object_ID = Object_ID(@FullTableName) 
+    )
+    BEGIN
+        SET @tsql = N'ALTER TABLE ' + @FullTableName + ' ADD ' + @ColumnName +' ' + @ColumnDef
+        execute sp_executesql @tsql
+        
+        PRINT '    Column ' + @ColumnName + ' from ' + @FullTableName + ' table added.'
+    END
+
+END 
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_SQLMappings_SQLLogins]') AND parent_object_id = OBJECT_ID(N'[security].[SQLMappings]'))
+BEGIN
+    ALTER TABLE [security].[SQLMappings]
+        ADD  CONSTRAINT [FK_SQLMappings_SQLLogins]
+            FOREIGN KEY (
+                [ServerName],[SqlLogin]
+            )
+        REFERENCES [security].[SQLLogins] ([ServerName],[SqlLogin])
+	IF @@ERROR = 0
+		PRINT '   Foreign Key [FK_SQLMappings_SQLLogins] created.'
+	ELSE
+	BEGIN
+		PRINT '   Error while trying to create Foreign Key [FK_SQLMappings_Contacts]'
+		RETURN
+	END
+END
+GO
+
+IF (OBJECTPROPERTY( OBJECT_ID( '[security].[SQLMappings]' ), 'TableHasPrimaryKey' ) <> 1)
+BEGIN
+    ALTER TABLE [security].[SQLMappings]
+        ADD  CONSTRAINT [PK_SQLMappings ]
+            PRIMARY KEY (
+                [ServerName],[SqlLogin],[DbName]
+            )
+	IF @@ERROR = 0
+		PRINT '   Primary Key [PK_SQLMappings] created.'
+END
+GO
+
+IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[SQLMappings]') AND name = N'IDX_UN_SQLMappings_DefaultDb')
+BEGIN
+	CREATE UNIQUE INDEX 
+		[IDX_UN_SQLMappings_DefaultDb] 
+	ON [security].[SQLMappings] (
+		[ServerName],
+		[SqlLogin],
+		[DbName],
+		[isDefaultDb]
+	)
+    WHERE [isDefaultDb] = 1
+	
+	IF @@ERROR = 0 
+		PRINT '    Index [security].[IDX_UN_SQLMappings_DefaultDb] created.'
+END
+
+IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[SQLMappings]') AND name = N'IDX_UN_SQLMappings_DbUser')
+BEGIN
+	CREATE UNIQUE INDEX 
+		[IDX_UN_SQLMappings_DbUser] 
+	ON [security].[SQLMappings] (
+		[ServerName],
+		[DbName],
+        [DbUserName]
+	)   
+	
+	IF @@ERROR = 0 
+		PRINT '    Index [security].[IDX_UN_SQLMappings_DefaultDb] created.'
+END
+
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_isDefaultDb]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[SQLMappings]
+        ADD CONSTRAINT [DF_SQLMappings_isDefaultDb] DEFAULT (0) FOR [isDefaultDb]
+	IF @@ERROR = 0
+		PRINT '   Constraint [DF_SQLMappings_isDefaultDb] created.'
+END
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_isLocked]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[SQLMappings]
+        ADD CONSTRAINT [DF_SQLMappings_isLocked] DEFAULT (0) FOR [isLocked]
+	IF @@ERROR = 0
+		PRINT '   Constraint [DF_SQLMappings_isLocked] created.'
+END
+
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_CreationDate]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[SQLMappings]
+        ADD CONSTRAINT [DF_SQLMappings_CreationDate] DEFAULT (Getdate()) FOR [CreationDate]
+	IF @@ERROR = 0
+		PRINT '   Constraint [DF_SQLMappings_CreationDate] created.'
+END
+
+GO
+
+IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_SQLMappings_LastModified]') AND type = 'D')
+BEGIN
+    ALTER TABLE [security].[SQLMappings]
+        ADD CONSTRAINT [DF_SQLMappings_LastModified] DEFAULT (Getdate()) FOR [LastModified]
+	
+	IF @@ERROR = 0
+		PRINT '   Constraint [DF_SQLMappings_LastModified] created.'
+END
+
+GO
+
+DECLARE @SQL VARCHAR(MAX)
+
+IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_SQLMappings]'))
+BEGIN
+    SET @SQL = 'CREATE TRIGGER [security].[TRG_I_SQLMappings] ' + CHAR(13) +
+               '  ON security.SQLMappings ' + CHAR(13) +
+               '    FOR INSERT ' + CHAR(13) +
+               'AS' + CHAR(13) +
+               'BEGIN' + CHAR(13) +
+               '    DECLARE @a varchar(MAX)' + CHAR(13) +
+               '    select @a = ''123''' + CHAR(13) +
+               'END' + CHAR(13);
+
+    EXEC (@SQL) ;
+	
+	IF @@ERROR = 0
+		PRINT '   Trigger [TRG_I_SQLMappings] created.'
+END
+
+SET @SQL =  'ALTER TRIGGER [security].[TRG_I_SQLMappings]' + CHAR(13) +
+            '    ON security.SQLMappings' + CHAR(13) +
+            '    FOR INSERT' +CHAR(13) +
+            'AS' + CHAR(13) +
+            'BEGIN' + CHAR(13) +
+            '    UPDATE [security].SQLMappings ' + CHAR(13) +
+            '        SET LastModified = GETDATE()'+CHAR(13) +
+            '        ,   CreationDate = GETDATE() ' + CHAR(13) +
+            '    FROM [security].SQLMappings o ' + CHAR(13) +
+            '        INNER JOIN inserted i' +CHAR(13) +
+            '            on upper(o.[ServerName]) = upper(i.[ServerName])' +CHAR(13) +
+            '           and upper(o.[SQLLogin])   = upper(i.[SQLLogin])' +CHAR(13) +
+            '           and upper(o.[DbName])     = upper(i.[DbName])' +CHAR(13) +
+            + CHAR(13) +
+			'	DECLARE forEachRowCursor' + CHAR(13) + 
+			'	CURSOR FOR' + CHAR(13) + 
+			'		select ' + CHAR(13) + 
+			'			ServerName,' + CHAR(13) + 
+			'			DbName,' + CHAR(13) + 
+			'			DefaultSchema,' + CHAR(13) + 
+			'			creationDate,' + CHAR(13) + 
+			'			lastModified' + CHAR(13) + 
+			'		from inserted' + CHAR(13) + 
+			'' + CHAR(13) + 
+			'/**' + CHAR(13) + 
+			' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
+			' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
+			' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
+			' */' + CHAR(13) + 
+			'	DECLARE @currentServer	[VARCHAR](256)' + CHAR(13) + 
+			'	DECLARE @currentDbName	[VARCHAR](64)' + CHAR(13) + 
+			'	DECLARE @currentSchema	[VARCHAR](64)' + CHAR(13) + 
+			'	DECLARE @currentCreate	datetime' + CHAR(13) + 
+			'	DECLARE @currentLastMod	datetime' + CHAR(13) + 
+				'' + CHAR(13) + 
+			'	OPEN forEachRowCursor;' + CHAR(13) + 
+			'	FETCH next from forEachRowCursor ' + CHAR(13) + 
+			'		into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod' + CHAR(13) + 
+				'' + CHAR(13) + 
+			'	WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
+			'	BEGIN' + CHAR(13) + 
+						'' + CHAR(13) + 
+			'	     merge [security].DatabaseSchemas s' + CHAR(13) +
+			'		 using ( ' + CHAR(13) + 
+			'			select ' + CHAR(13) + 
+			'				@currentServer  as ServerName,' + CHAR(13) + 
+			'				@currentDbName  as DbName,' + CHAR(13) + 
+			'				@currentSchema  as DefaultSchema,' + CHAR(13) + 
+			'				@currentCreate  as creationDate,' + CHAR(13) + 
+			'				@currentLastMod as  lastmodified' + CHAR(13) + 
+			'		 ) i' + CHAR(13) + 
+			'	     on  s.[ServerName]  = i.[ServerName]' + CHAR(13) +
+			'	     and s.DbName        = i.DbName' + CHAR(13) +
+			'	     and s.[SchemaName]  = i.[DefaultSchema]' + CHAR(13) +
+			'/*' + CHAR(13) +
+			'	     WHEN MATCHED then' + CHAR(13) +
+			'	         update set' + CHAR(13) +			
+			'	             isActive = 1' + CHAR(13) +
+			'*/' + CHAR(13) +
+			'	     WHEN NOT MATCHED BY TARGET THEN' + CHAR(13) +
+			'	        insert (' + CHAR(13) +
+			'	            ServerName,' + CHAR(13) +
+			'	            DbName,' + CHAR(13) +
+			'	            SchemaName,' + CHAR(13) +
+			'	             Description,' + CHAR(13) +
+			'	             isActive,' + CHAR(13) +
+			'	             creationDate,' + CHAR(13) +
+			'	             lastmodified' + CHAR(13) +
+			'	         )' + CHAR(13) +
+			'	         values (' + CHAR(13) +
+			'	             i.ServerName,' + CHAR(13) +
+			'	             i.DbName,' + CHAR(13) +
+			'	             i.DefaultSchema,' + CHAR(13) +
+			'	             ''Created automatically from SQLMappings table'',' + CHAR(13) +
+			'	             1,' + CHAR(13) +
+			'	             i.creationDate,' + CHAR(13) +
+			'	             i.lastModified	' + CHAR(13) +
+			'	         )' + CHAR(13) +
+			'	     ;' + CHAR(13) +					
+			'			FETCH next from forEachRowCursor ' + CHAR(13) + 
+			'				into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod			' + CHAR(13) + 
+			'	END;' + CHAR(13) + 
+			'	CLOSE forEachRowCursor;' + CHAR(13) + 
+			'	DEALLOCATE forEachRowCursor;' + CHAR(13) + 		
+			'END' ;
+EXEC (@SQL);
+
+IF @@ERROR = 0
+	PRINT '   Trigger [TRG_I_SQLMappings] altered.'
+
+IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_SQLMappings]'))
+BEGIN
+    SET @SQL = 'CREATE TRIGGER [security].[TRG_U_SQLMappings] ' + CHAR(13) +
+               '  ON security.SQLMappings ' + CHAR(13) +
+               '    FOR UPDATE ' + CHAR(13) +
+               'AS' + CHAR(13) +
+               'BEGIN' + CHAR(13) +
+               '    DECLARE @a varchar(MAX)' + CHAR(13) +
+               '    select @a = ''123''' + CHAR(13) +
+               'END' + CHAR(13);
+
+    EXEC (@SQL) ;
+	
+	IF @@ERROR = 0
+		PRINT '   Trigger [TRG_U_SQLMappings] created.'
+END
+
+SET @SQL =  'ALTER TRIGGER [security].[TRG_U_SQLMappings]' + CHAR(13) +
+            '    ON security.SQLMappings' + CHAR(13) +
+            '    FOR UPDATE' +CHAR(13) +
+            'AS' + CHAR(13) +
+            'BEGIN' + CHAR(13) +
+            '    UPDATE [security].SQLMappings ' + CHAR(13) +
+            '        SET LastModified = GETDATE()'+CHAR(13) +
+            '    FROM [security].SQLMappings o ' + CHAR(13) +
+            '        INNER JOIN inserted i' +CHAR(13) +
+			'            on upper(o.[ServerName]) = upper(i.[ServerName])' +CHAR(13) +	
+            '           and upper(o.[SQLLogin])   = upper(i.[SQLLogin])' +CHAR(13) +
+            '           and upper(o.[DbName])     = upper(i.[DbName])' +CHAR(13) +	
+			+CHAR(13) +
+			'	DECLARE forEachRowCursor' + CHAR(13) + 
+			'	CURSOR FOR' + CHAR(13) + 
+			'		select ' + CHAR(13) + 
+			'			ServerName,' + CHAR(13) + 
+			'			DbName,' + CHAR(13) + 
+			'			DefaultSchema,' + CHAR(13) + 
+			'			creationDate,' + CHAR(13) + 
+			'			lastModified' + CHAR(13) + 
+			'		from inserted' + CHAR(13) + 
+			'' + CHAR(13) + 
+			'/**' + CHAR(13) + 
+			' * As SQL Server doesn''t have a FOR EACH ROWS trigger, ' + CHAR(13) +
+			' * and as we don''t merge on this table PRIMARY KEY, ' + CHAR(13) + 
+			' * it is mandatory to use a cursor to loop on each rows!' + CHAR(13) + 
+			' */' + CHAR(13) + 
+			'	DECLARE @currentServer	[VARCHAR](256)' + CHAR(13) + 
+			'	DECLARE @currentDbName	[VARCHAR](64)' + CHAR(13) + 
+			'	DECLARE @currentSchema	[VARCHAR](64)' + CHAR(13) + 
+			'	DECLARE @currentCreate	datetime' + CHAR(13) + 
+			'	DECLARE @currentLastMod	datetime' + CHAR(13) + 
+				'' + CHAR(13) + 
+			'	OPEN forEachRowCursor;' + CHAR(13) + 
+			'	FETCH next from forEachRowCursor ' + CHAR(13) + 
+			'		into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod' + CHAR(13) + 
+				'' + CHAR(13) + 
+			'	WHILE @@FETCH_STATUS = 0' + CHAR(13) + 
+			'	BEGIN' + CHAR(13) + 
+						'' + CHAR(13) + 
+			'	     merge [security].DatabaseSchemas s' + CHAR(13) +
+			'		 using ( ' + CHAR(13) + 
+			'			select ' + CHAR(13) + 
+			'				@currentServer  as ServerName,' + CHAR(13) + 
+			'				@currentDbName  as DbName,' + CHAR(13) + 
+			'				@currentSchema  as DefaultSchema,' + CHAR(13) + 
+			'				@currentCreate  as creationDate,' + CHAR(13) + 
+			'				@currentLastMod as  lastmodified' + CHAR(13) + 
+			'		 ) i' + CHAR(13) + 
+			'	     on  s.[ServerName]  = i.[ServerName]' + CHAR(13) +
+			'	     and s.DbName        = i.DbName' + CHAR(13) +
+			'	     and s.[SchemaName]  = i.[DefaultSchema]' + CHAR(13) +
+			'/*' + CHAR(13) +
+			'	     WHEN MATCHED then' + CHAR(13) +
+			'	         update set' + CHAR(13) +			
+			'	             isActive = 1' + CHAR(13) +
+			'*/' + CHAR(13) +
+			'	     WHEN NOT MATCHED BY TARGET THEN' + CHAR(13) +
+			'	        insert (' + CHAR(13) +
+			'	            ServerName,' + CHAR(13) +
+			'	            DbName,' + CHAR(13) +
+			'	            SchemaName,' + CHAR(13) +
+			'	             Description,' + CHAR(13) +
+			'	             isActive,' + CHAR(13) +
+			'	             creationDate,' + CHAR(13) +
+			'	             lastmodified' + CHAR(13) +
+			'	         )' + CHAR(13) +
+			'	         values (' + CHAR(13) +
+			'	             i.ServerName,' + CHAR(13) +
+			'	             i.DbName,' + CHAR(13) +
+			'	             i.DefaultSchema,' + CHAR(13) +
+			'	             ''Created automatically from SQLMappings table'',' + CHAR(13) +
+			'	             1,' + CHAR(13) +
+			'	             i.creationDate,' + CHAR(13) +
+			'	             i.lastModified	' + CHAR(13) +
+			'	         )' + CHAR(13) +
+			'	     ;' + CHAR(13) +					
+			'			FETCH next from forEachRowCursor ' + CHAR(13) + 
+			'				into @currentServer,@currentDbName,@currentSchema,@currentCreate,@currentLastMod			' + CHAR(13) + 
+			'	END;' + CHAR(13) + 
+			'	CLOSE forEachRowCursor;' + CHAR(13) + 
+			'	DEALLOCATE forEachRowCursor;' + CHAR(13) + 
+            'END' ;
+EXEC (@SQL);
+IF @@ERROR = 0
+	PRINT '   Trigger [TRG_U_SQLMappings] altered.'
+GO
+
 
 
 
@@ -8022,288 +7394,6 @@ GO
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT '' 
-
-
-
--- /**
-  -- ==================================================================================
-    -- DESCRIPTION
-		-- Creation of the [security].[StandardOnSchemaRolesSecurity] table.
-		-- This table will contain a list of privileges assigned to security roles defined by our standard.
-
-	-- ==================================================================================
-  -- BUGS:
- 
-    -- BUGID       Fixed   Description
-    -- ==========  =====   ==========================================================
-    -- ----------------------------------------------------------------------------------
-  -- ==================================================================================
-  -- Notes :
- 
-        -- Exemples :
-        -- -------
- 
-  -- ==================================================================================
-  -- Revision history
- 
-    -- Date        Name                Description
-    -- ==========  ================    ================================================
-    -- 24/12/2014  Jefferson Elias     Version 0.1.0
-  -- ==================================================================================
--- */
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT 'Table [security].[StandardOnSchemaRolesSecurity] Creation'
-
-
--- IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]') AND type in (N'U'))
--- BEGIN
-    -- CREATE TABLE [security].[StandardOnSchemaRolesSecurity](
-        -- [RoleName] 				[varchar](64) NOT NULL,
-        -- [PrivName] 				[varchar](128) NOT NULL,
-        -- [isRoleMembership] 		[bit] NOT NULL,
-        -- [PermissionClass]       [varchar](16) DEFAULT 'DATABASE_SCHEMA' not null, -- can be 'SERVER','DATABASE' or 'DATABASE_SCHEMA'
-		-- [PermissionLevel] 		[varchar](6) DEFAULT 'GRANT' not null,
-        -- [isActive] 				[bit] NOT NULL,
-        -- [CreationDate] 			[date] NOT NULL,
-        -- [lastmodified] 			[date] NOT NULL
-    -- ) ON [PRIMARY]
-	
-	-- PRINT '    Table [security].[StandardOnSchemaRolesSecurity] created.'
--- END
--- /*
--- ELSE
--- BEGIN
-    
--- END
--- */
--- GO
-
--- IF  EXISTS (SELECT 1 FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnSchemaRolesSecurity_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]'))
--- BEGIN
-    -- if EXISTS (select * from INFORMATION_SCHEMA.TABLES where TABLE_SCHEMA = 'security' and TABLE_NAME = 'ApplicationParams' and TABLE_TYPE = 'BASE TABLE') 
-    -- BEGIN
-        -- DECLARE @VersionNumber VARCHAR(1024)
-        -- DECLARE @sqlCmd NVARCHAR(MAX)
-        -- SET @sqlCmd = 'select @val = ParamValue from security.ApplicationParams where ParamName = @p'
-        -- EXECUTE sp_executesql @sqlCmd , N'@p varchar(64),@val varchar(128) OUTPUT',@p = 'Version', @val = @VersionNumber OUTPUT
-        -- if(isnull(@VersionNumber,'0.0.0') < '0.1.1')
-        -- BEGIN
-            -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-                -- DROP CONSTRAINT [CK_StandardOnSchemaRolesSecurity_PermissionLevel]
-            -- PRINT '     Constraint [CK_StandardOnSchemaRolesSecurity_PermissionLevel] dropped.'
-        -- END       
-    -- END
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnSchemaRolesSecurity_PermissionClass]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]'))
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- WITH CHECK ADD CONSTRAINT [CK_StandardOnSchemaRolesSecurity_PermissionClass]
-            -- CHECK (PermissionClass in ('SERVER','DATABASE','DATABASE_SCHEMA'))
-	-- PRINT '     Constraint [CK_StandardOnSchemaRolesSecurity_PermissionClass] created.'
--- END
--- GO
-
-
--- IF  NOT EXISTS (SELECT * FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnSchemaRolesSecurity_PermissionLevel]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]'))
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- WITH CHECK ADD CONSTRAINT [CK_StandardOnSchemaRolesSecurity_PermissionLevel]
-            -- CHECK (([isRoleMembership] = 0 and [PermissionLevel] in ('GRANT','REVOKE','DENY'))
-                   -- or ([isRoleMembership] = 1 and [PermissionLevel] <> 'DENY'))
-	-- PRINT '     Constraint [CK_StandardOnSchemaRolesSecurity_PermissionLevel] created.'
--- END
--- GO
-
--- IF  /*NOT*/ EXISTS (SELECT 1 FROM sys.check_constraints WHERE object_id = OBJECT_ID(N'[security].[CK_StandardOnSchemaRolesSecurity_PermissionLevel_NoDeny]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]'))
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- DROP CONSTRAINT [CK_StandardOnSchemaRolesSecurity_PermissionLevel_NoDeny]            
-	-- PRINT '     Constraint [CK_StandardOnSchemaRolesSecurity_PermissionLevel_NoDeny] dropped.'
--- /*
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- WITH CHECK ADD CONSTRAINT [CK_StandardOnSchemaRolesSecurity_PermissionLevel_NoDeny]
-            -- CHECK (not ([isRoleMembership] = 1 and [PermissionLevel] = 'DENY'))
-	-- PRINT '     Constraint [CK_StandardOnSchemaRolesSecurity_PermissionLevel_NoDeny] created.'
--- */
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRolesSecurity_CreationDate]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- ADD CONSTRAINT [DF_StandardOnSchemaRolesSecurity_CreationDate] DEFAULT (Getdate()) FOR [CreationDate]
-	
-	-- PRINT '    Constraint [DF_StandardOnSchemaRolesSecurity_CreationDate] created.'
--- END
-
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM dbo.sysobjects WHERE id = OBJECT_ID(N'[security].[DF_StandardOnSchemaRolesSecurity_LastModified]') AND type = 'D')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- ADD CONSTRAINT [DF_StandardOnSchemaRolesSecurity_LastModified] DEFAULT (Getdate()) FOR [LastModified]
-	-- PRINT '    Constraint [DF_StandardOnSchemaRolesSecurity_LastModified] created.'
--- END
--- GO
-
--- IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[security].[FK_StandardOnSchemaRolesSecurity_StandardOnSchemaRoles]') AND parent_object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]'))
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- ADD  CONSTRAINT [FK_StandardOnSchemaRolesSecurity_StandardOnSchemaRoles]
-            -- FOREIGN KEY(
-                -- [RoleName]
-            -- )
-        -- REFERENCES [security].[StandardOnSchemaRoles] ([RoleName])
-	
-	-- PRINT '    Foreign key [FK_StandardOnSchemaRolesSecurity_StandardOnSchemaRoles] created.'
--- END
--- GO
-
--- IF  NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesSecurity]') AND name = N'PK_StandardOnSchemaRolesSecurity')
--- BEGIN
-    -- ALTER TABLE [security].[StandardOnSchemaRolesSecurity]
-        -- ADD  CONSTRAINT [PK_StandardOnSchemaRolesSecurity]
-            -- PRIMARY KEY CLUSTERED (
-                -- [RoleName] ASC,
-                -- [PrivName] ASC
-        -- )
-    -- WITH (
-        -- PAD_INDEX               = OFF,
-        -- STATISTICS_NORECOMPUTE  = OFF,
-        -- SORT_IN_TEMPDB          = OFF,
-        -- IGNORE_DUP_KEY          = OFF,
-        -- ONLINE                  = OFF,
-        -- ALLOW_ROW_LOCKS         = ON,
-        -- ALLOW_PAGE_LOCKS        = ON
-    -- )
-    -- ON [PRIMARY]
-	-- PRINT '    Primary key [PK_StandardOnSchemaRolesSecurity] created.'
--- END
--- GO
-
--- DECLARE @SQL VARCHAR(MAX)
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_I_StandardOnSchemaRolesSecurity]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_I_StandardOnSchemaRolesSecurity] ' + CHAR(13) +
-               -- '  ON security.StandardOnSchemaRolesSecurity ' + CHAR(13) +
-               -- '    FOR INSERT ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-	
-	-- PRINT '    Trigger [security].[TRG_I_StandardOnSchemaRolesSecurity] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_I_StandardOnSchemaRolesSecurity]' + CHAR(13) +
-            -- '    ON security.StandardOnSchemaRolesSecurity' + CHAR(13) +
-            -- '    FOR INSERT' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnSchemaRolesSecurity ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '        ,   CreationDate = GETDATE() ' + CHAR(13) +
-            -- '    FROM [security].StandardOnSchemaRolesSecurity o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '            on o.[RoleName] = i.[RoleName]' +CHAR(13) +
-            -- '           and o.[PrivName] = i.[PrivName]' +CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
--- PRINT '    Trigger [security].[TRG_I_StandardOnSchemaRolesSecurity] altered.'
-
--- IF  NOT EXISTS (SELECT * FROM sys.triggers WHERE object_id = OBJECT_ID(N'[security].[TRG_U_StandardOnSchemaRolesSecurity]'))
--- BEGIN
-    -- SET @SQL = 'CREATE TRIGGER [security].[TRG_U_StandardOnSchemaRolesSecurity] ' + CHAR(13) +
-               -- '  ON security.StandardOnSchemaRolesSecurity ' + CHAR(13) +
-               -- '    FOR UPDATE ' + CHAR(13) +
-               -- 'AS' + CHAR(13) +
-               -- 'BEGIN' + CHAR(13) +
-               -- '    DECLARE @a varchar(MAX)' + CHAR(13) +
-               -- '    select @a = ''123''' + CHAR(13) +
-               -- 'END' + CHAR(13);
-
-    -- EXEC (@SQL) ;
-	-- PRINT '    Trigger [security].[TRG_U_StandardOnSchemaRolesSecurity] created.'
--- END
-
--- SET @SQL =  'ALTER TRIGGER [security].[TRG_U_StandardOnSchemaRolesSecurity]' + CHAR(13) +
-            -- '    ON security.StandardOnSchemaRolesSecurity' + CHAR(13) +
-            -- '    FOR UPDATE' +CHAR(13) +
-            -- 'AS' + CHAR(13) +
-            -- 'BEGIN' + CHAR(13) +
-            -- '    UPDATE [security].StandardOnSchemaRolesSecurity ' + CHAR(13) +
-            -- '        SET LastModified = GETDATE()'+CHAR(13) +
-            -- '    FROM [security].StandardOnSchemaRolesSecurity o ' + CHAR(13) +
-            -- '        INNER JOIN inserted i' +CHAR(13) +
-            -- '            on o.[RoleName] = i.[RoleName]' +CHAR(13) +
-            -- '           and o.[PrivName] = i.[PrivName]' +CHAR(13) +
-            -- 'END' ;
--- EXEC (@SQL);
--- PRINT '    Trigger [security].[TRG_U_StandardOnSchemaRolesSecurity] altered.'
--- GO
-
--- PRINT '    Adding default data to [security].[StandardOnSchemaRolesSecurity].'
-
--- set nocount on;
--- ;with cte_data(
--- [RoleName],[PrivName],[isRoleMembership],[PermissionClass],[PermissionLevel],[isActive],[CreationDate],[lastmodified])
--- as (
-    -- select * 
-    -- from (
-        -- values
-        -- ('data_modifier','DELETE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
--- --        ('data_modifier','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('data_modifier','INSERT',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('data_modifier','UPDATE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
--- --        ('data_reader','EXECUTE',0,'DATABASE_SCHEMA','REVOKE',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('data_reader','SELECT',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('endusers','SHOWPLAN',0,'DATABASE','GRANT',1,GETDATE(),GETDATE()),
-        -- ('endusers','data_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('endusers','data_reader',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('endusers','prog_executors',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('full_access','endusers',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('full_access','managers',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('managers','struct_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('managers','struct_viewer',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('prog_executors','EXECUTE',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('responsible','data_modifier',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('responsible','data_reader',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('responsible','managers',1,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('struct_modifier','ALTER',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('struct_modifier','CREATE FUNCTION',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
-        -- ('struct_modifier','CREATE PROCEDURE',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
-        -- ('struct_modifier','CREATE SYNONYM',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
-        -- ('struct_modifier','CREATE TABLE',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
-        -- ('struct_modifier','CREATE TYPE',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
-        -- ('struct_modifier','CREATE VIEW',0,'DATABASE','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:23:59.500'),
-        -- ('struct_modifier','REFERENCES',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623'),
-        -- ('struct_viewer','VIEW DEFINITION',0,'DATABASE_SCHEMA','GRANT',1,'2014-12-24 14:21:52.617','2014-12-24 14:21:52.623')
-    -- ) c (
-        -- [RoleName],[PrivName],[isRoleMembership],[PermissionClass],[PermissionLevel],[isActive],[CreationDate],[lastmodified]
-    -- )
--- )
--- merge [security].[StandardOnSchemaRolesSecurity] as t
--- using cte_data as s
--- on		1=1 and t.[RoleName] = s.[RoleName] and t.[PrivName] = s.[PrivName]
--- when matched then
-	-- update set
-	-- [isRoleMembership] = s.[isRoleMembership],[PermissionClass] = s.[PermissionClass],[PermissionLevel] = s.[PermissionLevel],[isActive] = s.[isActive],[CreationDate] = s.[CreationDate],[lastmodified] = s.[lastmodified]
--- when not matched by target then
-	-- insert([RoleName],[PrivName],[isRoleMembership],[PermissionClass],[PermissionLevel],[isActive],[CreationDate],[lastmodified])
-	-- values(s.[RoleName],s.[PrivName],s.[isRoleMembership],s.[PermissionClass],s.[PermissionLevel],s.[isActive],s.[CreationDate],s.[lastmodified])
--- ;
-
-
--- PRINT '--------------------------------------------------------------------------------------------------------------'
--- PRINT '' 
-
 
 
 
@@ -11295,60 +10385,6 @@ PRINT ''
 
 
 
-PRINT '--------------------------------------------------------------------------------------------------------------'
---PRINT 'Procedure [security].[setStandardOnDatabaseRolePermissions] Creation'
-PRINT 'Procedure [security].[setStandardOnDatabaseRolePermissions] removal'
-
-IF  /*NOT*/ EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[setStandardOnDatabaseRolePermissions]') AND type in (N'P'))
-BEGIN
-	DROP PROCEDURE [security].[setStandardOnDatabaseRolePermissions];
-    -- EXECUTE ('CREATE PROCEDURE [security].[setStandardOnDatabaseRolePermissions] ( ' +
-            -- ' @ServerName    varchar(512), ' +
-            -- ' @DbName        varchar(64) ' +
-            -- ') ' +
-            -- 'AS ' +
-            -- 'BEGIN ' +
-            -- '   RETURN ''Not implemented'' ' +
-            -- 'END')
-    -- PRINT '    Procedure created.'
-END
-GO
-
-
--- ALTER PROCEDURE [security].[setStandardOnDatabaseRolePermissions] (
-    -- @ServerName  varchar(512) = @@SERVERNAME,
-    -- @DbName      varchar(64)  = NULL,
-    -- @RoleName varchar(64)  = NULL,
-    -- @Debug       BIT          = 0
--- )
--- AS
--- BEGIN 
-    -- --SET NOCOUNT ON;
-    -- DECLARE @versionNb          varchar(16) = '0.0.1';
-    -- DECLARE @tsql               varchar(max);
-    -- DECLARE @CurServerName      varchar(512)
-    -- DECLARE @CurDbName          varchar(64)
-    -- DECLARE @CurRoleName        varchar(64) 
--- END
--- GO
-
-
--- IF @@ERROR = 0
-    -- PRINT '   PROCEDURE altered.'
--- ELSE
--- BEGIN
-    -- PRINT '   Error while trying to alter procedure'
-    -- RETURN
--- END   
-
-PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT ''   
-
-
-
-
-
-
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -13978,323 +13014,6 @@ BEGIN
     PRINT '   Error while trying to alter procedure'
     RETURN
 END
-
-PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT ''
-
-
-
-
-
-
-
-
-PRINT '--------------------------------------------------------------------------------------------------------------'
---PRINT 'Procedure [security].[setStandardOnDatabaseRole] Creation'
-PRINT 'Procedure [security].[setStandardOnDatabaseRole] removal'
-
-IF  /*NOT*/ EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[setStandardOnDatabaseRole]') AND type in (N'P'))
-BEGIN
-	DROP PROCEDURE [security].[setStandardOnDatabaseRole]
-    -- EXECUTE ('CREATE PROCEDURE [security].[setStandardOnDatabaseRole] ( ' +
-            -- ' @ServerName    varchar(512), ' +
-            -- ' @DbName        varchar(64) ' +
-            -- ') ' +
-            -- 'AS ' +
-            -- 'BEGIN ' +
-            -- '   RETURN ''Not implemented'' ' +
-            -- 'END')
-    -- PRINT '    Procedure created.'
-END
-GO
-
--- ALTER PROCEDURE [security].[setStandardOnDatabaseRole] (
-    -- @ServerName  varchar(512) = @@SERVERNAME,
-    -- @DbName      varchar(64)  = NULL,
-    -- @StdRoleName varchar(64)  = NULL,
-    -- @Debug       BIT          = 0
--- )
--- AS
--- /*
-  -- ===================================================================================
-   -- DESCRIPTION:
-     -- This function takes care of the generation of Database Roles for "on database" access
-     -- according to its parameter values.
-
-   -- ARGUMENTS :
-     -- @ServerName    name of the server on which the SQL Server instance we want to modify is running.
-                    -- By default, it's the current server
-
-     -- @DbName        name of the database to take care of.
-                    -- A NULL value (which is the default value) means that this procedure
-                    -- has to take care of all "on schema" roles for any database on the given server.
-
-     -- @StdRoleName   name of the standard role for which execute this procedure
-                    -- if NULL given, all standard roles are being taken into account
-
-     -- @Debug         If set to 1, then we are in debug mode
-
-   -- REQUIREMENTS:
-
-    -- EXAMPLE USAGE :
-
-        -- -- All standard security roles on all servers
-        -- exec [security].[setStandardOnDatabaseRole] @ServerName = null
-
-        -- -- All standard security roles on all servers for DBA database
-        -- exec [security].[setStandardOnDatabaseRole] @ServerName = null, @DbName = 'DBA'
-
-        -- -- All standard security roles on server 'SI-S-SERV308' for DBA database
-        -- exec [security].[setStandardOnDatabaseRole] @ServerName = 'SI-S-SERV308', @DbName = 'DBA'
-
-        -- -- All standard security roles on local server for all database (uses variable @@SERVERNAME)
-        -- exec [security].[setStandardOnDatabaseRole]
-
-        -- -- All standard security roles on local server for DBA database (uses variable @@SERVERNAME)
-        -- exec [security].[setStandardOnDatabaseRole] @DbName = 'DBA'
-
-   -- ==================================================================================
-   -- BUGS:
-
-     -- BUGID       Fixed   Description
-     -- ==========  =====   ==========================================================
-     -- ----------------------------------------------------------------------------------
-   -- ==================================================================================
-   -- NOTES:
-   -- AUTHORS:
-        -- .   VBO     Vincent Bouquette   (vincent.bouquette@chu.ulg.ac.be)
-        -- .   BBO     Bernard Bozert      (bernard.bozet@chu.ulg.ac.be)
-        -- .   JEL     Jefferson Elias     (jelias@chu.ulg.ac.be)
-
-   -- COMPANY: CHU Liege
-   -- ==================================================================================
-   -- Revision History
-
-    -- Date        Nom         Description
-    -- ==========  =====       ==========================================================
-    -- 11/05/2015  JEL         Version 0.0.1
-    -- ----------------------------------------------------------------------------------
-  -- ===================================================================================
--- */
--- BEGIN
-
-    -- --SET NOCOUNT ON;
-    -- DECLARE @versionNb          varchar(16) = '0.0.1';
-    -- DECLARE @tsql               varchar(max);
-    -- DECLARE @CurServerName      varchar(512)
-    -- DECLARE @CurDbName          varchar(64)
-    -- DECLARE @CurRoleName        varchar(64)
-    -- DECLARE @CurDescription     varchar(2048)
-    -- DECLARE @curIsActive        BIT
-
-
-    -- SET @CurServerName = @ServerName
-    -- SET @CurDbName     = @DbName
-
-    -- BEGIN TRY
-    -- --BEGIN TRANSACTION
-        -- if(@CurServerName is null)
-        -- BEGIN
-            -- -- needs to loop on all servers defined in SQLMappings
-            -- -- no parameterized cursor in MSSQL ... viva Oracle!
-
-            -- if @Debug = 1
-            -- BEGIN
-                -- PRINT CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - No ServerName Given. Overall repository security update.'
-            -- END
-
-            -- DECLARE getServers CURSOR LOCAL FOR
-                -- select distinct
-                    -- ServerName
-                -- from
-                    -- security.SQLMappings
-                -- order by 1
-
-            -- open getServers
-            -- FETCH NEXT
-            -- FROM getServers INTO @CurServerName
-
-            -- WHILE @@FETCH_STATUS = 0
-            -- BEGIN
-                -- EXEC [security].[setStandardOnDatabaseRole] @ServerName = @CurServerName, @DbName = @CurDbName,@Debug = @Debug
-                -- -- carry on ...
-                -- FETCH NEXT
-                -- FROM getServers INTO @CurServerName
-            -- END
-            -- CLOSE getServers
-            -- DEALLOCATE getServers
-        -- END
-        -- else if(@CurServerName is not null and @CurDbName is null)
-        -- BEGIN
-            -- if @Debug = 1
-            -- BEGIN
-                -- PRINT CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - No DbName Given. Overall server security update.'
-            -- END
-            -- -- needs to loop on all dbs defined in SQLMappings
-            -- -- no parameterized cursor in MSSQL ... viva Oracle!
-            -- DECLARE getServerDatabases CURSOR LOCAL FOR
-                -- select distinct
-                    -- DbName
-                -- from inventory.SQLDatabases
-                -- where
-                    -- [ServerName] = @CurServerName
-                -- and [DbName] not in (
-                    -- select
-                        -- ObjectName
-                    -- from
-                        -- security.StandardExclusion
-                    -- where
-                        -- ObjectType = 'DATABASE'
-                    -- and isActive = 1
-                -- )
-                -- order by 1
-            -- open getServerDatabases
-            -- FETCH NEXT
-            -- FROM getServerDatabases INTO @CurDbName
-
-            -- WHILE @@FETCH_STATUS = 0
-            -- BEGIN
-                -- EXEC [security].[setStandardOnDatabaseRole] @ServerName = @CurServerName, @DbName = @CurDbName,@Debug = @Debug
-                -- -- carry on ...
-                -- FETCH NEXT
-                -- FROM getServerDatabases INTO @CurDbName
-            -- END
-            -- CLOSE getServerDatabases
-            -- DEALLOCATE getServerDatabases
-        -- END
-        -- else
-        -- BEGIN
-            -- if @Debug = 1
-            -- BEGIN
-                -- PRINT '--------------------------------------------------------------------------------------------------------------'
-                -- PRINT CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Taking care of server ' + @CurServerName
-                -- PRINT CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Taking care of Database ' + @CurDbName
-            -- END
-
-            -- -- make sure the database exists in our security inventory
-
-            -- DECLARE @tmpCounter INT ;
-
-            -- SELECT @tmpCounter = COUNT(*) from inventory.SQLDatabases where ServerName = @CurServerName and DbName = @CurDbName ;
-
-            -- if(@tmpCounter = 0)
-            -- BEGIN
-                -- RAISERROR('No match found for given database %s on server %s',10,1,@CurDbName,@CurServerName);
-                -- RETURN;
-            -- END
-            -- -- TODO : ensure that this dataset is ordered from no role dependency to roles with dependant roles created
-            -- DECLARE GetStandardOnDbRoles CURSOR LOCAL FOR
-                -- select RoleName, isActive, [Description]
-                -- from security.StandardOnDatabaseRoles
-
-            -- open GetStandardOnDbRoles;
-
-            -- FETCH NEXT
-            -- FROM GetStandardOnDbRoles INTO @CurRoleName,@curIsActive,@CurDescription
-
-            -- WHILE @@FETCH_STATUS = 0
-            -- BEGIN
-                -- if @Debug = 1
-                -- BEGIN
-                    -- PRINT CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Taking care of Standard Database Role ' + @CurRoleName;
-                -- END
-                -- merge security.DatabaseRoles r
-                -- using (
-                    -- select
-                        -- @CurServerName  as ServerName,
-                        -- @CurDbName      as DbName,
-                        -- @CurRoleName    as RoleName,
-                        -- @curIsActive    as isActive,
-                        -- @curDescription as Description
-                -- ) i
-                -- on
-                    -- r.ServerName = i.ServerName
-                -- and r.DbName     = i.DbName
-                -- and r.RoleName   = i.RoleName
-                -- WHEN MATCHED THEN
-                    -- update set
-                        -- isActive = i.isActive
-                -- WHEN NOT MATCHED BY TARGET THEN
-                    -- insert (
-                        -- ServerName,
-                        -- DbName,
-                        -- RoleName,
-                        -- isStandard,
-                        -- Reason,
-                        -- isActive
-                    -- )
-                    -- values (
-                        -- i.ServerName,
-                        -- i.DbName,
-                        -- i.RoleName,
-                        -- 1,
-                        -- i.Description,
-                        -- i.isActive
-                    -- )
-                -- /*
-                -- WHEN NOT MATCHED BY SOURCE THEN
-                    -- -- TODO make a procedure to undo the missing standard privilege
-                -- */
-                -- ;
-
-                -- -- now the role is created, we can add its permissions
-                -- EXEC [security].[setStandardOnDatabaseRolePermissions]
-                    -- @ServerName  = @CurServerName,
-                    -- @DbName      = @CurDbName,
-                    -- @RoleName    = @CurRoleName,
-                    -- @Debug       = @Debug
-
-                -- -- carry on ...
-                -- FETCH NEXT
-                -- FROM GetStandardOnDbRoles INTO @CurRoleName,@curIsActive,@CurDescription
-            -- END
-            -- CLOSE GetStandardOnDbRoles
-            -- DEALLOCATE GetStandardOnDbRoles
-            -- if(@Debug = 1)
-            -- BEGIN
-                -- PRINT '--------------------------------------------------------------------------------------------------------------'
-            -- END
-        -- END
-    -- --COMMIT
-    -- END TRY
-    -- BEGIN CATCH
-        -- SELECT
-        -- ERROR_NUMBER() AS ErrorNumber
-        -- ,ERROR_SEVERITY() AS ErrorSeverity
-        -- ,ERROR_STATE() AS ErrorState
-        -- ,ERROR_PROCEDURE() AS ErrorProcedure
-        -- ,ERROR_LINE() AS ErrorLine
-        -- ,ERROR_MESSAGE() AS ErrorMessage;
-
-        -- if CURSOR_STATUS('local','getServers') >= 0
-        -- begin
-            -- close getServers
-            -- deallocate getServers
-        -- end
-        -- if CURSOR_STATUS('local','getServerDatabases') >= 0
-        -- begin
-            -- close getServerDatabases
-            -- deallocate getServerDatabases
-        -- end
-        -- if CURSOR_STATUS('local','GetStandardOnDbRoles') >= 0
-        -- begin
-            -- close GetStandardOnDbRoles
-            -- deallocate GetStandardOnDbRoles
-        -- end
-        -- IF @@TRANCOUNT > 0
-            -- ROLLBACK
-    -- END CATCH
--- END
--- GO
-
-
--- IF @@ERROR = 0
-    -- PRINT '   PROCEDURE altered.'
--- ELSE
--- BEGIN
-    -- PRINT '   Error while trying to alter procedure'
-    -- RETURN
--- END
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT ''

@@ -2,7 +2,7 @@
 /*requires Table.ApplicationParams.sql*/
 /*requires Table.DatabasePermissions.sql*/
 /*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.StandardOnSchemaRolesSecurity.sql*/
+/*requires View.security.StandardOnSchemaRolesSecurity.sql*/
 /*requires Table.SQLMappings.sql*/
 
 

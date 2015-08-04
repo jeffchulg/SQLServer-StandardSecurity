@@ -49,6 +49,7 @@
 		</PreprocessingTasks>
         <Tests>            
                 <Test name="Deploy"                 order="100" type="SQLScript" FileLocation="..\..\dist\securityApplier_SQLServer.sql" 			  mustSucceed="true"/>
+                <Test name="ValidateSchema"         order="110" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-ValidateSchema.sql"  mustSucceed="true"/>
                 <Test name="DefineSecurity"         order="200" type="SQLScript" FileLocation="..\..\dist\{SOLUTIONNAME}.Testing-DefineSecurity.sql"  mustSucceed="true"/>
                 <Test name="GenerateSecurityScript" order="300" type="PSScript"  FileLocation="..\..\dist\Documenter\Generate-SQLSecurity.ps1" 		  mustSucceed="true">
                     <params>

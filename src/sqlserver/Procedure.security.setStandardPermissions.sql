@@ -94,7 +94,7 @@ BEGIN
 			ELSE srp.DbName
 		END as DbName,
 		srp.SchemaName,
-		CASE WHEN srp.ObjectName = '$(SCHEMA_NAME)' THEN @SchemaName WHEN srp.ObjectName = '$(DATABASE)' THEN @DbName ELSE srp.ObjectName END as ObjectName, 
+		CASE WHEN srp.ObjectName = '<SCHEMA_NAME>' THEN @SchemaName WHEN srp.ObjectName = '<DATABASE>' THEN @DbName ELSE srp.ObjectName END as ObjectName, 
 		srp.SubObjectName, 
 		srp.isWithGrantOption,
 		srp.isDefinedByMSSQL,

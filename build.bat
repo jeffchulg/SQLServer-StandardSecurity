@@ -7,3 +7,5 @@ java -jar .\tools\combiner-0.0.1.jar -v -e -o .\dist\SecurityManager.Testing-Def
 java -jar .\tools\combiner-0.0.1.jar -v -e -o .\dist\SecurityManager.Testing-GenerateSecurityScript.sql .\tests\GenerateSecurityScript\*.sql 2> logs/build.SecurityManager.Testing-GenerateSecurityScript.log
 
 java -jar .\tools\combiner-0.0.1.jar -v -e -o .\dist\SecurityManager.Testing-Cleanups.sql .\tests\Cleanups\*.sql 2> logs/build.SecurityManager.Testing-Cleanups.log
+
+java -jar .\tools\combiner-0.0.1.jar -v -e -o .\dist\SecurityManager.Testing-ValidateSchema.sql .\tests\ValidateSchema\*.sql 2> logs/build.SecurityManager.Testing-ValidateSchema.log

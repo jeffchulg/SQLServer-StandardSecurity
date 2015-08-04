@@ -1,12 +1,12 @@
 /*requires Schema.Security.sql*/
-/*requires Table.SQLLogins.sql*/
-/*requires Table.Contacts.sql*/
-/*requires Table.SQLMappings.sql*/
+/*requires Table.security.Contacts.sql*/
+/*requires Table.security.SQLLogins.sql*/
+/*requires Table.security.SQLMappings.sql*/
 
 /**
   ==================================================================================
     DESCRIPTION
-		Creation of the [security].[logins] view that lists active logins
+		Creation of the [security].[DatabaseUsers] view that lists active Database Users
 
 	==================================================================================
   BUGS:
@@ -31,42 +31,43 @@
 */
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'View [security].[logins] Creation'
+PRINT 'View [security].[DatabaseUsers] Creation'
 
 DECLARE @SQL VARCHAR(MAX)
-IF  NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[security].[logins]'))
+IF  NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[security].[DatabaseUsers]'))
 BEGIN
-    SET @SQL =  'CREATE view [security].[logins]
+    SET @SQL = 'CREATE view [security].[DatabaseUsers]
                 AS
-                select ''Not implemented'' as Col1'
+                select ''Not implemented'' as Col1' 
     EXEC (@SQL)
-	PRINT '    View [security].[logins] created.'
+    if @@ERROR = 0 
+		PRINT '    View [security].[DatabaseUsers] created.'
 END
 
-SET @SQL = 'ALTER view [security].[logins]
+SET @SQL = 'ALTER view [security].[DatabaseUsers]
                 AS
-                 select
+                select
                     c.[Name],
                     c.[Job],
                     c.[Department],
-                    c.[AuthMode],
                     l.[ServerName],
-                    l.[SQLLogin],
-                    l.[PermissionLevel],
+                    l.SQLLogin,
                     m.DbName,
 					m.DbUserName,
                     m.DefaultSchema,
-                    c.isActive,                    
                     m.isLocked
                 from [security].[Contacts] c
-                    inner join [Security].[SQLlogins] l
+                    join [Security].[SQLlogins] l
                         on c.SQLLogin = l.SQLLogin
-                    inner join [security].[SQLMappings] m
+                    left join [security].[SQLMappings] m
 						on l.SqlLogin   = m.SqlLogin
 					  and  l.ServerName = m.ServerName
-				where m.isDefaultDb = 1'
+                /*where c.isActive = 1*/'
 EXEC (@SQL)
-PRINT '    View [security].[logins] altered.'
+if @@ERROR = 0
+BEGIN
+	PRINT '    View [security].[DatabaseUsers] altered.'
+END
 GO
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

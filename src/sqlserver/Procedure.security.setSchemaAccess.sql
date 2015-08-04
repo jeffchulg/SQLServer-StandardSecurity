@@ -1,12 +1,12 @@
 /*requires Schema.Security.sql*/
-/*requires Table.Contacts.sql*/
-/*requires Table.SQLLogins.sql*/
-/*requires Table.SQLMappings.sql*/
-/*requires Table.DatabaseSchemas.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
+/*requires Table.security.Contacts.sql*/
+/*requires Table.security.SQLLogins.sql*/
+/*requires Table.security.SQLMappings.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
 /*requires View.security.StandardOnSchemaRoles.sql*/
-/*requires Procedure.setServerAccess.sql*/
+/*requires Procedure.security.setServerAccess.sql*/
 /*requires Function.security.getStandardOnSchemaRoleName.sql*/
 
 

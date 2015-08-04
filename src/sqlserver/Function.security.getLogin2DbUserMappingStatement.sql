@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Function.getDbUserCreationStatement.sql*/
+/*requires Function.security.getDbUserCreationStatement.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Function [security].[getLogin2DbUserMappingStatement] Creation'

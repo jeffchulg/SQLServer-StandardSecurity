@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.ApplicationParams.sql*/
+/*requires Table.security.ApplicationParams.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Function [security].[getDbRoleCreationStatement] Creation'

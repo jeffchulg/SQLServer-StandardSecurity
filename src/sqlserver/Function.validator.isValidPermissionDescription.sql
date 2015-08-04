@@ -1,7 +1,7 @@
 /*requires Schema.Validator.sql*/
 /*requires Table.inventory.SQLDatabases.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.SQLMappings.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.SQLMappings.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Function [validator].[isValidPermissionDescription] Creation'

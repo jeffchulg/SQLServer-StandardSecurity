@@ -1,10 +1,10 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabasePermissions.sql*/
-/*requires Function.getOnDbSchemaPermissionAssignmentStatement.sql*/
-/*requires Function.getOnUserObjectPermissionAssignmentStatement.sql*/
-/*requires Procedure.CreateTempTables4Generation.sql*/
-/*requires Procedure.SaveSecurityGenerationResult.sql*/
-/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
+/*requires Function.security.getOnDbSchemaPermissionAssignmentStatement.sql*/
+/*requires Function.security.getOnUserObjectPermissionAssignmentStatement.sql*/
+/*requires Procedure.security.CreateTempTables4Generation.sql*/
+/*requires Procedure.security.SaveSecurityGenerationResult.sql*/
+/*requires Procedure.security.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

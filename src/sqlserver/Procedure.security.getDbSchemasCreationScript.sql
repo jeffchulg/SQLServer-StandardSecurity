@@ -1,10 +1,10 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabaseSchemas.sql*/
-/*requires View.Logins.sql*/
-/*requires Function.getSchemaCreationStatement.sql*/
-/*requires Procedure.CreateTempTables4Generation.sql*/
-/*requires Procedure.SaveSecurityGenerationResult.sql*/
-/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
+/*requires View.security.Logins.sql*/
+/*requires Function.security.getSchemaCreationStatement.sql*/
+/*requires Procedure.security.CreateTempTables4Generation.sql*/
+/*requires Procedure.security.SaveSecurityGenerationResult.sql*/
+/*requires Procedure.security.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

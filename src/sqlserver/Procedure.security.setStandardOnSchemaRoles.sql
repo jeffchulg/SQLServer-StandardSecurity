@@ -1,12 +1,12 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabasePermissions.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
 /*requires View.security.StandardOnSchemaRoles.sql*/
-/*requires Table.DatabaseSchemas.sql*/
-/*requires Table.SQLMappings.sql*/
-/*requires Table.StandardExclusion.sql*/
-/*requires View.StandardOnSchemaRolesTreeView.sql*/
-/*requires Procedure.setStandardOnSchemaRolePermissions.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
+/*requires Table.security.SQLMappings.sql*/
+/*requires Table.security.StandardExclusion.sql*/
+/*requires View.security.StandardOnSchemaRolesTreeView.sql*/
+/*requires Procedure.security.setStandardOnSchemaRolePermissions.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Procedure [security].[setStandardOnSchemaRoles] Creation'

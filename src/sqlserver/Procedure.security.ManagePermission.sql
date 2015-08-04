@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabasePermissions.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
 /*requires Function.validator.isValidPermissionDescription.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

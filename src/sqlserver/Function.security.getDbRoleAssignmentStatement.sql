@@ -1,7 +1,7 @@
 /*requires Schema.Security.sql*/
-/*requires Table.ApplicationParams.sql*/
-/*requires Function.getDbRoleCreationStatement.sql*/
-/*requires Function.getDbUserCreationStatement.sql*/
+/*requires Table.security.ApplicationParams.sql*/
+/*requires Function.security.getDbRoleCreationStatement.sql*/
+/*requires Function.security.getDbUserCreationStatement.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Function [security].[getDbRoleAssignmentStatement] Creation'

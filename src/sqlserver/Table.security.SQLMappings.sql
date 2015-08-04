@@ -1,6 +1,6 @@
 /*requires Schema.Security.sql*/
-/*requires Table.SQLLogins.sql*/
-/*requires Table.DatabaseSchemas.sql*/
+/*requires Table.security.SQLLogins.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
 
 /**
   ==================================================================================

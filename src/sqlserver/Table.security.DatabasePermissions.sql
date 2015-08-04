@@ -1,5 +1,4 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabasePermissions.sql*/
 
 /**
   ==================================================================================

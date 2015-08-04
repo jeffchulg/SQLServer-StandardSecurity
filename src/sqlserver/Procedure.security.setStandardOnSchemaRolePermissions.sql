@@ -1,9 +1,9 @@
 /*requires Schema.Security.sql*/
-/*requires Table.ApplicationParams.sql*/
-/*requires Table.DatabasePermissions.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
+/*requires Table.security.ApplicationParams.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
 /*requires View.security.StandardOnSchemaRolesSecurity.sql*/
-/*requires Table.SQLMappings.sql*/
+/*requires Table.security.SQLMappings.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

@@ -1,9 +1,9 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabasePermissions.sql*/
-/*requires Table.StandardExclusion.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
+/*requires Table.security.StandardExclusion.sql*/
 /*requires Table.security.StandardRoles.sql*/
-/*requires Table.ApplicationParams.sql*/
+/*requires Table.security.ApplicationParams.sql*/
 /*requires Procedure.security.setStandardPermissions.sql*/
 /*requires Procedure.security.setStandardRoleMembers.sql*/
 

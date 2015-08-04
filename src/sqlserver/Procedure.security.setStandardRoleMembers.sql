@@ -1,9 +1,9 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.StandardExclusion.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
+/*requires Table.security.StandardExclusion.sql*/
 /*requires Table.security.StandardRoles.sql*/
-/*requires Table.ApplicationParams.sql*/
+/*requires Table.security.ApplicationParams.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Procedure [security].[setStandardRoleMembers] Creation'

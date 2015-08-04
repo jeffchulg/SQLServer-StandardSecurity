@@ -1,18 +1,18 @@
 /*requires Schema.Security.sql*/
-/*requires View.DatabaseUsers.sql*/
-/*requires View.Logins.sql*/
-/*requires Function.getDbUserCreationStatement.sql*/
-/*requires Procedure.CreateTempTables4Generation.sql*/
-/*requires Procedure.SaveSecurityGenerationResult.sql*/
-/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
+/*requires Table.security.ApplicationParams.sql*/
+/*requires View.security.Logins.sql*/
+/*requires Function.security.getLoginCreationStatement.sql*/
+/*requires Procedure.security.CreateTempTables4Generation.sql*/
+/*requires Procedure.security.SaveSecurityGenerationResult.sql*/
+/*requires Procedure.security.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'Procedure [security].[getDbUsersCreationScript] Creation'
+PRINT 'Procedure [security].[getLoginsCreationScript] Creation'
 
-IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getDbUsersCreationScript]') AND type in (N'P'))
+IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getLoginsCreationScript]') AND type in (N'P'))
 BEGIN
-    EXECUTE ('CREATE Procedure [security].[getDbUsersCreationScript] ( ' +
+    EXECUTE ('CREATE Procedure [security].[getLoginsCreationScript] ( ' +
             ' @ServerName    varchar(512), ' +
             ' @DbName    varchar(50) ' +
             ') ' +
@@ -21,14 +21,13 @@ BEGIN
             '   RETURN ''Not implemented'' ' +
             'END')
 
-	PRINT '    Procedure [security].[getDbUsersCreationScript] created.'
+	PRINT '    Procedure [security].[getLoginsCreationScript] created.'
 END
 GO
 
-ALTER Procedure [security].[getDbUsersCreationScript] (
+ALTER Procedure [security].[getLoginsCreationScript] (
     @ServerName  		    varchar(512),
-    @DbName  		        varchar(128),
-    @UserName               varchar(64)     = NULL,
+    @LoginName              varchar(64)     = NULL,
 	@AsOf 				    DATETIME 		= NULL ,
 	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,
     @OutputDatabaseName     NVARCHAR(128) 	= NULL ,
@@ -42,13 +41,12 @@ AS
 /*
  ===================================================================================
   DESCRIPTION:
-        This Procedure generates the statements for the creation of
-        all the database users according to the provided parameters.
+    This Procedure generates the statements for the creation of all logins
+    that have to be considered according to given parameters
 
   ARGUMENTS :
     @ServerName             name of the server on which the SQL Server instance we want to modify is running.
-    @DbName                 name of the database in which we have some job to do
-    @UserName               name of the database user we need to take care of
+    @LoginName              name of the login to take care of
     @AsOf                   to see a previous generated script result
     @OutputType             the output type you want : TABLE or SCRIPT at the moment
     @OutputDatabaseName     name of the database where we'll keep track of the generated script
@@ -58,7 +56,6 @@ AS
     @CanDropTempTables      if set to 1, the temporary tables required for this procedure to succeed can be dropped by the tool.
                             It will create them if they don't exist
     @Debug                  If set to 1, then we are in debug mode
-
   REQUIREMENTS:
 
   ==================================================================================
@@ -91,7 +88,7 @@ BEGIN
     DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);
-    DECLARE	@CurUser     	  	varchar(64)
+    DECLARE	@CurLogin   	  	varchar(64)
 	DECLARE @LineFeed 			VARCHAR(10)
     DECLARE @StringToExecute    VARCHAR(MAX)
 
@@ -109,7 +106,7 @@ BEGIN
         RAISERROR('No value set for @ServerName !',10,1)
     END
 
-    SET @CurUser = @UserName
+    SET @CurLogin = @LoginName
 
     exec security.CreateTempTables4Generation
             @CanDropTempTables,
@@ -160,37 +157,28 @@ BEGIN
                 EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'SERVER_NAME', @ServerName = @ServerName
             END
 
-            if(@NoDependencyCheckGen = 0)
-            BEGIN
-                EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'DATABASE_NAME', @ServerName = @ServerName, @DbName = @DbName
-            END
-
-            if(@CurUser is null)
+			if(@CurLogin is null)
 			BEGIN
            		if @Debug = 1
 				BEGIN
-					PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every users in database generation detected.'
+					PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every logins generation detected.'
 				END
 
-                DECLARE getDbUsers CURSOR LOCAL FOR
+                DECLARE getLogins CURSOR LOCAL FOR
                     select
-                        DbUserName
-                    from security.DatabaseUsers
-                    where
-                        [ServerName] = @ServerName
-                    and [DbName]     = @DbName
-                    order by 1
+                        [SQLLogin]
+                    from [security].[logins]
+                    where [ServerName] = @ServerName
 
-                open getDbUsers
+                open getLogins
 				FETCH NEXT
-				FROM getDbUsers INTO @CurUser
+				FROM getLogins INTO @CurLogin
 
                 WHILE @@FETCH_STATUS = 0
 				BEGIN
-					EXEC [security].[getDbUsersCreationScript]
+					EXEC [security].[getLoginsCreationScript]
 						@ServerName 		    = @ServerName,
-						@DbName     		    = @DbName,
-						@UserName  			    = @CurUser,
+						@LoginName 			    = @CurLogin,
 						@OutputType 		    = @OutputType,
 						@OutputDatabaseName     = null,--@OutputDatabaseName,
 						@OutputSchemaName 	    = null,--@OutputSchemaName,
@@ -200,58 +188,65 @@ BEGIN
 						@Debug 				    = @Debug
 					-- carry on ...
 					FETCH NEXT
-					FROM getDbUsers INTO @CurUser
+					FROM getLogins INTO @CurLogin
 				END
-				CLOSE getDbUsers
-				DEALLOCATE getDbUsers
+				CLOSE getLogins
+				DEALLOCATE getLogins
             END
             ELSE  -- a login name is given
             BEGIN
+                DECLARE @Department         VARCHAR(256)
+                DECLARE @Name               VARCHAR(64)
+                DECLARE @AuthMode           VARCHAR(64)
+                DECLARE @DefaultDb          VARCHAR(64)
+                DECLARE @isActive           BIT
+                DECLARE @PermissionLevel    VARCHAR(6)
 
-                if @Debug = 1
-                BEGIN
-                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - ServerName ' + @ServerName
-                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - DbName     ' + @DbName
-                END
-
-                DECLARE @isLocked           BIT
-                DECLARE @SQLLogin           VARCHAR(64)
-                DECLARE @DefaultSchema      VARCHAR(64)
+                DECLARE @DefaultPassword VARCHAR(128)
 
                 select
-                    @SQLLogin       = SQLLogin,
-                    @DefaultSchema  = DefaultSchema,
-                    @isLocked       = isLocked
-                from
-                    [security].[DatabaseUsers]
-                where
-                    [ServerName]    = @ServerName
-                and [DbName]        = @DbName
-                and [DbUserName]    = @CurUser
+                    @DefaultPassword = ParamValue
+                from [security].[ApplicationParams]
+                where ParamName = 'MSSQL_LoginSecurity_DefaultPassword'
 
-                if @SQLLogin is null
+                select
+                    @Department = Department,
+                    @Name       = Name,
+                    @AuthMode   = AuthMode,
+                    @DefaultDb  = DbName,
+                    @isActive   = isActive,
+                    @PermissionLevel = PermissionLevel
+                from
+                    [security].[logins]
+                where
+                    [ServerName] = @ServerName
+                and SQLLogin     = @CurLogin
+
+                if @AuthMode is null
                 BEGIN
-					DECLARE @ErrMsg VARCHAR(512) = 'The provided database user ' + QUOTENAME(@CurUser) + ' does not exist.'
+					DECLARE @ErrMsg VARCHAR(512) = 'The provided login ' + QUOTENAME(@CurLogin) + ' does not exist.'
                     RAISERROR(@ErrMsg,16,0)
                 END
 
                 if @debug = 1
                 BEGIN
-                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Taking care of user ' + @CurUser
+                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Taking care of login ' + @CurLogin + ' (' + @Name + ')'
                 END
 
-                SET @StringToExecute = 'PRINT ''. Commands for Database User "' + @CurUser+ '" in database "' + @DbName + '"''' + @LineFeed +
-                                        [security].[getDbUserCreationStatement](
-                                            @DbName,
-                                            @SQLLogin,
-                                            @CurUser,
-                                            @DefaultSchema,
-                                            @isLocked,
+                SET @StringToExecute = 'PRINT ''. Commands for "' + @Name + '" from department "' + @Department + '"''' + @LineFeed +
+                                       [security].[getLoginCreationStatement](
+                                            @CurLogin,
+                                            @AuthMode,
+                                            @DefaultPassword,
+                                            @DefaultDb,
+                                            @isActive,
                                             1, -- no header
                                             1, -- no db check
+                                            0,  -- GRANT CONNECT SQL YES ! TODO change it !!
+                                            @PermissionLevel,
                                             @Debug
                                         )
-                SET @CurOpName = 'CHECK_AND_CREATE_DB_USER'
+                SET @CurOpName = 'CHECK_AND_CREATE_SQL_LOGINS'
 
                 select @CurOpOrder = OperationOrder
                 from ##SecurityScriptResultsCommandsOrder
@@ -260,14 +255,15 @@ BEGIN
                 EXEC [security].[SecurityGenHelper_AppendCheck]
                     @CheckName   = 'STATEMENT_APPEND',
                     @ServerName  = @ServerName,
-                    @DbName      = @DbName,
-                    @ObjectName  = @CurUser,
+                    @DbName      = NULL,
+                    @ObjectName  = @CurLogin,
                     @CurOpName   = @CurOpName,
                     @CurOpOrder  = @CurOpOrder,
                     @Statements  = @StringToExecute
 
                 SET @CurOpName  = null
                 SET @CurOpOrder = null
+
             END
 
             /*
@@ -298,10 +294,10 @@ BEGIN
 			,ERROR_LINE() AS ErrorLine
 			,ERROR_MESSAGE() AS ErrorMessage;
 
-			if CURSOR_STATUS('local','getDbUsers') >= 0
+			if CURSOR_STATUS('local','getLogins') >= 0
 			begin
-				close getDbUsers
-				deallocate getDbUsers
+				close getLogins
+				deallocate getLogins
 			end
 
             IF @@TRANCOUNT > 0
@@ -312,7 +308,7 @@ END
 GO
 
 
-PRINT '    Procedure [security].[getDbUsersCreationScript] altered.'
+PRINT '    Procedure [security].[getLoginsCreationScript] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT ''

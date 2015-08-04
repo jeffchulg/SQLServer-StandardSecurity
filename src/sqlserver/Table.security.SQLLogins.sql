@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.Contacts.sql*/
+/*requires Table.security.Contacts.sql*/
 
 /**
   ==================================================================================

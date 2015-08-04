@@ -1,10 +1,10 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabaseSchemas.sql*/
-/*requires Table.SQLMappings.sql*/
-/*requires Table.DatabasePermissions.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.SQLLogins.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
+/*requires Table.security.SQLMappings.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
+/*requires Table.security.SQLLogins.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

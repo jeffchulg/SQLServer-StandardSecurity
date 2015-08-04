@@ -1,19 +1,19 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabaseSchemas.sql*/
-/*requires Table.SQLMappings.sql*/
-/*requires Table.DatabasePermissions.sql*/
-/*requires Procedure.CreateTempTables4Generation.sql*/
-/*requires Procedure.SaveSecurityGenerationResult.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
-/*requires Table.SQLLogins.sql*/
-/*requires Procedure.getDbSchemasCreationScript.sql*/
-/*requires Procedure.getLoginsCreationScript.sql*/
-/*requires Procedure.getDbUsersCreationScript.sql*/
-/*requires Procedure.getDbRolesCreationScript.sql*/
-/*requires Procedure.getDbRolesAssignmentScript.sql*/
-/*requires Procedure.getLogin2DbUserMappingsScript.sql*/
-/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
+/*requires Table.security.SQLMappings.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
+/*requires Procedure.security.CreateTempTables4Generation.sql*/
+/*requires Procedure.security.SaveSecurityGenerationResult.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
+/*requires Table.security.SQLLogins.sql*/
+/*requires Procedure.security.getDbSchemasCreationScript.sql*/
+/*requires Procedure.security.getLoginsCreationScript.sql*/
+/*requires Procedure.security.getDbUsersCreationScript.sql*/
+/*requires Procedure.security.getDbRolesCreationScript.sql*/
+/*requires Procedure.security.getDbRolesAssignmentScript.sql*/
+/*requires Procedure.security.getLogin2DbUserMappingsScript.sql*/
+/*requires Procedure.security.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

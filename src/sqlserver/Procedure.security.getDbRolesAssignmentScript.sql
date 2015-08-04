@@ -1,17 +1,17 @@
 /*requires Schema.Security.sql*/
-/*requires Table.SQLMappings.sql*/
-/*requires Procedure.CreateTempTables4Generation.sql*/
-/*requires Procedure.SaveSecurityGenerationResult.sql*/
-/*requires Function.getLogin2DbUserMappingStatement.sql*/
-/*requires Procedure.SecurityGenHelper_AppendCheck.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
+/*requires Function.security.getDbRoleAssignmentStatement.sql*/
+/*requires Procedure.security.CreateTempTables4Generation.sql*/
+/*requires Procedure.security.SaveSecurityGenerationResult.sql*/
+/*requires Procedure.security.SecurityGenHelper_AppendCheck.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'Procedure [security].[getLogin2DbUserMappingsScript] Creation'
+PRINT 'Procedure [security].[getDbRolesAssignmentScript] Creation'
 
-IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getLogin2DbUserMappingsScript]') AND type in (N'P'))
+IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[getDbRolesAssignmentScript]') AND type in (N'P'))
 BEGIN
-    EXECUTE ('CREATE Procedure [security].[getLogin2DbUserMappingsScript] ( ' +
+    EXECUTE ('CREATE Procedure [security].[getDbRolesAssignmentScript] ( ' +
             ' @ServerName    varchar(512), ' +
             ' @DbName    varchar(50) ' +
             ') ' +
@@ -19,15 +19,15 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-			
-	PRINT '    Procedure [security].[getLogin2DbUserMappingsScript] created.'
+    PRINT '    Procedure [security].[getDbRolesAssignmentScript] created.'    
 END
 GO
 
-ALTER Procedure [security].[getLogin2DbUserMappingsScript] (    
+ALTER Procedure [security].[getDbRolesAssignmentScript] (    
     @ServerName  		    varchar(512),    
-    @LoginName  		    varchar(512)    = NULL,    
-    @DbName  		        varchar(128)     = NULL ,    
+    @DbName  		        varchar(128),    
+    @RoleName               varchar(64)     = NULL,	
+    @MemberName             varchar(64)     = NULL,	
 	@AsOf 				    DATETIME 		= NULL ,
 	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,
     @OutputDatabaseName     NVARCHAR(128) 	= NULL ,
@@ -41,13 +41,14 @@ AS
 /*
  ===================================================================================
   DESCRIPTION:
-    This Procedure generates the statements for all the mappings between a login 
-    and a database user on a given server 
+    This Procedure generates the statements for all the database role memberships 
+    according to given parameters
  
   ARGUMENTS :
     @ServerName             name of the server on which the SQL Server instance we want to modify is running.
-    @LoginName              name of the login we need to take care of
-    @DbName                 name of the database in which we need to map this login
+    @DbName                 name of the database in which we have some job to do 
+    @RoleName               name of the database role we need to take care of
+    @MemberName             name of the database role member (user or role) we need to take care of
     @AsOf                   to see a previous generated script result
     @OutputType             the output type you want : TABLE or SCRIPT at the moment
     @OutputDatabaseName     name of the database where we'll keep track of the generated script 
@@ -56,8 +57,7 @@ AS
     @NoDependencyCheckGen   if set to 1, no check for server name and database name are generated
     @CanDropTempTables      if set to 1, the temporary tables required for this procedure to succeed can be dropped by the tool.
                             It will create them if they don't exist
-    @Debug                  If set to 1, then we are in debug mode
- 
+    @Debug                  If set to 1, then we are in debug mode 
   REQUIREMENTS:
  
   ==================================================================================
@@ -79,7 +79,7 @@ AS
  
     Date        Name	        	Description
     ==========  =================	===========================================================
-    24/12/2014  Jefferson Elias		Creation
+    24/12/2014  Jefferson Elias		Version 0.1.0
     ----------------------------------------------------------------------------------
  ===================================================================================
 */
@@ -87,11 +87,11 @@ BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.0.1';
+    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);   
-    DECLARE	@CurLogin 	  	    varchar(64)
-    DECLARE	@CurDbName	  	    varchar(64)
+    DECLARE	@CurRole   	  	    varchar(64)
+    DECLARE	@CurMember	  	    varchar(64)
 	DECLARE @LineFeed 			VARCHAR(10)
     DECLARE @StringToExecute    VARCHAR(MAX)
     
@@ -109,8 +109,8 @@ BEGIN
         RAISERROR('No value set for @ServerName !',10,1)
     END		
     
-    SET @CurLogin    = @LoginName
-    SET @CurDbName   = @DbName
+    SET @CurRole    = @RoleName
+    SET @CurMember  = @MemberName
 
     exec security.CreateTempTables4Generation 
         @CanDropTempTables, 
@@ -154,7 +154,7 @@ BEGIN
         DECLARE @CurOpOrder BIGINT
         
 		BEGIN TRY
-		BEGIN TRANSACTION           
+		BEGIN TRANSACTION                       
                 
             if(@NoDependencyCheckGen = 0)
             BEGIN     
@@ -165,64 +165,63 @@ BEGIN
             BEGIN     
                 EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'DATABASE_NAME', @ServerName = @ServerName, @DbName = @DbName
             END     
-            
-            if(@CurLogin is null or @CurDbName is null) 
-			BEGIN
-                if @CurDbName is null and @CurLogin is null 
+                        
+			if(@CurRole is null or @CurMember is null) 
+			BEGIN	
+           		if @Debug = 1 
+				BEGIN
+					PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every Role membership generation detected.'
+				END
+                
+                if @CurRole is null and @CurMember is null 
                 BEGIN 
-                    if @Debug = 1 
-                    BEGIN
-                        PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every mappings for server detected'
-                    END                 
-                    DECLARE getMappings CURSOR LOCAL FOR 
-                        select 
-                            SqlLogin, DbName 
+                    DECLARE getRolesMembers CURSOR LOCAL FOR
+                        select
+                            [RoleName], 
+                            [MemberName]
                         from 
-                            security.sqlmappings 
+                            [security].[DatabaseRoleMembers]        
                         where 
-                            QUOTENAME(ServerName) = QUOTENAME(@ServerName)
+                            [ServerName] = @ServerName
+                        and [DbName]     = @DbName
+                END 
+                ELSE IF @CurRole is null and @CurMember is not null 
+                BEGIN 
+                    DECLARE getRolesMembers CURSOR LOCAL FOR
+                        select
+                            [RoleName], 
+                            [MemberName]
+                        from 
+                            [security].[DatabaseRoleMembers]        
+                        where 
+                            [ServerName] = @ServerName
+                        and [DbName]     = @DbName
+                        and [MemberName] = @MemberName 
+                END 
+                ELSE IF @CurRole is not null and @CurMember is not null
+                BEGIN
+                    DECLARE getRolesMembers CURSOR LOCAL FOR
+                        select
+                            [RoleName], 
+                            [MemberName]
+                        from 
+                            [security].[DatabaseRoleMembers]        
+                        where 
+                            [ServerName] = @ServerName
+                        and [DbName]     = @DbName
+                        and [RoleName]   = @RoleName
                 END
-                ELSE IF @CurDbName is not null and @CurLogin is null         
-                BEGIN 
-                    if @Debug = 1 
-                    BEGIN
-                        PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - All mappings for database ' + @DbName + ' detected'
-                    END                
-                    DECLARE getMappings CURSOR LOCAL FOR 
-                        select 
-                            SqlLogin, DbName 
-                        from 
-                            security.sqlmappings 
-                        where 
-                            QUOTENAME(ServerName) = QUOTENAME(@ServerName)
-                        and QUOTENAME(DbName)     = QUOTENAME(@CurDbName)
-                END 
-                else if @CurDbName is null and @CurLogin is not null 
-                BEGIN 
-                    if @Debug = 1 
-                    BEGIN
-                        PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - All mappings for login ' + @CurLogin + ' detected'
-                    END
-                    DECLARE getMappings CURSOR LOCAL FOR 
-                        select 
-                            SqlLogin, DbName 
-                        from 
-                            security.sqlmappings 
-                        where 
-                            QUOTENAME(ServerName) = QUOTENAME(@ServerName)
-                        and QUOTENAME(SQLLogin)     = QUOTENAME(@CurLogin)
-                END 
-
-                open getMappings
+                open getRolesMembers
 				FETCH NEXT
-				FROM getMappings INTO @CurLogin, @CurDbName
+				FROM getRolesMembers INTO @CurRole, @CurMember
 
                 WHILE @@FETCH_STATUS = 0
 				BEGIN						
-					EXEC [security].[getLogin2DbUserMappingsScript] 
+					EXEC [security].[getDbRolesAssignmentScript] 
 						@ServerName 		    = @ServerName,
 						@DbName 		        = @DbName,
-						@LoginName 		        = @CurLogin,
+						@RoleName  		        = @CurRole,
+                        @MemberName             = @CurMember,
 						@OutputType 		    = @OutputType,
 						@OutputDatabaseName     = null,--@OutputDatabaseName,
 						@OutputSchemaName 	    = null,--@OutputSchemaName,
@@ -232,53 +231,55 @@ BEGIN
 						@Debug 				    = @Debug
 					-- carry on ...
 					FETCH NEXT
-					FROM getMappings INTO @CurLogin, @CurDbName
+					FROM getRolesMembers INTO @CurRole, @CurMember
 				END
-				CLOSE getMappings
-				DEALLOCATE getMappings			
+				CLOSE getRolesMembers
+				DEALLOCATE getRolesMembers			
             END
-            ELSE  -- a dbname and login are given
+            ELSE  -- a role name is given
             BEGIN                        
-                DECLARE @DbUserName     VARCHAR(64)
-                DECLARE @DefaultSchema  VARCHAR(64)                
-                DECLARE @isDefaultDb    BIT
+                DECLARE @PermissionLevel    VARCHAR(10)
+                DECLARE @MemberIsRole       BIT
+                DECLARE @isActive           BIT
                 
                 select 
-                    @DbUserName     = DbUserName,
-                    @DefaultSchema  = DefaultSchema,
-                    @isDefaultDb    = isDefaultDb
+                    @PermissionLevel    = PermissionLevel,
+                    @isActive           = isActive,
+                    @MemberIsRole       = MemberIsRole
                 from 
-                    [security].[SQLMappings]        
+                    [security].[DatabaseRoleMembers]        
                 where 
                     [ServerName] = @ServerName
                 and [DbName]     = @DbName 
-                and [SQLLogin]   = @CurLogin                
+                and [RoleName]   = @CurRole
+                and [MemberName] = @CurMember
     
-                if @isDefaultDb is null 
+                if @isActive is null 
                 BEGIN
-					DECLARE @ErrMsg VARCHAR(512) = 'The provided role assignement ' + QUOTENAME(@CurDbName) + ' > ' + QUOTENAME(@CurLogin) + ' does not exist.'
+					DECLARE @ErrMsg VARCHAR(512) = 'The provided role assignement ' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + ' does not exist.'
                     RAISERROR(@ErrMsg,16,0)
                 END 
                                 
-                SET @StringToExecute = 'PRINT ''. Commands to map login "' + QUOTENAME(@CurLogin) + ' to user ' + QUOTENAME(@DbUserName) + '" on ' + @DbName + '"''' + @LineFeed +
-                                       [security].[getLogin2DbUserMappingStatement](
-                                            @CurLogin,
-                                            @CurDbName,
-                                            @DbUserName,
-                                            @DefaultSchema,
+                
+                SET @StringToExecute = 'PRINT ''. Commands for role assignment "' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + '" on ' + @DbName + '"''' + @LineFeed +
+                                       [security].[getDbRoleAssignmentStatement](
+                                            @DbName,
+                                            @CurRole,
+                                            @CurMember,
+                                            @PermissionLevel,
+                                            @MemberIsRole,
+                                            @isActive,                                            
                                             1, -- no header
                                             1, -- no dependency check 
-                                            0,
-                                            0, -- TODO remove it once the grant connect to database is in DatabasePermission
                                             @Debug
                                         ) 
-                SET @CurOpName = 'CHECK_AND_DO_LOGIN_2_DBUSER_MAPPING'
+                SET @CurOpName = 'CHECK_AND_ASSIGN_DBROLE_MEMBERSHIP'
                 
                 select @CurOpOrder = OperationOrder 
                 from ##SecurityScriptResultsCommandsOrder 
                 where OperationType = @CurOpName
-
-                DECLARE @FullObjectName VARCHAR(MAX) = QUOTENAME(@CurLogin) + ' to ' + QUOTENAME(@DbUserName) + ' on ' + QUOTENAME(@CurDbName)
+                
+                DECLARE @FullObjectName VARCHAR(MAX) = QUOTENAME(@CurMember) + ' to ' + QUOTENAME(@CurRole)
                 
                 EXEC [security].[SecurityGenHelper_AppendCheck] 
                     @CheckName   = 'STATEMENT_APPEND', 
@@ -288,7 +289,7 @@ BEGIN
                     @CurOpName   = @CurOpName,
                     @CurOpOrder  = @CurOpOrder,
                     @Statements  = @StringToExecute
-                                                           
+                            
                 SET @CurOpName  = null
                 SET @CurOpOrder = null
             END 
@@ -321,10 +322,10 @@ BEGIN
 			,ERROR_LINE() AS ErrorLine
 			,ERROR_MESSAGE() AS ErrorMessage;
 			
-			if CURSOR_STATUS('local','getMappings') >= 0 
+			if CURSOR_STATUS('local','getRolesMembers') >= 0 
 			begin
-				close getMappings
-				deallocate getMappings 
+				close getRolesMembers
+				deallocate getRolesMembers 
 			end
 
             IF @@TRANCOUNT > 0
@@ -335,7 +336,7 @@ END
 GO            
 
 
-PRINT '    Procedure [security].[getLogin2DbUserMappingsScript] altered.'
+PRINT '    Procedure [security].[getDbRolesAssignmentScript] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT '' 

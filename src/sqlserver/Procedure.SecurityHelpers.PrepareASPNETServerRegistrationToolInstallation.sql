@@ -1,8 +1,8 @@
 /*requires Schema.SecurityHelpers.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabaseSchemas.sql*/
-/*requires Table.DatabasePermissions.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

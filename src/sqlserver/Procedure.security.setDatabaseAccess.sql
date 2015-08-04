@@ -1,7 +1,7 @@
 /*requires Schema.Security.sql*/
-/*requires Table.Contacts.sql*/
-/*requires Table.SQLMappings.sql*/
-/*requires Procedure.setServerAccess.sql*/
+/*requires Table.security.Contacts.sql*/
+/*requires Table.security.SQLMappings.sql*/
+/*requires Procedure.security.setServerAccess.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

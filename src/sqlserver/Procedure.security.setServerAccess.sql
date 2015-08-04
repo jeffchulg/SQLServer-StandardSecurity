@@ -1,6 +1,6 @@
 /*requires Schema.Security.sql*/
-/*requires Table.Contacts.sql*/
-/*requires Table.SQLLogins.sql*/
+/*requires Table.security.Contacts.sql*/
+/*requires Table.security.SQLLogins.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'

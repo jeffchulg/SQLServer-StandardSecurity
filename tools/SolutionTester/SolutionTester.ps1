@@ -469,9 +469,12 @@ foreach ($test in ($currentConfig.Tests.Test | Sort-Object @{e={$_.order -as [in
     Log-Write -LogPath $sLogFile -LineValue $logLine
 
     if(
-        $abortedTests -eq $true -and
-        $test.runEvenIfPreviousError -ne "true" -and
-        $abortedTestOrder -lt $test.StartFromOrder
+        $abortedTests -eq $true -and 
+		$test.runEvenIfPreviousError -ne "true" -or
+        ( 
+			$test.runEvenIfPreviousError -eq "true" -and
+			$abortedTestOrder -lt $test.StartFromOrder
+		)
     ) {
 		$logLine = "        ABORTED"
 		Log-Write -LogPath $sLogFile -LineValue $logLine

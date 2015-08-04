@@ -197,3 +197,113 @@ Output file : D:\SecurityManager\branches\functionnality---Testing\tools\Solutio
 ***************************************************************************************************
 Finished processing at [06/22/2015 10:18:10].
 ***************************************************************************************************
+***************************************************************************************************
+Started processing at [08/04/2015 11:30:48].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\PermissionReview\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\PermissionReview\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV357
+[DEBUG] - RepositoryDatabase : test
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_11-30-38.sql
+Output file : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_11-30-38.sql
+
+***************************************************************************************************
+Finished processing at [08/04/2015 11:30:50].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [08/04/2015 11:59:47].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\PermissionReview\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\PermissionReview\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV357
+[DEBUG] - RepositoryDatabase : test
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_11-59-41.sql
+Output file : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_11-59-41.sql
+
+***************************************************************************************************
+Finished processing at [08/04/2015 11:59:49].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [08/04/2015 12:00:54].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\PermissionReview\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\PermissionReview\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV357
+[DEBUG] - RepositoryDatabase : test
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_12-00-47.sql
+Output file : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_12-00-47.sql
+
+***************************************************************************************************
+Finished processing at [08/04/2015 12:00:57].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [08/04/2015 12:11:59].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\PermissionReview\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\PermissionReview\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV357
+[DEBUG] - RepositoryDatabase : test
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_12-11-59.sql
+Output file : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_12-11-59.sql
+
+***************************************************************************************************
+Finished processing at [08/04/2015 12:12:00].
+***************************************************************************************************
+***************************************************************************************************
+Started processing at [08/04/2015 12:12:51].
+***************************************************************************************************
+
+Running script version [0.1.0].
+
+***************************************************************************************************
+
+Loading configuration file 'D:\SecurityManager\branches\PermissionReview\dist\Documenter\configs\application.configs.xml'
+Now taking care to switch logging from D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Generate-SQLSecurity.ps1.log to D:\SecurityManager\branches\PermissionReview\dist\Documenter\logs\Document-SQLSecurity.log
+Loading files under directory D:\SecurityManager\branches\PermissionReview\dist\Documenter\ps-libs
+[DEBUG] - Loading library named SQLServer-Management\Load-SQLCmd.ps1
+[DEBUG] - RepositoryServer   : SI-S-SERV357
+[DEBUG] - RepositoryDatabase : test
+[DEBUG] - OutputDatabase     : DbaDoc
+[DEBUG] - OutputTableName    : GeneratedSecurityScripts
+[DEBUG] - OutputFile         : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_12-12-43.sql
+Output file : D:\SecurityManager\branches\PermissionReview\tools\SolutionTester\logs\GenerateSecurityScript_SI-S-SERV357_2015-08-04_12-12-43.sql
+
+***************************************************************************************************
+Finished processing at [08/04/2015 12:12:52].
+***************************************************************************************************

@@ -24,18 +24,18 @@ END
 GO
 
 ALTER Procedure [security].[getDbRolesAssignmentScript] (    
-    @ServerName  		    varchar(512),    
-    @DbName  		        varchar(128),    
-    @RoleName               varchar(64)     = NULL,	
-    @MemberName             varchar(64)     = NULL,	
-	@AsOf 				    DATETIME 		= NULL ,
-	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,
-    @OutputDatabaseName     NVARCHAR(128) 	= NULL ,
-    @OutputSchemaName 	    NVARCHAR(256) 	= NULL ,
-    @OutputTableName 	    NVARCHAR(256) 	= NULL ,	
+    @ServerName             varchar(512),    
+    @DbName                 varchar(128),    
+    @RoleName               varchar(64)     = NULL, 
+    @MemberName             varchar(64)     = NULL, 
+    @AsOf                   DATETIME        = NULL ,
+    @OutputType             VARCHAR(20)     = 'TABLE' ,
+    @OutputDatabaseName     NVARCHAR(128)   = NULL ,
+    @OutputSchemaName       NVARCHAR(256)   = NULL ,
+    @OutputTableName        NVARCHAR(256)   = NULL ,    
     @NoDependencyCheckGen   BIT             = 0,   
     @CanDropTempTables      BIT             = 1,
-	@Debug		 		    BIT		  	 	= 0    
+    @Debug                  BIT             = 0    
 )
 AS
 /*
@@ -77,9 +77,11 @@ AS
   ==================================================================================
   Historique des revisions
  
-    Date        Name	        	Description
-    ==========  =================	===========================================================
-    24/12/2014  Jefferson Elias		Version 0.1.0
+    Date        Name                Description
+    ==========  =================   ===========================================================
+    24/12/2014  Jefferson Elias     Version 0.1.0
+    ----------------------------------------------------------------------------------      
+    07/08/2015  Jefferson Elias     Removed version number
     ----------------------------------------------------------------------------------
  ===================================================================================
 */
@@ -87,27 +89,26 @@ BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.1.0';
-    DECLARE @execTime			datetime;
+    DECLARE @execTime           datetime;
     DECLARE @tsql               varchar(max);   
-    DECLARE	@CurRole   	  	    varchar(64)
-    DECLARE	@CurMember	  	    varchar(64)
-	DECLARE @LineFeed 			VARCHAR(10)
+    DECLARE @CurRole            varchar(64)
+    DECLARE @CurMember          varchar(64)
+    DECLARE @LineFeed           VARCHAR(10)
     DECLARE @StringToExecute    VARCHAR(MAX)
     
-	/* Sanitize our inputs */
-	SELECT 
-		@OutputDatabaseName = QUOTENAME(@OutputDatabaseName),
-		@LineFeed 			= CHAR(13) + CHAR(10),
-		@execTime = GETDATE()
-	
+    /* Sanitize our inputs */
+    SELECT 
+        @OutputDatabaseName = QUOTENAME(@OutputDatabaseName),
+        @LineFeed           = CHAR(13) + CHAR(10),
+        @execTime = GETDATE()
+    
     /**
      * Checking parameters
      */
     if(@ServerName is null)
     BEGIN
         RAISERROR('No value set for @ServerName !',10,1)
-    END		
+    END     
     
     SET @CurRole    = @RoleName
     SET @CurMember  = @MemberName
@@ -117,17 +118,17 @@ BEGIN
         @Debug = @Debug 
 
     IF @OutputType = 'SCHEMA'
-	BEGIN
-		SELECT FieldList = 'GenerationDate DATETIME NOT NULL | ServerName VARCHAR(256) NOT NULL | DbName VARCHAR(64) NULL | ObjectName VARCHAR(512)  NULL | GeneratorVersion VARCHAR(16) NOT NULL | OperationOrder BIGINT  NOT NULL | OperationType VARCHAR(64) not null | QueryText	VARCHAR(MAX) NOT NULL'
-	END
-	ELSE IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL
+    BEGIN
+        SELECT FieldList = 'GenerationDate DATETIME NOT NULL | ServerName VARCHAR(256) NOT NULL | DbName VARCHAR(64) NULL | ObjectName VARCHAR(512)  NULL | GeneratorVersion VARCHAR(16) NOT NULL | OperationOrder BIGINT  NOT NULL | OperationType VARCHAR(64) not null | QueryText    VARCHAR(MAX) NOT NULL'
+    END
+    ELSE IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL
     -- This mode is OK, just a TODO (make it with *named* fields)
-	BEGIN
+    BEGIN
         if @debug = 1 
         BEGIN
             PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Asof Mode detected'
         END       
-		-- They want to look into the past.
+        -- They want to look into the past.
 
         SET @StringToExecute = N' IF EXISTS(SELECT * FROM '
             + @OutputDatabaseName
@@ -146,15 +147,15 @@ BEGIN
             PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Query : ' + @LineFeed + @StringToExecute
         END  
         EXEC(@StringToExecute);
-	END /* IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL */
+    END /* IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL */
 
-	ELSE -- Security command generation
+    ELSE -- Security command generation
     BEGIN
         DECLARE @CurOpName VARCHAR(512)
         DECLARE @CurOpOrder BIGINT
         
-		BEGIN TRY
-		BEGIN TRANSACTION                       
+        BEGIN TRY
+        BEGIN TRANSACTION                       
                 
             if(@NoDependencyCheckGen = 0)
             BEGIN     
@@ -166,12 +167,12 @@ BEGIN
                 EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'DATABASE_NAME', @ServerName = @ServerName, @DbName = @DbName
             END     
                         
-			if(@CurRole is null or @CurMember is null) 
-			BEGIN	
-           		if @Debug = 1 
-				BEGIN
-					PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every Role membership generation detected.'
-				END
+            if(@CurRole is null or @CurMember is null) 
+            BEGIN   
+                if @Debug = 1 
+                BEGIN
+                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every Role membership generation detected.'
+                END
                 
                 if @CurRole is null and @CurMember is null 
                 BEGIN 
@@ -212,29 +213,29 @@ BEGIN
                         and [RoleName]   = @RoleName
                 END
                 open getRolesMembers
-				FETCH NEXT
-				FROM getRolesMembers INTO @CurRole, @CurMember
+                FETCH NEXT
+                FROM getRolesMembers INTO @CurRole, @CurMember
 
                 WHILE @@FETCH_STATUS = 0
-				BEGIN						
-					EXEC [security].[getDbRolesAssignmentScript] 
-						@ServerName 		    = @ServerName,
-						@DbName 		        = @DbName,
-						@RoleName  		        = @CurRole,
+                BEGIN                       
+                    EXEC [security].[getDbRolesAssignmentScript] 
+                        @ServerName             = @ServerName,
+                        @DbName                 = @DbName,
+                        @RoleName               = @CurRole,
                         @MemberName             = @CurMember,
-						@OutputType 		    = @OutputType,
-						@OutputDatabaseName     = null,--@OutputDatabaseName,
-						@OutputSchemaName 	    = null,--@OutputSchemaName,
-						@OutputTableName 	    = null,--@OutputTableName,
+                        @OutputType             = @OutputType,
+                        @OutputDatabaseName     = null,--@OutputDatabaseName,
+                        @OutputSchemaName       = null,--@OutputSchemaName,
+                        @OutputTableName        = null,--@OutputTableName,
                         @NoDependencyCheckGen   = 1,
                         @CanDropTempTables      = 0,
-						@Debug 				    = @Debug
-					-- carry on ...
-					FETCH NEXT
-					FROM getRolesMembers INTO @CurRole, @CurMember
-				END
-				CLOSE getRolesMembers
-				DEALLOCATE getRolesMembers			
+                        @Debug                  = @Debug
+                    -- carry on ...
+                    FETCH NEXT
+                    FROM getRolesMembers INTO @CurRole, @CurMember
+                END
+                CLOSE getRolesMembers
+                DEALLOCATE getRolesMembers          
             END
             ELSE  -- a role name is given
             BEGIN                        
@@ -256,7 +257,7 @@ BEGIN
     
                 if @isActive is null 
                 BEGIN
-					DECLARE @ErrMsg VARCHAR(512) = 'The provided role assignement ' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + ' does not exist.'
+                    DECLARE @ErrMsg VARCHAR(512) = 'The provided role assignement ' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + ' does not exist.'
                     RAISERROR(@ErrMsg,16,0)
                 END 
                                 
@@ -298,40 +299,39 @@ BEGIN
                 Now we have the table ##SecurityGenerationResults 
                 with all we got from generation.
                 
-			    @OutputTableName lets us export the results to a permanent table 
-				
+                @OutputTableName lets us export the results to a permanent table 
+                
                 This way to process is highly inspired from Brent Ozar's 
             */
-			--SELECT * from ##SecurityGenerationResults
+            --SELECT * from ##SecurityGenerationResults
             exec [security].[SaveSecurityGenerationResult] 
-				@OutputDatabaseName     = @OutputDatabaseName,
-				@OutputSchemaName 	    = @OutputSchemaName ,
-				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
-				@Debug		 		    = @Debug
+                @OutputDatabaseName     = @OutputDatabaseName,
+                @OutputSchemaName       = @OutputSchemaName ,
+                @OutputTableName        = @OutputTableName ,
+                @Debug                  = @Debug
         COMMIT
-		
-		END TRY
-		
-		BEGIN CATCH
-			SELECT
-			ERROR_NUMBER() AS ErrorNumber
-			,ERROR_SEVERITY() AS ErrorSeverity
-			,ERROR_STATE() AS ErrorState
-			,ERROR_PROCEDURE() AS ErrorProcedure
-			,ERROR_LINE() AS ErrorLine
-			,ERROR_MESSAGE() AS ErrorMessage;
-			
-			if CURSOR_STATUS('local','getRolesMembers') >= 0 
-			begin
-				close getRolesMembers
-				deallocate getRolesMembers 
-			end
+        
+        END TRY
+        
+        BEGIN CATCH
+            SELECT
+            ERROR_NUMBER() AS ErrorNumber
+            ,ERROR_SEVERITY() AS ErrorSeverity
+            ,ERROR_STATE() AS ErrorState
+            ,ERROR_PROCEDURE() AS ErrorProcedure
+            ,ERROR_LINE() AS ErrorLine
+            ,ERROR_MESSAGE() AS ErrorMessage;
+            
+            if CURSOR_STATUS('local','getRolesMembers') >= 0 
+            begin
+                close getRolesMembers
+                deallocate getRolesMembers 
+            end
 
             IF @@TRANCOUNT > 0
                 ROLLBACK
-		END CATCH
-	END
+        END CATCH
+    END
 END
 GO            
 

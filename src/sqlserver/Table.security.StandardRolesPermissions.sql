@@ -35,14 +35,14 @@ PRINT 'Table [security].[StandardRolesPermissions] Creation'
 IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[StandardRolesPermissions]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [security].[StandardRolesPermissions](
-		[RoleScope]		[varchar](16) NOT NULL,
-        [RoleName]        [varchar](64) NOT NULL,
+		[RoleScope]			[varchar](16) NOT NULL,
+        [RoleName]        	[varchar](64) NOT NULL,
         [ObjectClass]       [VARCHAR](128) NOT NULL, -- 'SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER','SQL_LOGIN'
                                                      -- 'SERVER_ROLE','DATABASE_ROLE','DATABASE_ROLE_ON_SCHEMA' => OBJECT_NAME = the role
         [ObjectType]        [VARCHAR](128) ,
         [PermissionLevel]   [varchar](6) DEFAULT 'GRANT' not null,
         [PermissionName]    [VARCHAR](128) NOT NULL,
-        [DbName]            [VARCHAR](64) ,
+        [DbName]            [VARCHAR](128) ,
         [SchemaName]        [VARCHAR](64) ,
         [ObjectName]        [VARCHAR](128) NOT NULL,
         [SubObjectName]     [VARCHAR](128), -- column_name , partition_name

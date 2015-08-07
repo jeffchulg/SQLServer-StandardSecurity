@@ -1394,6 +1394,6 @@ if(@ResultsInErrorCnt > 0)
 BEGIN
 	DECLARE @textMsg VARCHAR(2048);
 	SET @textMsg = CONVERT(VARCHAR,@ResultsInErrorCnt) + ' errors found for the $(Feature) feature' ;
-	RAISERROR(@textMsg,12,1);
+	RAISERROR(@textMsg,12,1) WITH NOWAIT;
 END 
 GO

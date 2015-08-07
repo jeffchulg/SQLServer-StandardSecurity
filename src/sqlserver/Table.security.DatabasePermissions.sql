@@ -38,7 +38,7 @@ IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[securit
 BEGIN
     CREATE TABLE [security].[DatabasePermissions] (
         [ServerName]        [VARCHAR](256) NOT NULL,
-        [DbName]            [VARCHAR](64) NOT NULL,
+        [DbName]            [VARCHAR](128) NOT NULL,
         [Grantee]           [VARCHAR](64) NOT NULL,
         [isUser]            [BIT] NOT NULL,
 		[ObjectClass]       [VARCHAR](128) NOT NULL,

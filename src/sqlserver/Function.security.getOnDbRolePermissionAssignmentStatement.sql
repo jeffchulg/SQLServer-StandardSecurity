@@ -15,7 +15,7 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-            
+
     PRINT '    Function [security].[getOnDbRolePermissionAssignmentStatement] created.'
 END
 GO
@@ -38,17 +38,17 @@ AS
 /*
  ===================================================================================
   DESCRIPTION:
-    This function returns a string with the statements for a permission assignment 
+    This function returns a string with the statements for a permission assignment
     with syntax :
         <@PermissionLevel = GRANT|REVOKE|DENY> <PermissionName> ON ROLE::<@RoleName> TO <@Grantee>
-    
- 
+
+
   ARGUMENTS :
-        @DbName                 name of the database in which we have some job to do 
-        @Grantee                name of the role or user which has a permission to be granted 
-        @isUser                 If set to 1, @Grantee is a user 
+        @DbName                 name of the database in which we have some job to do
+        @Grantee                name of the role or user which has a permission to be granted
+        @isUser                 If set to 1, @Grantee is a user
         @PermissionLevel        'GRANT','REVOKE','DENY'
-        @PermissionName         Name of the permission to assign to @Grantee 
+        @PermissionName         Name of the permission to assign to @Grantee
         @isWithGrantOption      If set to 1, @Grantee can grant this permission
         @RoleName             Name of the schema on which the permission is about
         @isActive               If set to 1, the assignment is active and must be done,
@@ -56,15 +56,15 @@ AS
         @NoHeader               If set to 1, no header will be displayed in the generated statements
         @NoDependencyCheckGen   if set to 1, no check for server name, database name and so on are generated
         @Debug                  If set to 1, then we are in debug mode
- 
+
   REQUIREMENTS:
-  
+
   EXAMPLE USAGE :
 
- 
+
   ==================================================================================
   BUGS:
- 
+
     BUGID       Fixed   Description
     ==========  =====   ==========================================================
 
@@ -74,28 +74,30 @@ AS
        .   VBO     Vincent Bouquette   (vincent.bouquette@chu.ulg.ac.be)
        .   BBO     Bernard Bozert      (bernard.bozet@chu.ulg.ac.be)
        .   JEL     Jefferson Elias     (jelias@chu.ulg.ac.be)
- 
+
   COMPANY: CHU Liege
   ==================================================================================
   Revision History
- 
+
     Date        Name        Description
     ==========  =====       ==========================================================
-    30/03/2015  JEL         Version 0.1.0 
+    30/03/2015  JEL         Version 0.1.0
     --------------------------------------------------------------------------------
-    02/04/2014  JEL         Corrected bug when database and server collations are different.    
+    02/04/2014  JEL         Corrected bug when database and server collations are different.
+	----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
     DECLARE @LineFeed           VARCHAR(10)
-    
+
     /* Sanitize our inputs */
-    SELECT  
+    SELECT
         @LineFeed           = CHAR(13) + CHAR(10) ,
         @DynDeclare         = 'DECLARE @Grantee         VARCHAR(256)' + @LineFeed +
                               'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
@@ -104,22 +106,22 @@ BEGIN
                               'SET @Grantee         = ''' + QUOTENAME(@Grantee) + '''' + @LineFeed  +
                               'SET @PermissionLevel = ''' + @PermissionLevel + '''' + @LineFeed  +
                               'SET @PermissionName  = ''' + @PermissionName + '''' + @LineFeed  +
-                              'SET @RoleName        = ''' + QUOTENAME(@RoleName) + '''' + @LineFeed 
+                              'SET @RoleName        = ''' + QUOTENAME(@RoleName) + '''' + @LineFeed
 
     SET @tsql = @DynDeclare  +
-                'DECLARE @DbName      VARCHAR(64) = ''' + QUOTENAME(@DbName) + '''' + @LineFeed 
+                'DECLARE @DbName      VARCHAR(64) = ''' + QUOTENAME(@DbName) + '''' + @LineFeed
 
-        
+
     SET @ErrorDbNotExists =  N'The given database ('+QUOTENAME(@DbName)+') does not exist'
 
-    if @NoHeader = 0 
+    if @NoHeader = 0
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database permission assignment on Database Role version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database permission assignment on Database Role.' + @LineFeed +
                     ' */'   + @LineFeed +
-                    ''      + @LineFeed 
-    END 
-    if @NoDependencyCheckGen = 0 
+                    ''      + @LineFeed
+    END
+    if @NoDependencyCheckGen = 0
     BEGIN
         SET @tsql = @tsql + '-- 1.1 Check that the database actually exists' + @LineFeed +
                     'if (NOT exists (select * from sys.databases where QUOTENAME(name) = @DbName))' + @LineFeed  +
@@ -127,86 +129,86 @@ BEGIN
                     '    RAISERROR ( ''' + @ErrorDbNotExists + ''',0,1 ) WITH NOWAIT' + @LineFeed  +
                     '    return' + @LineFeed +
                     'END' + @LineFeed  +
-                    '' + @LineFeed 
+                    '' + @LineFeed
         -- TODO : add checks for Grantee and RoleName
     END
-    
+
     SET @tsql = @tsql + /*
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
                 + @LineFeed + */
                 'DECLARE @RoleID INT' + @LineFeed +
-                'SELECT @RoleID = principal_id COLLATE French_CI_AS' + @LineFeed + 
-                'FROM ' + @LineFeed + 
-                '    ' + QUOTENAME(@DbName) + '.sys.database_principals' + @LineFeed + 
-                'WHERE type_desc COLLATE French_CI_AS = ''DATABASE_ROLE'' COLLATE French_CI_AS' + @LineFeed + 
+                'SELECT @RoleID = principal_id COLLATE French_CI_AS' + @LineFeed +
+                'FROM ' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.sys.database_principals' + @LineFeed +
+                'WHERE type_desc COLLATE French_CI_AS = ''DATABASE_ROLE'' COLLATE French_CI_AS' + @LineFeed +
                 'AND [name] COLLATE French_CI_AS = @RoleName COLLATE French_CI_AS' + @LineFeed  + @LineFeed +
                 'DECLARE @CurPermLevel VARCHAR(10)' + @LineFeed +
                 'select @CurPermLevel = state_desc COLLATE French_CI_AS' + @LineFeed +
                 'from' + @LineFeed +
                 '    ' + QUOTENAME(@DbName) + '.sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
-                '    class_desc  COLLATE French_CI_AS                                = ''DATABASE_PRINCIPAL'' COLLATE French_CI_AS' + @LineFeed + 
+                '    class_desc  COLLATE French_CI_AS                                = ''DATABASE_PRINCIPAL'' COLLATE French_CI_AS' + @LineFeed +
                 'and QUOTENAME(USER_NAME(grantee_principal_id)) COLLATE French_CI_AS = @Grantee COLLATE French_CI_AS' + @LineFeed +
                 'and major_id COLLATE French_CI_AS                                   = @RoleID COLLATE French_CI_AS' + @LineFeed +
                 'and QUOTENAME(permission_name) COLLATE French_CI_AS                 = QUOTENAME(@PermissionName) COLLATE French_CI_AS' + @LineFeed
 
-    DECLARE @PermAuthorization VARCHAR(64)    
-    
-    select 
-        @PermAuthorization = ISNULL(ParamValue,ISNULL(DefaultValue,'dbo')) 
-    from 
+    DECLARE @PermAuthorization VARCHAR(64)
+
+    select
+        @PermAuthorization = ISNULL(ParamValue,ISNULL(DefaultValue,'dbo'))
+    from
         security.ApplicationParams
-    where 
+    where
         ParamName = 'ObjectPermissionGrantorDenier';
-                
+
     if @PermissionLevel = 'GRANT'
-    BEGIN 
-        SET @tsql = @tsql +  
+    BEGIN
+        SET @tsql = @tsql +
                     'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT''  COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
                     '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
-        BEGIN 
+        BEGIN
             SET @tsql = @tsql +
                         'WITH GRANT OPTION '
-        END               
-        
-        SET @tsql = @tsql + 
+        END
+
+        SET @tsql = @tsql +
                     ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
-    END 
-    ELSE if @PermissionLevel = 'DENY' 
-    BEGIN 
-        SET @tsql = @tsql +  
+    END
+    ELSE if @PermissionLevel = 'DENY'
+    BEGIN
+        SET @tsql = @tsql +
                     'if (@CurPermLevel <> ''DENY''  COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
                     '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
-        SET @tsql = @tsql + 
+        SET @tsql = @tsql +
                     ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
-                    'END' + @LineFeed                    
-        
-    END 
+                    'END' + @LineFeed
+
+    END
     ELSE IF @PermissionLevel = 'REVOKE'
     BEGIN
-        SET @tsql = @tsql +  
+        SET @tsql = @tsql +
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
                     '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE
-    BEGIN 
+    BEGIN
         return cast('Unknown PermissionLevel ' + @PermissionLevel as int);
-    END     
-    
+    END
+
     SET @tsql = @tsql + @LineFeed  +
-                'GO' + @LineFeed 
-                
+                'GO' + @LineFeed
+
     RETURN @tsql
 END
-go  
+go
 
 PRINT '    Function [security].[getOnDbRolePermissionAssignmentStatement] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' 
+PRINT ''

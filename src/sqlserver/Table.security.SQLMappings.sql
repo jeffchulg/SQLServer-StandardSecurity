@@ -41,7 +41,7 @@ BEGIN
     CREATE TABLE [security].[SQLMappings] (
         [ServerName]      [VARCHAR](256) 	NOT NULL,		
         [SqlLogin]        [VARCHAR](256) 	NOT NULL,
-		[DbName]	      [VARCHAR](64) 	NOT NULL, 
+		[DbName]	      [VARCHAR](128) 	NOT NULL, 
 		[DbUserName]	  [VARCHAR](64) 	NOT NULL, 
         [DefaultSchema]   [VARCHAR](64) 	NOT NULL,
 		[isDefaultDb]	  [BIT]				NOT NULL,

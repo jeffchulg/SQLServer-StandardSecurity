@@ -118,17 +118,18 @@ exec [security].[getSecurityScript]
    ==================================================================================
    Revision History
   
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     24/12/2014  JEL         Version 0.0.1
-     ----------------------------------------------------------------------------------
+	Date        Nom                 Description
+	==========  =================== ==========================================================
+	24/12/2014  Jefferson Elias     Version 0.0.1
+	----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	 
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
 	
-    DECLARE @versionNb        	varchar(16) = '0.0.1';
     DECLARE @tsql             	varchar(max);
 	DECLARE @execTime			datetime;
 	DECLARE	@CurDbName		  	varchar(64)
@@ -396,8 +397,7 @@ BEGIN
             exec [security].[SaveSecurityGenerationResult] 
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
-				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
+				@OutputTableName 	    = @OutputTableName ,				
 				@Debug		 		    = @Debug
             
 			if @DisplayResult = 0 

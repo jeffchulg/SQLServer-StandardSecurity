@@ -329,7 +329,7 @@ IF  NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[securit
 BEGIN
     CREATE TABLE [security].[DatabasePermissions] (
         [ServerName]        [VARCHAR](256) NOT NULL,
-        [DbName]            [VARCHAR](64) NOT NULL,
+        [DbName]            [VARCHAR](128) NOT NULL,
         [Grantee]           [VARCHAR](64) NOT NULL,
         [isUser]            [BIT] NOT NULL,
 		[ObjectClass]       [VARCHAR](128) NOT NULL,
@@ -1557,16 +1557,17 @@ AS
    ==================================================================================
    Revision History
   
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     24/12/2014  JEL         Version 0.0.1
-     ----------------------------------------------------------------------------------
+	Date        Nom         Description
+	==========  =====       ==========================================================
+	24/12/2014  JEL         Version 0.0.1
+	----------------------------------------------------------------------------------		
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.0.1';
     DECLARE @tsql             	varchar(max);
 
 	DECLARE @LineFeed 			VARCHAR(10)
@@ -1719,15 +1720,16 @@ DESCRIPTION:
   ==================================================================================
   Revision History
  
-    Date        Nom         Description
-    ==========  =====       ==========================================================
-    24/12/2014  JEL         Version 0.1.0
+    Date        Nom         		Description
+    ==========  =================== ==========================================================
+    24/12/2014  JEL         		Version 0.1.0
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
      --SET NOCOUNT ON;
-    DECLARE @versionNb        varchar(16) = '0.1.0';
     DECLARE @tsql             varchar(max);       
     DECLARE @LineFeed 		  VARCHAR(10);
     DECLARE @StringToExecute  VARCHAR(MAX);
@@ -1890,8 +1892,7 @@ GO
 ALTER PROCEDURE [security].[SaveSecurityGenerationResult] (
     @OutputDatabaseName     NVARCHAR(128),
     @OutputSchemaName 	    NVARCHAR(256) ,
-    @OutputTableName 	    NVARCHAR(256) ,
-	@VersionNumber			VARCHAR(128),
+    @OutputTableName 	    NVARCHAR(256) ,	
 	@Debug		 		    BIT		= 0
 )
 AS
@@ -1932,38 +1933,33 @@ AS
    ==================================================================================
    Revision History
 
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     24/12/2014  JEL         Version 0.0.1
-     ----------------------------------------------------------------------------------
+	Date        Nom         Description
+	==========  =====       ==========================================================
+	24/12/2014  JEL         Version 0.0.1
+	----------------------------------------------------------------------------------	 	
+	07/08/2015 	JEL			Removed version number of the procedure and as parameter.
+							Instead, it just uses the one in ApplicationParams table.
+    ----------------------------------------------------------------------------------
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.0.1';
     DECLARE @tsql             	varchar(max);
-
-	DECLARE @LineFeed 			VARCHAR(10)
-    DECLARE @StringToExecute    VARCHAR(MAX)
+	
+	DECLARE @VersionNumber		VARCHAR(128);
+	DECLARE @LineFeed 			VARCHAR(10);
+    DECLARE @StringToExecute    VARCHAR(MAX);
 
 	/* Sanitize our inputs */
 	SELECT
-		@LineFeed 			= CHAR(13) + CHAR(10)
+		@LineFeed 			= CHAR(13) + CHAR(10);
 
-	if @VersionNumber is null
-	BEGIN
-		-- we'll get the global version number
-		select
-			@VersionNumber = ParamValue
-		from [security].[ApplicationParams]
-		where ParamName = 'Version'
-
-		if @Debug = 1
-		BEGIN
-			PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Generator version number set to ' + @VersionNumber
-		END
-	END
+	-- get the global version number
+	select
+		@VersionNumber = ParamValue
+	from [security].[ApplicationParams]
+	where ParamName = 'Version'
 
 	BEGIN TRY
 
@@ -2334,12 +2330,13 @@ AS
     ----------------------------------------------------------------------------------
 	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------			
  ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb        varchar(16) = '0.2.0';
     DECLARE @tsql             varchar(max);    
     DECLARE @ErrorDbNotExists varchar(max);
     DECLARE @LineFeed 		  VARCHAR(10);
@@ -2363,7 +2360,7 @@ BEGIN
     BEGIN    
         SET @tsql = isnull(@tsql,'') + 
                     '/**' +@LineFeed+
-                    ' * Database user creation version ' + @versionNb + '.' +@LineFeed+
+                    ' * Database user creation.' +@LineFeed+
                     ' *   Database Name  : ' + @DbName +@LineFeed+
                     ' *   User Name 	 : ' + @UserName 	 +@LineFeed+
                     ' *   Default Schema : ' + @SchemaName 	 +@LineFeed+
@@ -2493,11 +2490,13 @@ AS
     24/12/2014  JEL         Version 0.1.0 
     --------------------------------------------------------------------------------
     02/04/2014  JEL         Corrected bug when database and server collations are different.
+	----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -2518,7 +2517,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database Schema Creation version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database Schema Creation.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 
@@ -2532,11 +2531,8 @@ BEGIN
                     'END' + @LineFeed  +
                     '' + @LineFeed           
     END
-   /* 
-    SET @tsql = @tsql + 
-                'USE ' + QUOTENAME(@DbName) + @LineFeed +
-                + @LineFeed 
-    */
+
+	
     DECLARE @SchemaAuthorization VARCHAR(64)    
     
     select 
@@ -2656,11 +2652,12 @@ AS
     12/06/2015  JEL         Correcting Bug in CHECK_POLICY part : it was exchanged with CHECK_EXPIRATION
                             ==> problem !
     ----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------			
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb              VARCHAR(16) = '0.1.3';
     DECLARE @tsql                   VARCHAR(max);
     DECLARE @LoginDeclaration       VARCHAR(512);
     DECLARE @ErrorDbNotExists       VARCHAR(max);
@@ -2678,7 +2675,7 @@ BEGIN
     BEGIN
         SET @tsql = isnull(@tsql,'') + 
                     '/**' + @LineFeed +
-                    ' * SQL Login Creation (both authentication) version ' + @versionNb + '.' + @LineFeed +
+                    ' * SQL Login Creation (both authentication).' + @LineFeed +
                     ' *     LoginName       : ' + @LoginName        + @LineFeed  +
                     ' *     AuthMode        : ' + @AuthMode         + @LineFeed  +
                     ' *     Passwd          : ' + ISNULL(@Passwd,'<null>')     + @LineFeed  +
@@ -3094,6 +3091,7 @@ AS
     Date        Name        Description
     ==========  =====       ==========================================================
     16/04/2015  JEL         Version 0.1.0
+	
  ===================================================================================
 */
 BEGIN
@@ -3391,11 +3389,13 @@ AS
     24/12/2014  JEL         Version 0.1.0 
     --------------------------------------------------------------------------------
     02/04/2014  JEL         Corrected bug when database and server collations are different.    
+	----------------------------------------------------------------------------------			
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------			
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.1';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -3420,7 +3420,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Permission on database assignment version ' + @versionNb + '.' + @LineFeed +
+                    ' * Permission on database assignment.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 
@@ -3640,14 +3640,14 @@ PRINT 'Table [security].[StandardRolesPermissions] Creation'
 IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[security].[StandardRolesPermissions]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [security].[StandardRolesPermissions](
-		[RoleScope]		[varchar](16) NOT NULL,
-        [RoleName]        [varchar](64) NOT NULL,
+		[RoleScope]			[varchar](16) NOT NULL,
+        [RoleName]        	[varchar](64) NOT NULL,
         [ObjectClass]       [VARCHAR](128) NOT NULL, -- 'SERVER','DATABASE','DATABASE_SCHEMA','SCHEMA_OBJECT','SCHEMA_OBJECT_COLUMN','DATABASE_USER','SQL_LOGIN'
                                                      -- 'SERVER_ROLE','DATABASE_ROLE','DATABASE_ROLE_ON_SCHEMA' => OBJECT_NAME = the role
         [ObjectType]        [VARCHAR](128) ,
         [PermissionLevel]   [varchar](6) DEFAULT 'GRANT' not null,
         [PermissionName]    [VARCHAR](128) NOT NULL,
-        [DbName]            [VARCHAR](64) ,
+        [DbName]            [VARCHAR](128) ,
         [SchemaName]        [VARCHAR](64) ,
         [ObjectName]        [VARCHAR](128) NOT NULL,
         [SubObjectName]     [VARCHAR](128), -- column_name , partition_name
@@ -4131,11 +4131,12 @@ AS
 	----------------------------------------------------------------------------------	
 	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------	
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------		
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -4156,7 +4157,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database Role Creation version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database Role Creation.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 
@@ -4296,12 +4297,13 @@ AS
     ----------------------------------------------------------------------------------	
 	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------	
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------		
  ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb        varchar(16) = '0.1.2';
     DECLARE @tsql             varchar(max);   
     DECLARE @ErrorDbNotExists varchar(max);
     
@@ -4325,7 +4327,7 @@ BEGIN
     BEGIN    
         SET @tsql = isnull(@tsql,'') + 
                     '/**' +@LineFeed+
-                    ' * SQL Login to Db user mapping version ' + @versionNb + '.' +@LineFeed+
+                    ' * SQL Login to Db user mapping.' +@LineFeed+
                     ' *   LoginName				 : ' + @LoginName + @LineFeed +
                     ' *   DBName				 : ' + @DbName +@LineFeed+
                     ' *   UserName				 : ' + @UserName + @LineFeed +
@@ -4520,12 +4522,14 @@ AS
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
     --------------------------------------------------------------------------------
-    02/04/2014  JEL         Corrected bug when database and server collations are different.      
+    02/04/2014  JEL         Corrected bug when database and server collations are different.   
+	----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -4565,7 +4569,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database permission on schema assignment version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database permission on schema assignment.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 
@@ -4818,12 +4822,14 @@ AS
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
     --------------------------------------------------------------------------------
-    02/04/2014  JEL         Corrected bug when database and server collations are different.        
+    02/04/2014  JEL         Corrected bug when database and server collations are different.    
+	----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------    
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.1';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -4850,7 +4856,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database permission on schema assignment version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database permission on schema assignment.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 
@@ -5312,7 +5318,7 @@ BEGIN
             'BEGIN ' +
             '   RETURN ''Not implemented'' ' +
             'END')
-            
+
     PRINT '    Function [security].[getOnDbRolePermissionAssignmentStatement] created.'
 END
 GO
@@ -5335,17 +5341,17 @@ AS
 /*
  ===================================================================================
   DESCRIPTION:
-    This function returns a string with the statements for a permission assignment 
+    This function returns a string with the statements for a permission assignment
     with syntax :
         <@PermissionLevel = GRANT|REVOKE|DENY> <PermissionName> ON ROLE::<@RoleName> TO <@Grantee>
-    
- 
+
+
   ARGUMENTS :
-        @DbName                 name of the database in which we have some job to do 
-        @Grantee                name of the role or user which has a permission to be granted 
-        @isUser                 If set to 1, @Grantee is a user 
+        @DbName                 name of the database in which we have some job to do
+        @Grantee                name of the role or user which has a permission to be granted
+        @isUser                 If set to 1, @Grantee is a user
         @PermissionLevel        'GRANT','REVOKE','DENY'
-        @PermissionName         Name of the permission to assign to @Grantee 
+        @PermissionName         Name of the permission to assign to @Grantee
         @isWithGrantOption      If set to 1, @Grantee can grant this permission
         @RoleName             Name of the schema on which the permission is about
         @isActive               If set to 1, the assignment is active and must be done,
@@ -5353,15 +5359,15 @@ AS
         @NoHeader               If set to 1, no header will be displayed in the generated statements
         @NoDependencyCheckGen   if set to 1, no check for server name, database name and so on are generated
         @Debug                  If set to 1, then we are in debug mode
- 
+
   REQUIREMENTS:
-  
+
   EXAMPLE USAGE :
 
- 
+
   ==================================================================================
   BUGS:
- 
+
     BUGID       Fixed   Description
     ==========  =====   ==========================================================
 
@@ -5371,28 +5377,30 @@ AS
        .   VBO     Vincent Bouquette   (vincent.bouquette@chu.ulg.ac.be)
        .   BBO     Bernard Bozert      (bernard.bozet@chu.ulg.ac.be)
        .   JEL     Jefferson Elias     (jelias@chu.ulg.ac.be)
- 
+
   COMPANY: CHU Liege
   ==================================================================================
   Revision History
- 
+
     Date        Name        Description
     ==========  =====       ==========================================================
-    30/03/2015  JEL         Version 0.1.0 
+    30/03/2015  JEL         Version 0.1.0
     --------------------------------------------------------------------------------
-    02/04/2014  JEL         Corrected bug when database and server collations are different.    
+    02/04/2014  JEL         Corrected bug when database and server collations are different.
+	----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
     DECLARE @LineFeed           VARCHAR(10)
-    
+
     /* Sanitize our inputs */
-    SELECT  
+    SELECT
         @LineFeed           = CHAR(13) + CHAR(10) ,
         @DynDeclare         = 'DECLARE @Grantee         VARCHAR(256)' + @LineFeed +
                               'DECLARE @PermissionLevel VARCHAR(10)' + @LineFeed +
@@ -5401,22 +5409,22 @@ BEGIN
                               'SET @Grantee         = ''' + QUOTENAME(@Grantee) + '''' + @LineFeed  +
                               'SET @PermissionLevel = ''' + @PermissionLevel + '''' + @LineFeed  +
                               'SET @PermissionName  = ''' + @PermissionName + '''' + @LineFeed  +
-                              'SET @RoleName        = ''' + QUOTENAME(@RoleName) + '''' + @LineFeed 
+                              'SET @RoleName        = ''' + QUOTENAME(@RoleName) + '''' + @LineFeed
 
     SET @tsql = @DynDeclare  +
-                'DECLARE @DbName      VARCHAR(64) = ''' + QUOTENAME(@DbName) + '''' + @LineFeed 
+                'DECLARE @DbName      VARCHAR(64) = ''' + QUOTENAME(@DbName) + '''' + @LineFeed
 
-        
+
     SET @ErrorDbNotExists =  N'The given database ('+QUOTENAME(@DbName)+') does not exist'
 
-    if @NoHeader = 0 
+    if @NoHeader = 0
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database permission assignment on Database Role version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database permission assignment on Database Role.' + @LineFeed +
                     ' */'   + @LineFeed +
-                    ''      + @LineFeed 
-    END 
-    if @NoDependencyCheckGen = 0 
+                    ''      + @LineFeed
+    END
+    if @NoDependencyCheckGen = 0
     BEGIN
         SET @tsql = @tsql + '-- 1.1 Check that the database actually exists' + @LineFeed +
                     'if (NOT exists (select * from sys.databases where QUOTENAME(name) = @DbName))' + @LineFeed  +
@@ -5424,89 +5432,89 @@ BEGIN
                     '    RAISERROR ( ''' + @ErrorDbNotExists + ''',0,1 ) WITH NOWAIT' + @LineFeed  +
                     '    return' + @LineFeed +
                     'END' + @LineFeed  +
-                    '' + @LineFeed 
+                    '' + @LineFeed
         -- TODO : add checks for Grantee and RoleName
     END
-    
+
     SET @tsql = @tsql + /*
                 'USE ' + QUOTENAME(@DbName) + @LineFeed +
                 + @LineFeed + */
                 'DECLARE @RoleID INT' + @LineFeed +
-                'SELECT @RoleID = principal_id COLLATE French_CI_AS' + @LineFeed + 
-                'FROM ' + @LineFeed + 
-                '    ' + QUOTENAME(@DbName) + '.sys.database_principals' + @LineFeed + 
-                'WHERE type_desc COLLATE French_CI_AS = ''DATABASE_ROLE'' COLLATE French_CI_AS' + @LineFeed + 
+                'SELECT @RoleID = principal_id COLLATE French_CI_AS' + @LineFeed +
+                'FROM ' + @LineFeed +
+                '    ' + QUOTENAME(@DbName) + '.sys.database_principals' + @LineFeed +
+                'WHERE type_desc COLLATE French_CI_AS = ''DATABASE_ROLE'' COLLATE French_CI_AS' + @LineFeed +
                 'AND [name] COLLATE French_CI_AS = @RoleName COLLATE French_CI_AS' + @LineFeed  + @LineFeed +
                 'DECLARE @CurPermLevel VARCHAR(10)' + @LineFeed +
                 'select @CurPermLevel = state_desc COLLATE French_CI_AS' + @LineFeed +
                 'from' + @LineFeed +
                 '    ' + QUOTENAME(@DbName) + '.sys.database_permissions' + @LineFeed +
                 'where' + @LineFeed +
-                '    class_desc  COLLATE French_CI_AS                                = ''DATABASE_PRINCIPAL'' COLLATE French_CI_AS' + @LineFeed + 
+                '    class_desc  COLLATE French_CI_AS                                = ''DATABASE_PRINCIPAL'' COLLATE French_CI_AS' + @LineFeed +
                 'and QUOTENAME(USER_NAME(grantee_principal_id)) COLLATE French_CI_AS = @Grantee COLLATE French_CI_AS' + @LineFeed +
                 'and major_id COLLATE French_CI_AS                                   = @RoleID COLLATE French_CI_AS' + @LineFeed +
                 'and QUOTENAME(permission_name) COLLATE French_CI_AS                 = QUOTENAME(@PermissionName) COLLATE French_CI_AS' + @LineFeed
 
-    DECLARE @PermAuthorization VARCHAR(64)    
-    
-    select 
-        @PermAuthorization = ISNULL(ParamValue,ISNULL(DefaultValue,'dbo')) 
-    from 
+    DECLARE @PermAuthorization VARCHAR(64)
+
+    select
+        @PermAuthorization = ISNULL(ParamValue,ISNULL(DefaultValue,'dbo'))
+    from
         security.ApplicationParams
-    where 
+    where
         ParamName = 'ObjectPermissionGrantorDenier';
-                
+
     if @PermissionLevel = 'GRANT'
-    BEGIN 
-        SET @tsql = @tsql +  
+    BEGIN
+        SET @tsql = @tsql +
                     'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT''  COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
                     '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
-        BEGIN 
+        BEGIN
             SET @tsql = @tsql +
                         'WITH GRANT OPTION '
-        END               
-        
-        SET @tsql = @tsql + 
+        END
+
+        SET @tsql = @tsql +
                     ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
-    END 
-    ELSE if @PermissionLevel = 'DENY' 
-    BEGIN 
-        SET @tsql = @tsql +  
+    END
+    ELSE if @PermissionLevel = 'DENY'
+    BEGIN
+        SET @tsql = @tsql +
                     'if (@CurPermLevel <> ''DENY''  COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
                     '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' to ' + QUOTENAME(@Grantee) + ' '
-        SET @tsql = @tsql + 
+        SET @tsql = @tsql +
                     ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
-                    'END' + @LineFeed                    
-        
-    END 
+                    'END' + @LineFeed
+
+    END
     ELSE IF @PermissionLevel = 'REVOKE'
     BEGIN
-        SET @tsql = @tsql +  
+        SET @tsql = @tsql +
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
                     '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON ROLE::' + QUOTENAME(@RoleName) + ' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE
-    BEGIN 
+    BEGIN
         return cast('Unknown PermissionLevel ' + @PermissionLevel as int);
-    END     
-    
+    END
+
     SET @tsql = @tsql + @LineFeed  +
-                'GO' + @LineFeed 
-                
+                'GO' + @LineFeed
+
     RETURN @tsql
 END
-go  
+go
 
 PRINT '    Function [security].[getOnDbRolePermissionAssignmentStatement] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' 
+PRINT ''
 
 
 /**
@@ -5957,7 +5965,6 @@ AS
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @tsql               nvarchar(max);
     DECLARE @tsql_declaration   nvarchar(max);
     DECLARE @LineFeed           VARCHAR(6) ;
@@ -6275,7 +6282,7 @@ BEGIN
     CREATE TABLE [security].[SQLMappings] (
         [ServerName]      [VARCHAR](256) 	NOT NULL,		
         [SqlLogin]        [VARCHAR](256) 	NOT NULL,
-		[DbName]	      [VARCHAR](64) 	NOT NULL, 
+		[DbName]	      [VARCHAR](128) 	NOT NULL, 
 		[DbUserName]	  [VARCHAR](64) 	NOT NULL, 
         [DefaultSchema]   [VARCHAR](64) 	NOT NULL,
 		[isDefaultDb]	  [BIT]				NOT NULL,
@@ -7292,12 +7299,13 @@ AS
                                     Added parameter sanitization
                                     VERSION 0.1.1
     --------------------------------------------------------------------------------     
+	07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.1.1';
     DECLARE @tsql             	nvarchar(max);
     DECLARE @LineFeed 		    VARCHAR(10);
 	
@@ -8117,12 +8125,13 @@ AS
     ==========  ================    ================================================
     26/12/2014  Jefferson Elias     VERSION 0.1.1
     --------------------------------------------------------------------------------  
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.1.1';
     DECLARE @tsql             	nvarchar(max);
     DECLARE @LineFeed 		    VARCHAR(10);    
     
@@ -8607,11 +8616,12 @@ AS
 	----------------------------------------------------------------------------------	
 	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------	
+	07/08/2015 	JEL			Removed version number from function
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
-    --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
+    --SET NOCOUNT ON;    
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -8634,7 +8644,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database Role assignment version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database Role assignment.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 
@@ -8800,16 +8810,17 @@ EXEC [SecurityHelpers].[PrepareASPNETServerRegistrationToolInstallation]
    ==================================================================================
    Revision History
 
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     30/03/2015  JEL         Version 0.0.1
+     Date        Nom         		Description
+     ==========  ================== ==========================================================
+     30/03/2015  JEL         		Version 0.0.1
      ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	 
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @tsql               varchar(max);
 
 
@@ -9343,13 +9354,14 @@ AS
     ==========  =================	===========================================================
     24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);   
     DECLARE	@CurLogin 	  	    varchar(64)
@@ -9568,7 +9580,6 @@ BEGIN
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
 				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
 				@Debug		 		    = @Debug
         COMMIT
 		
@@ -9626,18 +9637,18 @@ END
 GO
 
 ALTER Procedure [security].[getDbRolesAssignmentScript] (    
-    @ServerName  		    varchar(512),    
-    @DbName  		        varchar(128),    
-    @RoleName               varchar(64)     = NULL,	
-    @MemberName             varchar(64)     = NULL,	
-	@AsOf 				    DATETIME 		= NULL ,
-	@OutputType 		    VARCHAR(20) 	= 'TABLE' ,
-    @OutputDatabaseName     NVARCHAR(128) 	= NULL ,
-    @OutputSchemaName 	    NVARCHAR(256) 	= NULL ,
-    @OutputTableName 	    NVARCHAR(256) 	= NULL ,	
+    @ServerName             varchar(512),    
+    @DbName                 varchar(128),    
+    @RoleName               varchar(64)     = NULL, 
+    @MemberName             varchar(64)     = NULL, 
+    @AsOf                   DATETIME        = NULL ,
+    @OutputType             VARCHAR(20)     = 'TABLE' ,
+    @OutputDatabaseName     NVARCHAR(128)   = NULL ,
+    @OutputSchemaName       NVARCHAR(256)   = NULL ,
+    @OutputTableName        NVARCHAR(256)   = NULL ,    
     @NoDependencyCheckGen   BIT             = 0,   
     @CanDropTempTables      BIT             = 1,
-	@Debug		 		    BIT		  	 	= 0    
+    @Debug                  BIT             = 0    
 )
 AS
 /*
@@ -9679,9 +9690,11 @@ AS
   ==================================================================================
   Historique des revisions
  
-    Date        Name	        	Description
-    ==========  =================	===========================================================
-    24/12/2014  Jefferson Elias		Version 0.1.0
+    Date        Name                Description
+    ==========  =================   ===========================================================
+    24/12/2014  Jefferson Elias     Version 0.1.0
+    ----------------------------------------------------------------------------------      
+    07/08/2015  Jefferson Elias     Removed version number
     ----------------------------------------------------------------------------------
  ===================================================================================
 */
@@ -9689,27 +9702,26 @@ BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.1.0';
-    DECLARE @execTime			datetime;
+    DECLARE @execTime           datetime;
     DECLARE @tsql               varchar(max);   
-    DECLARE	@CurRole   	  	    varchar(64)
-    DECLARE	@CurMember	  	    varchar(64)
-	DECLARE @LineFeed 			VARCHAR(10)
+    DECLARE @CurRole            varchar(64)
+    DECLARE @CurMember          varchar(64)
+    DECLARE @LineFeed           VARCHAR(10)
     DECLARE @StringToExecute    VARCHAR(MAX)
     
-	/* Sanitize our inputs */
-	SELECT 
-		@OutputDatabaseName = QUOTENAME(@OutputDatabaseName),
-		@LineFeed 			= CHAR(13) + CHAR(10),
-		@execTime = GETDATE()
-	
+    /* Sanitize our inputs */
+    SELECT 
+        @OutputDatabaseName = QUOTENAME(@OutputDatabaseName),
+        @LineFeed           = CHAR(13) + CHAR(10),
+        @execTime = GETDATE()
+    
     /**
      * Checking parameters
      */
     if(@ServerName is null)
     BEGIN
         RAISERROR('No value set for @ServerName !',10,1)
-    END		
+    END     
     
     SET @CurRole    = @RoleName
     SET @CurMember  = @MemberName
@@ -9719,17 +9731,17 @@ BEGIN
         @Debug = @Debug 
 
     IF @OutputType = 'SCHEMA'
-	BEGIN
-		SELECT FieldList = 'GenerationDate DATETIME NOT NULL | ServerName VARCHAR(256) NOT NULL | DbName VARCHAR(64) NULL | ObjectName VARCHAR(512)  NULL | GeneratorVersion VARCHAR(16) NOT NULL | OperationOrder BIGINT  NOT NULL | OperationType VARCHAR(64) not null | QueryText	VARCHAR(MAX) NOT NULL'
-	END
-	ELSE IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL
+    BEGIN
+        SELECT FieldList = 'GenerationDate DATETIME NOT NULL | ServerName VARCHAR(256) NOT NULL | DbName VARCHAR(64) NULL | ObjectName VARCHAR(512)  NULL | GeneratorVersion VARCHAR(16) NOT NULL | OperationOrder BIGINT  NOT NULL | OperationType VARCHAR(64) not null | QueryText    VARCHAR(MAX) NOT NULL'
+    END
+    ELSE IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL
     -- This mode is OK, just a TODO (make it with *named* fields)
-	BEGIN
+    BEGIN
         if @debug = 1 
         BEGIN
             PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Asof Mode detected'
         END       
-		-- They want to look into the past.
+        -- They want to look into the past.
 
         SET @StringToExecute = N' IF EXISTS(SELECT * FROM '
             + @OutputDatabaseName
@@ -9748,15 +9760,15 @@ BEGIN
             PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Query : ' + @LineFeed + @StringToExecute
         END  
         EXEC(@StringToExecute);
-	END /* IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL */
+    END /* IF @AsOf IS NOT NULL AND @OutputDatabaseName IS NOT NULL AND @OutputSchemaName IS NOT NULL AND @OutputTableName IS NOT NULL */
 
-	ELSE -- Security command generation
+    ELSE -- Security command generation
     BEGIN
         DECLARE @CurOpName VARCHAR(512)
         DECLARE @CurOpOrder BIGINT
         
-		BEGIN TRY
-		BEGIN TRANSACTION                       
+        BEGIN TRY
+        BEGIN TRANSACTION                       
                 
             if(@NoDependencyCheckGen = 0)
             BEGIN     
@@ -9768,12 +9780,12 @@ BEGIN
                 EXEC [security].[SecurityGenHelper_AppendCheck] @CheckName = 'DATABASE_NAME', @ServerName = @ServerName, @DbName = @DbName
             END     
                         
-			if(@CurRole is null or @CurMember is null) 
-			BEGIN	
-           		if @Debug = 1 
-				BEGIN
-					PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every Role membership generation detected.'
-				END
+            if(@CurRole is null or @CurMember is null) 
+            BEGIN   
+                if @Debug = 1 
+                BEGIN
+                    PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Every Role membership generation detected.'
+                END
                 
                 if @CurRole is null and @CurMember is null 
                 BEGIN 
@@ -9814,29 +9826,29 @@ BEGIN
                         and [RoleName]   = @RoleName
                 END
                 open getRolesMembers
-				FETCH NEXT
-				FROM getRolesMembers INTO @CurRole, @CurMember
+                FETCH NEXT
+                FROM getRolesMembers INTO @CurRole, @CurMember
 
                 WHILE @@FETCH_STATUS = 0
-				BEGIN						
-					EXEC [security].[getDbRolesAssignmentScript] 
-						@ServerName 		    = @ServerName,
-						@DbName 		        = @DbName,
-						@RoleName  		        = @CurRole,
+                BEGIN                       
+                    EXEC [security].[getDbRolesAssignmentScript] 
+                        @ServerName             = @ServerName,
+                        @DbName                 = @DbName,
+                        @RoleName               = @CurRole,
                         @MemberName             = @CurMember,
-						@OutputType 		    = @OutputType,
-						@OutputDatabaseName     = null,--@OutputDatabaseName,
-						@OutputSchemaName 	    = null,--@OutputSchemaName,
-						@OutputTableName 	    = null,--@OutputTableName,
+                        @OutputType             = @OutputType,
+                        @OutputDatabaseName     = null,--@OutputDatabaseName,
+                        @OutputSchemaName       = null,--@OutputSchemaName,
+                        @OutputTableName        = null,--@OutputTableName,
                         @NoDependencyCheckGen   = 1,
                         @CanDropTempTables      = 0,
-						@Debug 				    = @Debug
-					-- carry on ...
-					FETCH NEXT
-					FROM getRolesMembers INTO @CurRole, @CurMember
-				END
-				CLOSE getRolesMembers
-				DEALLOCATE getRolesMembers			
+                        @Debug                  = @Debug
+                    -- carry on ...
+                    FETCH NEXT
+                    FROM getRolesMembers INTO @CurRole, @CurMember
+                END
+                CLOSE getRolesMembers
+                DEALLOCATE getRolesMembers          
             END
             ELSE  -- a role name is given
             BEGIN                        
@@ -9858,7 +9870,7 @@ BEGIN
     
                 if @isActive is null 
                 BEGIN
-					DECLARE @ErrMsg VARCHAR(512) = 'The provided role assignement ' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + ' does not exist.'
+                    DECLARE @ErrMsg VARCHAR(512) = 'The provided role assignement ' + QUOTENAME(@CurMember) + ' > ' + QUOTENAME(@CurRole) + ' does not exist.'
                     RAISERROR(@ErrMsg,16,0)
                 END 
                                 
@@ -9900,40 +9912,39 @@ BEGIN
                 Now we have the table ##SecurityGenerationResults 
                 with all we got from generation.
                 
-			    @OutputTableName lets us export the results to a permanent table 
-				
+                @OutputTableName lets us export the results to a permanent table 
+                
                 This way to process is highly inspired from Brent Ozar's 
             */
-			--SELECT * from ##SecurityGenerationResults
+            --SELECT * from ##SecurityGenerationResults
             exec [security].[SaveSecurityGenerationResult] 
-				@OutputDatabaseName     = @OutputDatabaseName,
-				@OutputSchemaName 	    = @OutputSchemaName ,
-				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
-				@Debug		 		    = @Debug
+                @OutputDatabaseName     = @OutputDatabaseName,
+                @OutputSchemaName       = @OutputSchemaName ,
+                @OutputTableName        = @OutputTableName ,
+                @Debug                  = @Debug
         COMMIT
-		
-		END TRY
-		
-		BEGIN CATCH
-			SELECT
-			ERROR_NUMBER() AS ErrorNumber
-			,ERROR_SEVERITY() AS ErrorSeverity
-			,ERROR_STATE() AS ErrorState
-			,ERROR_PROCEDURE() AS ErrorProcedure
-			,ERROR_LINE() AS ErrorLine
-			,ERROR_MESSAGE() AS ErrorMessage;
-			
-			if CURSOR_STATUS('local','getRolesMembers') >= 0 
-			begin
-				close getRolesMembers
-				deallocate getRolesMembers 
-			end
+        
+        END TRY
+        
+        BEGIN CATCH
+            SELECT
+            ERROR_NUMBER() AS ErrorNumber
+            ,ERROR_SEVERITY() AS ErrorSeverity
+            ,ERROR_STATE() AS ErrorState
+            ,ERROR_PROCEDURE() AS ErrorProcedure
+            ,ERROR_LINE() AS ErrorLine
+            ,ERROR_MESSAGE() AS ErrorMessage;
+            
+            if CURSOR_STATUS('local','getRolesMembers') >= 0 
+            begin
+                close getRolesMembers
+                deallocate getRolesMembers 
+            end
 
             IF @@TRANCOUNT > 0
                 ROLLBACK
-		END CATCH
-	END
+        END CATCH
+    END
 END
 GO            
 
@@ -10190,16 +10201,17 @@ AS
    ==================================================================================
    Revision History
   
-    Date        Nom         Description
-    ==========  =====       ==========================================================
-    24/12/2014  JEL         Version 0.0.1
+    Date        Nom         		Description
+    ==========  =================== ==================================================
+    24/12/2014  JEL         		Version 0.0.1
     ----------------------------------------------------------------------------------    
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
   ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @tsql               varchar(max);
     DECLARE @SchemaRoleSep      VARCHAR(64)
     
@@ -10488,13 +10500,14 @@ AS
     ==========  =================	===========================================================
     24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
 
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);
     DECLARE	@CurSchema   	  	varchar(64)
@@ -10671,7 +10684,6 @@ BEGIN
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
 				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
 				@Debug		 		    = @Debug
         COMMIT
 
@@ -10784,13 +10796,14 @@ AS
     ==========  =================	===========================================================
     24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
 
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);
     DECLARE	@CurLogin   	  	varchar(64)
@@ -10984,7 +10997,6 @@ BEGIN
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
 				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
 				@Debug		 		    = @Debug
         COMMIT
 
@@ -11100,13 +11112,14 @@ AS
     ==========  =================	===========================================================
     24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
 
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);
     DECLARE	@CurUser     	  	varchar(64)
@@ -11300,8 +11313,7 @@ BEGIN
             exec [security].[SaveSecurityGenerationResult]
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
-				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
+				@OutputTableName 	    = @OutputTableName ,				
 				@Debug		 		    = @Debug
         COMMIT
 
@@ -11417,13 +11429,14 @@ AS
     ==========  =================	===========================================================
     24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);   
     DECLARE	@CurRole   	  	    varchar(64)
@@ -11604,7 +11617,6 @@ BEGIN
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
 				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
 				@Debug		 		    = @Debug
         COMMIT
 		
@@ -11682,14 +11694,13 @@ BEGIN
 
     SET NOCOUNT ON;
     DECLARE @DbName             VARCHAR(128);
-    DECLARE @versionNb        	varchar(16) 
     DECLARE @tsql             	nvarchar(max);
     DECLARE @LineFeed 		    VARCHAR(10);    
     DECLARE @LookupOperator     VARCHAR(4) ;
     DECLARE @SQLAgentRoleName   VARCHAR(128);
     DECLARE @PermissionLevel    VARCHAR(16);
     
-    SET @versionNb       = '0.1.1';
+
     SET @LookupOperator  = '=';
     SET @PermissionLevel = 'GRANT'
     
@@ -12011,16 +12022,17 @@ AS
    ==================================================================================
    Revision History
   
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     24/12/2014  JEL         Version 0.0.1
-     ----------------------------------------------------------------------------------
+    Date        Nom         Description
+    ==========  =====       ==========================================================
+	24/12/2014  JEL         Version 0.0.1
+    ----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------	 
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.0.1';
     DECLARE @tsql             	varchar(max);
 
 	DECLARE	@CurDbName		  	varchar(64)
@@ -12514,13 +12526,14 @@ AS
     ==========  =================	===========================================================
     24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);   
     DECLARE	@CurGrantee   	  	varchar(64)
@@ -12867,8 +12880,7 @@ BEGIN
             exec [security].[SaveSecurityGenerationResult] 
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
-				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
+				@OutputTableName 	    = @OutputTableName ,				
 				@Debug		 		    = @Debug
         COMMIT
 		
@@ -13135,16 +13147,17 @@ AS
    ==================================================================================
    Revision History
   
-    Date        Nom         Description
-    ==========  =====       ==========================================================
-    24/12/2014  JEL         Version 0.0.1
+    Date        Nom         		Description
+    ==========  ======================================================================
+    24/12/2014  JEL         		Version 0.0.1
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
   ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.1';
     DECLARE @tsql               varchar(max);
     DECLARE @CurServerName      varchar(512)
     DECLARE @CurDbName          varchar(64)
@@ -13488,12 +13501,13 @@ AS
     ==========  ================    ================================================
     16/04/2015  Jefferson Elias     VERSION 0.1.1
     --------------------------------------------------------------------------------  
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.1.0';
     DECLARE @tsql             	nvarchar(max);
     DECLARE @LineFeed 		    VARCHAR(10);    
     
@@ -13788,17 +13802,18 @@ exec [security].[getSecurityScript]
    ==================================================================================
    Revision History
   
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     24/12/2014  JEL         Version 0.0.1
-     ----------------------------------------------------------------------------------
+	Date        Nom                 Description
+	==========  =================== ==========================================================
+	24/12/2014  Jefferson Elias     Version 0.0.1
+	----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	 
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
 	
-    DECLARE @versionNb        	varchar(16) = '0.0.1';
     DECLARE @tsql             	varchar(max);
 	DECLARE @execTime			datetime;
 	DECLARE	@CurDbName		  	varchar(64)
@@ -14066,8 +14081,7 @@ BEGIN
             exec [security].[SaveSecurityGenerationResult] 
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
-				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
+				@OutputTableName 	    = @OutputTableName ,				
 				@Debug		 		    = @Debug
             
 			if @DisplayResult = 0 

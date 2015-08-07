@@ -82,12 +82,13 @@ AS
     ----------------------------------------------------------------------------------	
 	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------	
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------		
  ===================================================================================
 */
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb        varchar(16) = '0.1.2';
     DECLARE @tsql             varchar(max);   
     DECLARE @ErrorDbNotExists varchar(max);
     
@@ -111,7 +112,7 @@ BEGIN
     BEGIN    
         SET @tsql = isnull(@tsql,'') + 
                     '/**' +@LineFeed+
-                    ' * SQL Login to Db user mapping version ' + @versionNb + '.' +@LineFeed+
+                    ' * SQL Login to Db user mapping.' +@LineFeed+
                     ' *   LoginName				 : ' + @LoginName + @LineFeed +
                     ' *   DBName				 : ' + @DbName +@LineFeed+
                     ' *   UserName				 : ' + @UserName + @LineFeed +

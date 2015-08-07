@@ -82,13 +82,14 @@ AS
     ==========  =================	===========================================================
     24/12/2014  Jefferson Elias		Creation
     ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
     
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @execTime			datetime;
     DECLARE @tsql               varchar(max);   
     DECLARE	@CurRole   	  	    varchar(64)
@@ -269,7 +270,6 @@ BEGIN
 				@OutputDatabaseName     = @OutputDatabaseName,
 				@OutputSchemaName 	    = @OutputSchemaName ,
 				@OutputTableName 	    = @OutputTableName ,
-				@VersionNumber		 	= @versionNb,
 				@Debug		 		    = @Debug
         COMMIT
 		

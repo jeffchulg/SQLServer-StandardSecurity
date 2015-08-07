@@ -87,11 +87,12 @@ AS
 	----------------------------------------------------------------------------------	
 	19/06/2015  JEL         Changed parameter DbName from 32 chars to 128
     ----------------------------------------------------------------------------------	
+	07/08/2015 	JEL			Removed version number from function
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
-    --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
+    --SET NOCOUNT ON;    
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -114,7 +115,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database Role assignment version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database Role assignment.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 

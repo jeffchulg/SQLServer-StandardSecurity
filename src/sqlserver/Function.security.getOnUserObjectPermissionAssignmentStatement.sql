@@ -107,12 +107,14 @@ AS
     ==========  =====       ==========================================================
     24/12/2014  JEL         Version 0.1.0 
     --------------------------------------------------------------------------------
-    02/04/2014  JEL         Corrected bug when database and server collations are different.      
+    02/04/2014  JEL         Corrected bug when database and server collations are different.   
+	----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------	
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.1.0';
     DECLARE @tsql               varchar(max);
     DECLARE @DynDeclare         varchar(512);
     DECLARE @ErrorDbNotExists   varchar(max);
@@ -152,7 +154,7 @@ BEGIN
     if @NoHeader = 0 
     BEGIN
         SET @tsql = @tsql + '/**' + @LineFeed +
-                    ' * Database permission on schema assignment version ' + @versionNb + '.' + @LineFeed +
+                    ' * Database permission on schema assignment.' + @LineFeed +
                     ' */'   + @LineFeed +
                     ''      + @LineFeed 
     END 

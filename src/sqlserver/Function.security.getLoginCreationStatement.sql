@@ -80,11 +80,12 @@ AS
     12/06/2015  JEL         Correcting Bug in CHECK_POLICY part : it was exchanged with CHECK_EXPIRATION
                             ==> problem !
     ----------------------------------------------------------------------------------
+	07/08/2015 	JEL			Removed version number
+    ----------------------------------------------------------------------------------			
  ===================================================================================
 */
 BEGIN
     --SET NOCOUNT ON;
-    DECLARE @versionNb              VARCHAR(16) = '0.1.3';
     DECLARE @tsql                   VARCHAR(max);
     DECLARE @LoginDeclaration       VARCHAR(512);
     DECLARE @ErrorDbNotExists       VARCHAR(max);
@@ -102,7 +103,7 @@ BEGIN
     BEGIN
         SET @tsql = isnull(@tsql,'') + 
                     '/**' + @LineFeed +
-                    ' * SQL Login Creation (both authentication) version ' + @versionNb + '.' + @LineFeed +
+                    ' * SQL Login Creation (both authentication).' + @LineFeed +
                     ' *     LoginName       : ' + @LoginName        + @LineFeed  +
                     ' *     AuthMode        : ' + @AuthMode         + @LineFeed  +
                     ' *     Passwd          : ' + ISNULL(@Passwd,'<null>')     + @LineFeed  +

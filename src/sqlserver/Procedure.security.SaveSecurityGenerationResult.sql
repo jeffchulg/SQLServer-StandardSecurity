@@ -22,8 +22,7 @@ GO
 ALTER PROCEDURE [security].[SaveSecurityGenerationResult] (
     @OutputDatabaseName     NVARCHAR(128),
     @OutputSchemaName 	    NVARCHAR(256) ,
-    @OutputTableName 	    NVARCHAR(256) ,
-	@VersionNumber			VARCHAR(128),
+    @OutputTableName 	    NVARCHAR(256) ,	
 	@Debug		 		    BIT		= 0
 )
 AS
@@ -64,38 +63,33 @@ AS
    ==================================================================================
    Revision History
 
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     24/12/2014  JEL         Version 0.0.1
-     ----------------------------------------------------------------------------------
+	Date        Nom         Description
+	==========  =====       ==========================================================
+	24/12/2014  JEL         Version 0.0.1
+	----------------------------------------------------------------------------------	 	
+	07/08/2015 	JEL			Removed version number of the procedure and as parameter.
+							Instead, it just uses the one in ApplicationParams table.
+    ----------------------------------------------------------------------------------
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.0.1';
     DECLARE @tsql             	varchar(max);
-
-	DECLARE @LineFeed 			VARCHAR(10)
-    DECLARE @StringToExecute    VARCHAR(MAX)
+	
+	DECLARE @VersionNumber		VARCHAR(128);
+	DECLARE @LineFeed 			VARCHAR(10);
+    DECLARE @StringToExecute    VARCHAR(MAX);
 
 	/* Sanitize our inputs */
 	SELECT
-		@LineFeed 			= CHAR(13) + CHAR(10)
+		@LineFeed 			= CHAR(13) + CHAR(10);
 
-	if @VersionNumber is null
-	BEGIN
-		-- we'll get the global version number
-		select
-			@VersionNumber = ParamValue
-		from [security].[ApplicationParams]
-		where ParamName = 'Version'
-
-		if @Debug = 1
-		BEGIN
-			PRINT '-- ' + CONVERT(VARCHAR,GETDATE()) + ' - DEBUG - Generator version number set to ' + @VersionNumber
-		END
-	END
+	-- get the global version number
+	select
+		@VersionNumber = ParamValue
+	from [security].[ApplicationParams]
+	where ParamName = 'Version'
 
 	BEGIN TRY
 

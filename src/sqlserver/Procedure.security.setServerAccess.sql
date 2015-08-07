@@ -94,12 +94,13 @@ AS
                                     Added parameter sanitization
                                     VERSION 0.1.1
     --------------------------------------------------------------------------------     
+	07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb        	varchar(16) = '0.1.1';
     DECLARE @tsql             	nvarchar(max);
     DECLARE @LineFeed 		    VARCHAR(10);
 	

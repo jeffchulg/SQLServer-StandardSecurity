@@ -495,14 +495,21 @@ foreach ($test in ($currentConfig.Tests.Test | Sort-Object @{e={$_.order -as [in
 
             try {
                 # Log to a temp file
-                Push-Location
-                Start-Transcript -Path "$tmpLogFile"
+                #Push-Location
+                #Start-Transcript -Path "$tmpLogFile"
                 if($TargetDatabase -eq $null) {
-                    $ret = Invoke-SQLCmd -Verbose -inputfile $test.FileLocation -ServerInstance "$TargetServer"
+					sqlcmd.exe -i $test.FileLocation -S "$TargetServer" -b -E -I -o "$tmpLogFile"
+					$ret = $LASTEXITCODE 
+                    #$ret = Invoke-SQLCmd -Verbose -inputfile $test.FileLocation -ServerInstance "$TargetServer"
                 }
                 else {
-                    $ret = Invoke-SQLCmd -Verbose -inputfile $test.FileLocation -ServerInstance "$TargetServer" -Database $TargetDatabase
-                }
+					sqlcmd.exe -i $test.FileLocation -S "$TargetServer" -d $TargetDatabase -b -E -I -o "$tmpLogFile"
+					$ret = $LASTEXITCODE 
+                    #$ret = Invoke-SQLCmd -Verbose -inputfile $test.FileLocation -ServerInstance "$TargetServer" -Database $TargetDatabase
+                }				
+				if($ret -ne 0) {
+					throw "sqlcmd.exe returned a value 1"
+				}
             }
             catch {
                 $logLine = "An error occurred while executing script.`nError message :`n" +  $_.Exception.Message + "`nStack Trace :`n" + $_.Exception.StackTrace
@@ -511,21 +518,20 @@ foreach ($test in ($currentConfig.Tests.Test | Sort-Object @{e={$_.order -as [in
                 $ErrorCountInTest = $ErrorCountInTest + 1
             }
             finally {
-                try {
-                    Stop-Transcript
-                }
-                catch { }
+                #try {
+                #    Stop-Transcript
+                #}
+                #catch { }
                 Pop-Location
-
             }
             
             $logLine = "`n`n${padding}:::::::::::::::::::::::::: SQLCMD LOG ::::::::::::::::::::::::::::::::`n`n"
             Log-Write -LogPath $sLogFile -LineValue $logLine
 
             foreach ($logLine in (Get-Content "$tmpLogFile")) {
-                if($logLine -like "VERBOSE:*") {
-                    $logLine = $logLine -replace "VERBOSE: ",""
-                }
+                #if($logLine -like "VERBOSE:*") {
+                #    $logLine = $logLine -replace "VERBOSE: ",""
+                #}
 
                 Log-Write -LogPath $sLogFile -LineValue "${padding}$logLine"
 

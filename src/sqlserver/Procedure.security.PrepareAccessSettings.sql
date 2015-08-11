@@ -1,8 +1,7 @@
 /*requires Schema.Security.sql*/
 /*requires Table.security.Contacts.sql*/
 /*requires Table.security.SQLLogins.sql*/
-/*requires Table.security.SQLMappings.sql*/
-/*requires Table.security.DatabaseSchemas.sql*/
+
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT 'Procedure [security].[PrepareAccessSettings] Creation'

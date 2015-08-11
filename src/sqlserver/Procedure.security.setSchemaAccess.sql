@@ -41,6 +41,7 @@ ALTER PROCEDURE [security].[setSchemaAccess] (
     @exactMatch                 BIT          = 1,
     @isAllow                    BIT          = 1,
     @isActive                   BIT          = 1,
+	@_noTmpTblDrop              BIT          = 0,
 	@Debug		 		        BIT		  	 = 0
 )
 AS
@@ -98,6 +99,8 @@ AS
     --------------------------------------------------------------------------------
     07/08/2015  Jefferson Elias     Removed version number
     ----------------------------------------------------------------------------------
+	11/08/2015  Jefferson Elias		moved a part of the logic to security.PrepareAccessSettings
+    ----------------------------------------------------------------------------------
   ===================================================================================
 */
 BEGIN
@@ -112,16 +115,10 @@ BEGIN
 
     SELECT
 		@LineFeed 			= CHAR(13) + CHAR(10),
-        @exactMatch         = isnull(@exactMatch,1),
         @ServerName         = case when len(@ServerName)        = 0 THEN NULL else @ServerName END ,
         @DbName             = case when len(@DbName)            = 0 THEN NULL else @DbName END ,
         @SchemaName         = case when len(@SchemaName)        = 0 THEN NULL else @SchemaName END ,
-        @StandardRoleName   = case when len(@StandardRoleName)  = 0 THEN NULL else @StandardRoleName END /*,
-        @ContactDepartment  = case when len(@ContactDepartment) = 0 THEN NULL else @ContactDepartment END ,
-        @ContactsJob        = case when len(@ContactsJob)       = 0 THEN NULL else @ContactsJob END ,
-        @ContactName        = case when len(@ContactName)       = 0 THEN NULL else @ContactName END ,
-        @ContactLogin       = case when len(@ContactLogin)      = 0 THEN NULL else @ContactLogin END*/
-
+        @StandardRoleName   = case when len(@StandardRoleName)  = 0 THEN NULL else @StandardRoleName END 
 
 	/*
 		Checking parameters
@@ -135,11 +132,6 @@ BEGIN
 	BEGIN
 		RAISERROR('No value set for @DbName !',10,1)
 	END
-	/*
-	if(@ContactLogin is null and @ContactDepartment is null and @ContactsJob is null and @ContactName is null)
-	BEGIN
-		RAISERROR('No way to process : no parameter isn''t null !',10,1)
-	END*/
 
     if(not EXISTS (select 1 from security.StandardOnSchemaRoles where RoleName = @StandardRoleName))
     BEGIN
@@ -169,52 +161,6 @@ BEGIN
 						@exactMatch			= @exactMatch,
 						@withTmpTblDrop		= 0,
 						@Debug				= @Debug ;
-		/*
-        if OBJECT_ID('#logins' ) is null
-        -- there have been no setServerAccess call => we need to get a list of logins to use
-        BEGIN
-
-            if @Debug = 1
-            BEGIN
-                PRINT '-- Performing lookup for contacts that correspond to criteria'
-            END
-
-            DECLARE @LookupOperator VARCHAR(4) = '='
-
-            if @exactMatch = 0
-                SET @LookupOperator = 'like'
-            CREATE table #logins ( ServerName varchar(512), name varchar(128), isActive BIT)
-
-            SET @tsql = 'insert into #logins' + @LineFeed +
-                        '    SELECT l.ServerName, l.[SQLLogin], l.[isActive]' + @LineFeed +
-                        '    FROM [security].[SQLLogins] l' + @LineFeed +
-                        '    WHERE' + @LineFeed +
-                        '        l.ServerName = @ServerName' + @LineFeed +
-                        '    AND l.[SQLLogin] in (' + @LineFeed +
-                        '            SELECT [SQLLogin]' + @LineFeed +
-                        '            from [security].[Contacts] c' + @LineFeed +
-                        '            where ' + @LineFeed +
-                        '                c.[SQLLogin]   ' + @LookupOperator + ' isnull(@curLogin,[SQLLogin])' + @LineFeed +
-                        '            and c.[Department] ' + @LookupOperator + ' isnull(@curDep,[Department])' + @LineFeed +
-                        '            and c.[Job]        ' + @LookupOperator + ' isnull(@curJob,[Job])' + @LineFeed +
-                        '            and c.[Name]       ' + @LookupOperator + ' isnull(@curName,[Name])' + @LineFeed +
-                        '    )'
-
-            if @Debug = 1
-            BEGIN 
-                PRINT '/ * Query executed : ' + @tsql + '* /'
-            END
-
-            exec sp_executesql
-                    @tsql ,
-                    N'@ServerName varchar(512),@curLogin VARCHAR(128) = NULL,@curDep VARCHAR(512),@CurJob VARCHAR(256),@CurName VARCHAR(256)',
-                    @ServerName = @ServerName ,
-                    @curLogin = @ContactLogin,
-                    @CurDep = @ContactDepartment,
-                    @CurJob = @ContactsJob ,
-                    @CurName = @ContactName
-        END
-		*/
 
 		SET @tsql = '
         MERGE
@@ -274,10 +220,9 @@ BEGIN
 				@Reason = @Reason,
 				@isActive = @isActive ;
 
-		if OBJECT_ID('tempdb..##logins' ) is not null
-		BEGIN 
+		if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
-		END 
+					
 	END TRY
 
 	BEGIN CATCH
@@ -289,7 +234,7 @@ BEGIN
         ,ERROR_LINE() AS ErrorLine
         ,ERROR_MESSAGE() AS ErrorMessage;
 
-        if OBJECT_ID('tempdb..##logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 
 		if CURSOR_STATUS('local','loginsToManage') >= 0

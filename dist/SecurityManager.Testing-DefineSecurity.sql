@@ -1021,7 +1021,7 @@ BEGIN TRY
     COMMIT TRANSACTION 
 END TRY
 BEGIN CATCH    
-    SET @ErrorCount = @ErrorCount + 1
+    SET @ErrorCount = @ErrorCount + 1;
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
@@ -1061,7 +1061,7 @@ BEGIN TRY
     COMMIT TRANSACTION 
 END TRY
 BEGIN CATCH    
-    SET @ErrorCount = @ErrorCount + 1
+    SET @ErrorCount = @ErrorCount + 1;
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
@@ -1104,7 +1104,7 @@ BEGIN TRY
     COMMIT TRANSACTION 
 END TRY
 BEGIN CATCH    
-    SET @ErrorCount = @ErrorCount + 1
+    SET @ErrorCount = @ErrorCount + 1;
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
@@ -1145,7 +1145,7 @@ BEGIN TRY
     execute sp_executesql @tsql ;
     ROLLBACK TRANSACTION 
     
-    SET @ErrorCount = @ErrorCount + 1
+    SET @ErrorCount = @ErrorCount + 1;
     SET @TestResult = 'WARN';
     SET @ErrorMessage = 'MISSING CHECK - Trial to add [$(LocalSQLLogin4)] (a SQL Login mapped to database user [$(LocalSQLLogin4)]) as member of a DATABASE Role ($(CustomRoleName1)) succeeded. It should never work as this database user should have not been created (the mapping is done with another username)!'  ;
     PRINT '    > WARNING -' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
@@ -1191,7 +1191,7 @@ BEGIN TRY
     COMMIT TRANSACTION 
 END TRY
 BEGIN CATCH    
-    SET @ErrorCount = @ErrorCount + 1
+    SET @ErrorCount = @ErrorCount + 1;
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
@@ -1224,7 +1224,7 @@ set @tsql = 'insert into [security].[DatabaseRoleMembers]'  + @LineFeed +
             '    DB_NAME(),' + @LineFeed +
             '    ''$(CurrentDB_Schema1)' + @TmpStringVal + 'endusers'',' + @LineFeed +
             '    ''$(CustomRoleName1)'',' + @LineFeed +            
-            '    0,' + @LineFeed +
+            '    1,' + @LineFeed +
             '    ''GRANT'',' + @LineFeed +
             '    0,' + @LineFeed +
             '    ''For validation test called "' + @TestName + '"''' + @LineFeed +
@@ -1237,7 +1237,7 @@ BEGIN TRY
     COMMIT TRANSACTION 
 END TRY
 BEGIN CATCH    
-    SET @ErrorCount = @ErrorCount + 1
+    SET @ErrorCount = @ErrorCount + 1;
     SET @TestResult = 'FAILURE';
     SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
     PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
@@ -1250,6 +1250,56 @@ END CATCH
 BEGIN TRAN
 INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
 COMMIT;
+
+-- ---------------------------------------------------------------------------------------------------------
+
+SET @TestID = @TestID + 1 ;
+SET @TestName = 'Expected failed creation by INSERT statement into [security].[DatabaseRoleMembers] table (MemberIsRole = 0 ; PermissionLevel = GRANT ; active = 1)';
+SET @TestDescription = 'Tries to insert a record into the [security].[DatabaseRoleMembers] table with a member which is a Role and MemberIsRole parameter set inappropriately.' ;
+SET @TestResult = 'SUCCESS';
+SET @ErrorMessage = NULL;
+
+SELECT @TmpStringVal = ParamValue 
+from [security].ApplicationParams 
+where ParamName = 'Separator4OnSchemaStandardRole'
+
+set @tsql = 'insert into [security].[DatabaseRoleMembers]'  + @LineFeed +
+            '    (ServerName,DbName,RoleName,MemberName,MemberIsRole,PermissionLevel,isActive,Reason)' + @LineFeed +
+            'values (' + @LineFeed +
+            '    @@SERVERNAME,' + @LineFeed +
+            '    DB_NAME(),' + @LineFeed +
+            '    ''$(CurrentDB_Schema1)' + @TmpStringVal + 'endusers'',' + @LineFeed +
+            '    ''$(CustomRoleName1)'',' + @LineFeed +            
+            '    1,' + @LineFeed +
+            '    ''GRANT'',' + @LineFeed +
+            '    0,' + @LineFeed +
+            '    ''For validation test called "' + @TestName + '"''' + @LineFeed +
+            ')' ;
+
+BEGIN TRY
+    BEGIN TRANSACTION
+    PRINT 'Running test #' + CONVERT(VARCHAR,@TestID) + '(' + @TestName + ')';
+    execute sp_executesql @tsql ;
+	SET @ErrorCount = @ErrorCount + 1;
+    SET @TestResult = 'FAILURE';
+    SET @ErrorMessage = 'Able to add a member which is a database role as a database user' ;
+    PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ')
+    IF @@TRANCOUNT > 0
+    BEGIN 
+        ROLLBACK ;
+    END     
+END TRY
+BEGIN CATCH    
+	IF @@TRANCOUNT > 0
+    BEGIN 
+        COMMIT ;
+    END     
+END CATCH
+
+BEGIN TRAN
+INSERT into $(TestingSchema).testResults values (@TestID ,'$(Feature)', @TestName , @TestDescription, @TestResult , @ErrorMessage );
+COMMIT;
+
 
 -- ---------------------------------------------------------------------------------------------------------
 
@@ -1308,7 +1358,7 @@ BEGIN
         COMMIT TRANSACTION;
     END TRY
     BEGIN CATCH
-        SET @ErrorCount = @ErrorCount + 1
+        SET @ErrorCount = @ErrorCount + 1;
         SET @TestResult = 'FAILURE';
         SET @ErrorMessage = 'Line ' + CONVERT(VARCHAR,ERROR_LINE()) + ' => ' + ERROR_MESSAGE()  ;
         PRINT '    > ERROR ' + REPLACE(REPLACE(@ErrorMessage,CHAR(10),' ') , CHAR(13) , ' ') + ' | @CreationWasOK = ' + CONVERT(VARCHAR,@CreationWasOK) ;
@@ -1344,6 +1394,6 @@ if(@ResultsInErrorCnt > 0)
 BEGIN
 	DECLARE @textMsg VARCHAR(2048);
 	SET @textMsg = CONVERT(VARCHAR,@ResultsInErrorCnt) + ' errors found for the $(Feature) feature' ;
-	RAISERROR(@textMsg,12,1);
+	RAISERROR(@textMsg,12,1) WITH NOWAIT;
 END 
 GO

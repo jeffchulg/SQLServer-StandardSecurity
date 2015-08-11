@@ -1,6 +1,6 @@
 /*requires Schema.Security.sql*/
-/*requires Table.Contacts.sql*/
-/*requires Table.ApplicationParams.sql*/
+/*requires Table.security.Contacts.sql*/
+/*requires Table.security.ApplicationParams.sql*/
 
 
 

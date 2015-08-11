@@ -1,5 +1,5 @@
 /*requires Schema.Security.sql*/
-/*requires Table.DatabasePermissions.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
 /*requires Function.validator.isValidPermissionDescription.sql*/
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -43,7 +43,6 @@ AS
 BEGIN
 
     --SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @tsql               nvarchar(max);
     DECLARE @tsql_declaration   nvarchar(max);
     DECLARE @LineFeed           VARCHAR(6) ;

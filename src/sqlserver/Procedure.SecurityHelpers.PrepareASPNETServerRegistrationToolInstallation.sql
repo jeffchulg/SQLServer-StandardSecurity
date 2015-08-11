@@ -1,8 +1,8 @@
 /*requires Schema.SecurityHelpers.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabaseSchemas.sql*/
-/*requires Table.DatabasePermissions.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabaseSchemas.sql*/
+/*requires Table.security.DatabasePermissions.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -80,16 +80,17 @@ EXEC [SecurityHelpers].[PrepareASPNETServerRegistrationToolInstallation]
    ==================================================================================
    Revision History
 
-     Date        Nom         Description
-     ==========  =====       ==========================================================
-     30/03/2015  JEL         Version 0.0.1
+     Date        Nom         		Description
+     ==========  ================== ==========================================================
+     30/03/2015  JEL         		Version 0.0.1
      ----------------------------------------------------------------------------------
+    07/08/2015  Jefferson Elias     Removed version number
+    ----------------------------------------------------------------------------------	 
   ===================================================================================
 */
 BEGIN
 
     SET NOCOUNT ON;
-    DECLARE @versionNb          varchar(16) = '0.0.1';
     DECLARE @tsql               varchar(max);
 
 

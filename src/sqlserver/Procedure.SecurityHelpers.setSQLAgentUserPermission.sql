@@ -1,10 +1,10 @@
 /*requires Schema.SecurityHelpers.sql*/
 /*requires Schema.Security.sql*/
-/*requires Table.Contacts.sql*/
-/*requires Table.SQLMappings.sql*/
-/*requires Table.DatabaseRoles.sql*/
-/*requires Table.DatabaseRoleMembers.sql*/
-/*requires Procedure.setDatabaseAccess.sql*/
+/*requires Table.security.Contacts.sql*/
+/*requires Table.security.SQLMappings.sql*/
+/*requires Table.security.DatabaseRoles.sql*/
+/*requires Table.security.DatabaseRoleMembers.sql*/
+/*requires Procedure.security.setDatabaseAccess.sql*/
 
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
@@ -44,14 +44,13 @@ BEGIN
 
     SET NOCOUNT ON;
     DECLARE @DbName             VARCHAR(128);
-    DECLARE @versionNb        	varchar(16) 
     DECLARE @tsql             	nvarchar(max);
     DECLARE @LineFeed 		    VARCHAR(10);    
     DECLARE @LookupOperator     VARCHAR(4) ;
     DECLARE @SQLAgentRoleName   VARCHAR(128);
     DECLARE @PermissionLevel    VARCHAR(16);
     
-    SET @versionNb       = '0.1.1';
+
     SET @LookupOperator  = '=';
     SET @PermissionLevel = 'GRANT'
     

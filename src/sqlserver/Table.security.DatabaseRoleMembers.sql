@@ -212,6 +212,7 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_I_DatabaseRoleMembers]' + CHAR(13) +
             '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
             '           and o.DbName        = i.DbName' +CHAR(13) +
             '           and o.[RoleName]    = i.[RoleName]' +CHAR(13) +
+			'           and o.[MemberName]    = i.[MemberName]' +CHAR(13) +
             'END' ;
 EXEC (@SQL);
 PRINT '    Trigger [security].[TRG_I_DatabaseRoleMembers] altered.'
@@ -243,6 +244,7 @@ SET @SQL =  'ALTER TRIGGER [security].[TRG_U_DatabaseRoleMembers]' + CHAR(13) +
             '            on o.[ServerName]  = i.[ServerName]' +CHAR(13) +
             '           and o.DbName        = i.DbName' +CHAR(13) +
             '           and o.[RoleName]    = i.[RoleName]' +CHAR(13) +
+            '           and o.[MemberName]    = i.[MemberName]' +CHAR(13) +
 
             'END' ;
 EXEC (@SQL);

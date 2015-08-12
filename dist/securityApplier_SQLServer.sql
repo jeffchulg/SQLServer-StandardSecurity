@@ -5854,13 +5854,13 @@ BEGIN
 		RAISERROR('Unknown AccessLevel parameter',12,1);
 	END	;
         
-	if OBJECT_ID('##logins') is not null and @withTmpTblDrop = 1 
+	if OBJECT_ID('tempdb..##logins') is not null and @withTmpTblDrop = 1 
 	BEGIN 
 		if @Debug = 1
 		BEGIN 
 			PRINT '-- Dropping table ##logins';
 		END  
-		exec sp_executesql 'DROP TABLE ##logins' ;
+		exec sp_executesql N'DROP TABLE ##logins' ;
 	END 
 	
 	if OBJECT_ID('##logins' ) is null 
@@ -5974,7 +5974,9 @@ BEGIN
     EXEC (@SQL)
 	PRINT '    View [security].[StandardOnSchemaRolesTreeView] created.'
 END
+GO
 
+DECLARE @SQL VARCHAR(MAX)
 SET @SQL = 'ALTER view [security].[StandardOnSchemaRolesTreeView]
                 AS
                     with TreeView ([RoleName],ParentRole,[Level])
@@ -7953,7 +7955,7 @@ BEGIN
 
 	BEGIN TRY
         exec [security].[PrepareAccessSettings]
-						@AccessLevel		= 'SCHEMA',
+						@AccessLevel		= 'SERVER',
 						@ServerName			= @ServerName, 
 						@ContactDepartment	= @ContactDepartment,
 						@ContactsJob		= @ContactsJob,
@@ -7962,7 +7964,7 @@ BEGIN
 						@exactMatch			= @exactMatch,
 						@withTmpTblDrop		= 0,
 						@Debug				= @Debug ;
-
+		--select * From ##logins ;
         DECLARE @PermissionLevel VARCHAR(6) = 'GRANT' ;
         if @isAllow = 1
         BEGIN
@@ -7991,7 +7993,7 @@ BEGIN
             RAISERROR('Not yet implemented ! ',16,0)
 
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 	END TRY
 
@@ -8004,7 +8006,7 @@ BEGIN
             ,ERROR_LINE() AS ErrorLine
             ,ERROR_MESSAGE() AS ErrorMessage;
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 
 	END CATCH
@@ -8700,7 +8702,7 @@ BEGIN
         END
 
         exec [security].[PrepareAccessSettings]
-						@AccessLevel		= 'SCHEMA',
+						@AccessLevel		= 'DATABASE',
 						@ServerName			= @ServerName, 
 						@ContactDepartment	= @ContactDepartment,
 						@ContactsJob		= @ContactsJob,
@@ -8827,7 +8829,7 @@ BEGIN
         ELSE
             RAISERROR('Not yet implemented ! ',15,0)
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 	END TRY
 
@@ -8840,7 +8842,7 @@ BEGIN
             ,ERROR_LINE() AS ErrorLine
             ,ERROR_MESSAGE() AS ErrorMessage;
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 
 		if CURSOR_STATUS('local','loginsToManage') >= 0
@@ -13754,7 +13756,7 @@ BEGIN
 				@Reason = @Reason,
 				@isActive = @isActive ;
 
-		if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+		if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 					
 	END TRY
@@ -13768,7 +13770,7 @@ BEGIN
         ,ERROR_LINE() AS ErrorLine
         ,ERROR_MESSAGE() AS ErrorMessage;
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 
 		if CURSOR_STATUS('local','loginsToManage') >= 0

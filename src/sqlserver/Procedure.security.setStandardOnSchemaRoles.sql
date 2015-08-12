@@ -211,6 +211,7 @@ BEGIN
                 where 
                     s.ServerName = @CurServerName
                 and s.DbName     = @CurDbName
+				and s.SchemaName = ISNULL(@SchemaName,s.SchemaName)
                 and s.SchemaName not in (
                         select 
                             ObjectName 

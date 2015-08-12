@@ -126,7 +126,7 @@ BEGIN
 
 	BEGIN TRY
         exec [security].[PrepareAccessSettings]
-						@AccessLevel		= 'SCHEMA',
+						@AccessLevel		= 'SERVER',
 						@ServerName			= @ServerName, 
 						@ContactDepartment	= @ContactDepartment,
 						@ContactsJob		= @ContactsJob,
@@ -135,7 +135,7 @@ BEGIN
 						@exactMatch			= @exactMatch,
 						@withTmpTblDrop		= 0,
 						@Debug				= @Debug ;
-
+		--select * From ##logins ;
         DECLARE @PermissionLevel VARCHAR(6) = 'GRANT' ;
         if @isAllow = 1
         BEGIN
@@ -164,7 +164,7 @@ BEGIN
             RAISERROR('Not yet implemented ! ',16,0)
 
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 	END TRY
 
@@ -177,7 +177,7 @@ BEGIN
             ,ERROR_LINE() AS ErrorLine
             ,ERROR_MESSAGE() AS ErrorMessage;
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 
 	END CATCH

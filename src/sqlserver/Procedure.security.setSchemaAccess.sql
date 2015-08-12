@@ -220,7 +220,7 @@ BEGIN
 				@Reason = @Reason,
 				@isActive = @isActive ;
 
-		if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+		if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 					
 	END TRY
@@ -234,7 +234,7 @@ BEGIN
         ,ERROR_LINE() AS ErrorLine
         ,ERROR_MESSAGE() AS ErrorMessage;
 
-        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..#logins' ) is not null
+        if @_noTmpTblDrop = 0 and OBJECT_ID('tempdb..##logins' ) is not null
             exec sp_executesql N'DROP TABLE ##logins' ;
 
 		if CURSOR_STATUS('local','loginsToManage') >= 0

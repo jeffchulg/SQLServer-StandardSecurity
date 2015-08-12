@@ -114,13 +114,13 @@ BEGIN
 		RAISERROR('Unknown AccessLevel parameter',12,1);
 	END	;
         
-	if OBJECT_ID('##logins') is not null and @withTmpTblDrop = 1 
+	if OBJECT_ID('tempdb..##logins') is not null and @withTmpTblDrop = 1 
 	BEGIN 
 		if @Debug = 1
 		BEGIN 
 			PRINT '-- Dropping table ##logins';
 		END  
-		exec sp_executesql 'DROP TABLE ##logins' ;
+		exec sp_executesql N'DROP TABLE ##logins' ;
 	END 
 	
 	if OBJECT_ID('##logins' ) is null 

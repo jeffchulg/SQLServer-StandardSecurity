@@ -43,7 +43,9 @@ BEGIN
     EXEC (@SQL)
 	PRINT '    View [security].[StandardOnSchemaRolesTreeView] created.'
 END
+GO
 
+DECLARE @SQL VARCHAR(MAX)
 SET @SQL = 'ALTER view [security].[StandardOnSchemaRolesTreeView]
                 AS
                     with TreeView ([RoleName],ParentRole,[Level])

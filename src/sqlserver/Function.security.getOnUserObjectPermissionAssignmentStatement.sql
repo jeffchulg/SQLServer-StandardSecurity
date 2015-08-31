@@ -163,11 +163,22 @@ BEGIN
         SET @tsql = @tsql + '-- 1.1 Check that the database actually exists' + @LineFeed +
                     'if (NOT exists (select * from sys.databases where QUOTENAME(name) = @DbName))' + @LineFeed  +
                     'BEGIN' + @LineFeed  +
-                    '    RAISERROR ( ''' + @ErrorDbNotExists + ''',0,1 ) WITH NOWAIT' + @LineFeed  +
+                    '    RAISERROR ( ''' + @ErrorDbNotExists + ''',12,1 ) WITH NOWAIT' + @LineFeed  +
                     '    return' + @LineFeed +
                     'END' + @LineFeed  +
                     '' + @LineFeed 
         -- TODO : add checks for Grantee and SchemaName and ObjectName and SubObjectName
+        
+        SET @tsql = @tsql + @LineFeed +
+                    'DECLARE @tsql_checks NVARCHAR(MAX) ;' + @LineFeed + 
+                    'DECLARE @cntObjects  INT ;' + @LineFeed +
+                    'SET @tsql_checks = ''use ' + QUOTENAME(@DbName) + ' ; SELECT @ObjID = OBJECT_ID(''''' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) + ''''')''' + @LineFeed +
+                    'exec sp_executesql @tsql_checks , N''@ObjID INT OUTPUT'', @ObjID = @cntObjects OUTPUT ;' + @LineFeed +
+                    'if(@cntObjects is null)' + @LineFeed +                                         
+                    'BEGIN' + @LineFeed  +
+                    '    PRINT ( ''!!!Warning : No object with name has been found (' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) + ')'');' + @LineFeed  +                    
+                    '    RETURN;' + @LineFeed +
+                    'END' + @LineFeed ;
     END
     
     SET @tsql = @tsql + /*
@@ -198,7 +209,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
         BEGIN 
             SET @tsql = @tsql +
@@ -206,7 +217,7 @@ BEGIN
         END               
         
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) + ''''';'';' + @LineFeed +
                     'END' + @LineFeed
     END 
     ELSE if @PermissionLevel = 'DENY' 
@@ -214,9 +225,9 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel <> ''DENY'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) + ''''';'';' + @LineFeed +
                     'END' + @LineFeed                    
         
     END 
@@ -225,7 +236,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    '    EXEC sp_executesql N''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + ''''';'';' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE

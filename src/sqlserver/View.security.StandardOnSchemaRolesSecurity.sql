@@ -34,8 +34,8 @@ SET @SQL = 'ALTER view [security].[StandardOnSchemaRolesSecurity]
 			    WITH SCHEMABINDING
                 AS
 					select 
-						RoleName,
-						MemberName as PrivName,
+						MemberName as RoleName,
+						RoleName as PrivName,
 						''DATABASE_SCHEMA'' as PermissionClass,
 						PermissionLevel,
 						isActive,
@@ -56,6 +56,7 @@ SET @SQL = 'ALTER view [security].[StandardOnSchemaRolesSecurity]
 							security.StandardRolesPermissions
 						where 
 							RoleScope = ''SCHEMA''
+                        AND ObjectClass in (''DATABASE'',''DATABASE_SCHEMA'')
 					)';
 EXEC (@SQL)
 PRINT '    View altered.'

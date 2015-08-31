@@ -263,10 +263,10 @@ BEGIN TRY
         with standardSchemaRolesPerms
         AS (
             select
-                ''SCHEMA''          as RoleScope,
-                RoleName          as RoleName,
-                ''SCHEMA''          as RoleMemberScope,
-                PrivName          as MemberName ,
+                ''SCHEMA''        as RoleScope,
+                PrivName          as RoleName,
+                ''SCHEMA''        as RoleMemberScope,
+                RoleName          as MemberName ,
                 PermissionLevel   as PermissionLevel,                
                 NULL              as Reason/*no column Reason*/,
                 isActive          as isActive,
@@ -303,16 +303,16 @@ BEGIN TRY
         with standardSchemaRolesPerms
         AS (
 			select * from ( values
-			('SCHEMA','endusers','SCHEMA','data_modifier','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','endusers','SCHEMA','data_reader','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','endusers','SCHEMA','prog_executors','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','full_access','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','full_access','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','managers','SCHEMA','struct_modifier','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','managers','SCHEMA','struct_viewer','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','responsible','SCHEMA','data_modifier','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','responsible','SCHEMA','data_reader','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','responsible','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617')
+			('SCHEMA','data_modifier','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','data_reader','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','prog_executors','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','endusers','SCHEMA','full_access','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','managers','SCHEMA','full_access','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','struct_modifier','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','struct_viewer','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','data_modifier','SCHEMA','responsible','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','data_reader','SCHEMA','responsible','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','managers','SCHEMA','responsible','GRANT','',1,0,'2014-12-24 14:21:52.617')
         ) c (
 			RoleScope,RoleName,RoleMemberScope,MemberName,PermissionLevel,Reason,isActive,isDefinedByMSSQL,CreationDate
 		))

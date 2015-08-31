@@ -1,4 +1,6 @@
 /*requires Schema.Security.sql*/
+/*requires Table.security.StandardRoleMembers.sql*/
+/*requires Table.security.StandardRolesPermissions.sql*/
 /*requires View.security.StandardOnSchemaRoles.sql*/
 /*requires View.security.StandardOnSchemaRolesSecurity.sql*/
 

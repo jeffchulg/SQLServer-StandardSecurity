@@ -35,7 +35,12 @@ AS
 /*
   ===================================================================================
    DESCRIPTION:		
-  
+        Prepares the temporary table ##logins which will be used in access settings 
+        procedures ([security].[set*Access]).
+        
+        This table will contain only the SQL Logins that should be used in those procedures
+        according to the given parameters.
+        
    ARGUMENTS :        	
 		@ServerName         name of the server from which the we want to work with
                             By default, it's the current server

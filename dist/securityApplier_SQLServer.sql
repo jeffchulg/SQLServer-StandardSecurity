@@ -3478,11 +3478,22 @@ BEGIN
         SET @tsql = @tsql + '-- 1.1 Check that the database actually exists' + @LineFeed +
                     'if (NOT exists (select * from sys.databases where QUOTENAME(name) = @DbName))' + @LineFeed  +
                     'BEGIN' + @LineFeed  +
-                    '    RAISERROR ( ''' + @ErrorDbNotExists + ''',0,1 ) WITH NOWAIT' + @LineFeed  +
+                    '    RAISERROR ( ''' + @ErrorDbNotExists + ''',12,1 ) WITH NOWAIT' + @LineFeed  +
                     '    return' + @LineFeed +
                     'END' + @LineFeed  +
                     '' + @LineFeed 
         -- TODO : add checks for Grantee and SchemaName and ObjectName and SubObjectName
+        
+        SET @tsql = @tsql + @LineFeed +
+                    'DECLARE @tsql_checks NVARCHAR(MAX) ;' + @LineFeed + 
+                    'DECLARE @cntObjects  INT ;' + @LineFeed +
+                    'SET @tsql_checks = ''use ' + QUOTENAME(@DbName) + ' ; SELECT @ObjID = OBJECT_ID(''''' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) + ''''')''' + @LineFeed +
+                    'exec sp_executesql @tsql_checks , N''@ObjID INT OUTPUT'', @ObjID = @cntObjects OUTPUT ;' + @LineFeed +
+                    'if(@cntObjects is null)' + @LineFeed +                                         
+                    'BEGIN' + @LineFeed  +
+                    '    PRINT ( ''!!!Warning : No object with name has been found (' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) + ')'');' + @LineFeed  +                    
+                    '    RETURN;' + @LineFeed +
+                    'END' + @LineFeed ;
     END
     
     SET @tsql = @tsql + /*
@@ -3513,7 +3524,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is null OR @CurPermLevel <> ''GRANT'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
         if @isWithGrantOption = 1
         BEGIN 
             SET @tsql = @tsql +
@@ -3521,7 +3532,7 @@ BEGIN
         END               
         
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) + ''''';'';' + @LineFeed +
                     'END' + @LineFeed
     END 
     ELSE if @PermissionLevel = 'DENY' 
@@ -3529,9 +3540,9 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel <> ''DENY'' COLLATE French_CI_AS)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
+                    '    EXEC sp_executesql N''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' to ' + QUOTENAME(@Grantee) + ' '
         SET @tsql = @tsql + 
-                    ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    ' AS ' + QUOTENAME(@PermAuthorization) + ''''';'';' + @LineFeed +
                     'END' + @LineFeed                    
         
     END 
@@ -3540,7 +3551,7 @@ BEGIN
         SET @tsql = @tsql +  
                     'if (@CurPermLevel is not null)' + @LineFeed +
                     'BEGIN' + @LineFeed +
-                    '    EXEC ''USE ' + QUOTENAME(@DbName) + '; sp_executesql N''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + '''' + @LineFeed +
+                    '    EXEC sp_executesql N''USE ' + QUOTENAME(@DbName) + '; exec sp_executesql N''''' + @PermissionLevel + ' ' + @PermissionName + ' ON OBJECT::' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@ObjectName) +' FROM ' + QUOTENAME(@Grantee) + ' AS ' + QUOTENAME(@PermAuthorization) + ''''';'';' + @LineFeed +
                     'END' + @LineFeed
     END
     ELSE
@@ -5646,10 +5657,10 @@ BEGIN TRY
         with standardSchemaRolesPerms
         AS (
             select
-                ''SCHEMA''          as RoleScope,
-                RoleName          as RoleName,
-                ''SCHEMA''          as RoleMemberScope,
-                PrivName          as MemberName ,
+                ''SCHEMA''        as RoleScope,
+                PrivName          as RoleName,
+                ''SCHEMA''        as RoleMemberScope,
+                RoleName          as MemberName ,
                 PermissionLevel   as PermissionLevel,                
                 NULL              as Reason/*no column Reason*/,
                 isActive          as isActive,
@@ -5686,16 +5697,16 @@ BEGIN TRY
         with standardSchemaRolesPerms
         AS (
 			select * from ( values
-			('SCHEMA','endusers','SCHEMA','data_modifier','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','endusers','SCHEMA','data_reader','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','endusers','SCHEMA','prog_executors','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','full_access','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','full_access','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','managers','SCHEMA','struct_modifier','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','managers','SCHEMA','struct_viewer','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','responsible','SCHEMA','data_modifier','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','responsible','SCHEMA','data_reader','GRANT','',1,0,'2014-12-24 14:21:52.617'),
-			('SCHEMA','responsible','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617')
+			('SCHEMA','data_modifier','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','data_reader','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','prog_executors','SCHEMA','endusers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','endusers','SCHEMA','full_access','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','managers','SCHEMA','full_access','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','struct_modifier','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','struct_viewer','SCHEMA','managers','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','data_modifier','SCHEMA','responsible','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','data_reader','SCHEMA','responsible','GRANT','',1,0,'2014-12-24 14:21:52.617'),
+			('SCHEMA','managers','SCHEMA','responsible','GRANT','',1,0,'2014-12-24 14:21:52.617')
         ) c (
 			RoleScope,RoleName,RoleMemberScope,MemberName,PermissionLevel,Reason,isActive,isDefinedByMSSQL,CreationDate
 		))
@@ -5930,87 +5941,6 @@ PRINT '    Procedure [security].[PrepareAccessSettings] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT ''	
-
-
-
-/**
-  ==================================================================================
-    DESCRIPTION
-		Creation of the [security].[StandardOnSchemaRolesTreeView] view.
-        This view intends to display a hierarchical display for standard on schema 
-        database roles.
-
-	==================================================================================
-  BUGS:
- 
-    BUGID       Fixed   Description
-    ==========  =====   ==========================================================
-    ----------------------------------------------------------------------------------
-  ==================================================================================
-  Notes :
- 
-        Exemples :
-        -------
- 
-  ==================================================================================
-  Revision history
- 
-    Date        Name                Description
-    ==========  ================    ================================================
-    24/12/2014  Jefferson Elias     Version 0.1.0
-    --------------------------------------------------------------------------------	
-  ==================================================================================
-*/
-
-PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT 'View [security].[StandardOnSchemaRolesTreeView] Creation'
-
-DECLARE @SQL VARCHAR(MAX)
-IF  NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesTreeView]'))
-BEGIN
-    SET @SQL =  'CREATE view [security].[StandardOnSchemaRolesTreeView]
-                AS
-                select ''Not implemented'' as Col1'
-    EXEC (@SQL)
-	PRINT '    View [security].[StandardOnSchemaRolesTreeView] created.'
-END
-GO
-
-DECLARE @SQL VARCHAR(MAX)
-SET @SQL = 'ALTER view [security].[StandardOnSchemaRolesTreeView]
-                AS
-                    with TreeView ([RoleName],ParentRole,[Level])
-                    as (
-                        select RoleName, CAST('''' as VARCHAR(64)) as ParentRole,0 
-                        from security.StandardOnSchemaRoles
-                        where RoleName not in (
-                            select RoleName
-                            from security.StandardOnSchemaRolesSecurity
-                            where isRoleMembership = 1 and PermissionLevel = ''GRANT''
-                        )
-                        union all
-                        select r.RoleName,CAST(r.PrivName AS varchar(64)),[Level]+1
-                        from security.StandardOnSchemaRolesSecurity r	
-                        INNER JOIN TreeView p ON r.PrivName = p.RoleName
-                        where isRoleMembership = 1 and PermissionLevel = ''GRANT''
-                    )
-                    select tv.[Level],r.RoleName,r.isActive,r.Description,r.CreationDate,r.lastModified                 
-                    from (
-                        select max(tv1.[Level]) as [Level],tv1.RoleName
-                        from 
-                            TreeView tv1
-                        group by RoleName
-                    ) tv
-                    inner join security.StandardOnSchemaRoles r
-                    on
-                        tv.RoleName = r.RoleName
-                    '
-EXEC (@SQL)
-PRINT '    View [security].[StandardOnSchemaRolesTreeView] altered.'
-GO
-
-PRINT '--------------------------------------------------------------------------------------------------------------'
-PRINT '' 
 
 
 
@@ -7454,6 +7384,7 @@ SET @SQL = 'ALTER view [security].[StandardOnSchemaRolesSecurity]
 							security.StandardRolesPermissions
 						where 
 							RoleScope = ''SCHEMA''
+                        AND ObjectClass in (''DATABASE'',''DATABASE_SCHEMA'')
 					)';
 EXEC (@SQL)
 PRINT '    View altered.'
@@ -8859,6 +8790,89 @@ PRINT '    Procedure [security].[setDatabaseAccess] altered.'
 
 PRINT '--------------------------------------------------------------------------------------------------------------'
 PRINT ''
+
+
+
+
+
+/**
+  ==================================================================================
+    DESCRIPTION
+		Creation of the [security].[StandardOnSchemaRolesTreeView] view.
+        This view intends to display a hierarchical display for standard on schema 
+        database roles.
+
+	==================================================================================
+  BUGS:
+ 
+    BUGID       Fixed   Description
+    ==========  =====   ==========================================================
+    ----------------------------------------------------------------------------------
+  ==================================================================================
+  Notes :
+ 
+        Exemples :
+        -------
+ 
+  ==================================================================================
+  Revision history
+ 
+    Date        Name                Description
+    ==========  ================    ================================================
+    24/12/2014  Jefferson Elias     Version 0.1.0
+    --------------------------------------------------------------------------------	
+  ==================================================================================
+*/
+
+PRINT '--------------------------------------------------------------------------------------------------------------'
+PRINT 'View [security].[StandardOnSchemaRolesTreeView] Creation'
+
+DECLARE @SQL VARCHAR(MAX)
+IF  NOT EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[security].[StandardOnSchemaRolesTreeView]'))
+BEGIN
+    SET @SQL =  'CREATE view [security].[StandardOnSchemaRolesTreeView]
+                AS
+                select ''Not implemented'' as Col1'
+    EXEC (@SQL)
+	PRINT '    View [security].[StandardOnSchemaRolesTreeView] created.'
+END
+GO
+
+DECLARE @SQL VARCHAR(MAX)
+SET @SQL = 'ALTER view [security].[StandardOnSchemaRolesTreeView]
+                AS
+                    with TreeView ([RoleName],ParentRole,[Level])
+                    as (
+                        select RoleName, CAST('''' as VARCHAR(64)) as ParentRole,0 
+                        from security.StandardOnSchemaRoles
+                        where RoleName not in (
+                            select RoleName
+                            from security.StandardOnSchemaRolesSecurity
+                            where isRoleMembership = 1 and PermissionLevel = ''GRANT''
+                        )
+                        union all
+                        select r.RoleName,CAST(r.PrivName AS varchar(64)),[Level]+1
+                        from security.StandardOnSchemaRolesSecurity r	
+                        INNER JOIN TreeView p ON r.PrivName = p.RoleName
+                        where isRoleMembership = 1 and PermissionLevel = ''GRANT''
+                    )
+                    select tv.[Level],r.RoleName,r.isActive,r.Description,r.CreationDate,r.lastModified                 
+                    from (
+                        select max(tv1.[Level]) as [Level],tv1.RoleName
+                        from 
+                            TreeView tv1
+                        group by RoleName
+                    ) tv
+                    inner join security.StandardOnSchemaRoles r
+                    on
+                        tv.RoleName = r.RoleName
+                    '
+EXEC (@SQL)
+PRINT '    View [security].[StandardOnSchemaRolesTreeView] altered.'
+GO
+
+PRINT '--------------------------------------------------------------------------------------------------------------'
+PRINT '' 
 
 
 
@@ -13397,6 +13411,7 @@ BEGIN
                 where 
                     s.ServerName = @CurServerName
                 and s.DbName     = @CurDbName
+				and s.SchemaName = ISNULL(@SchemaName,s.SchemaName)
                 and s.SchemaName not in (
                         select 
                             ObjectName 
